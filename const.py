@@ -29,6 +29,9 @@ DICT_FILES_ST = {POSTFIX_FILE_LF_RESULT: FILE_TEMPLATE_LF_RESULT}
 
 Pattern_read = '([^\']*?|\'.*?\'),'
 
+MarkKey = 'Mark'
+
+#########---BUS---#########
 BusNoKey = 'Bus_No'
 BusNameKey = 'Bus_Name'
 BaseKVKey = 'Base_kV'
@@ -37,21 +40,59 @@ VmaxKVKey = 'Vmax_kV'
 VminKVKey = 'Vmin_kV'
 SC1MVAKey = 'SC1_MVA'
 SC3MVAKey = 'SC3_MVA'
+#########---ACLINE---#########
+ACLineINameKey = 'I_Name'
+ACLineJNameKey = 'J_Name'
+ACLineIDNoKey = 'ID_No'
+ACLineR1Key = 'R1'
+ACLineX1Key = 'X1'
+ACLineHalfB1Key = 'B1_Half'
+ACLineOwnerKey = 'Owner'
+ACLineCtrlModeKey = 'Mode_Ctrl'
+ACLineParNoKey = 'Par_No'
+ACLineCtrlBusKey = 'Bus_Ctrl'
+ACLineCtrlLineKey = 'Line_Ctrl'
+ACLineCtrlValueKey = 'Value_Ctrl'
+ACLineRateKAKey = 'Rate_kA'
+ACLineUpLimitKey = 'Up_Limit'
+ACLineNameKey = 'Line_Name'
 
-LineINameKey = 'I_Name'
-LineJNameKey = 'J_Name'
-LineIDNoKey = 'ID_No'
-LineR1Key = 'R1'
-LineX1Key = 'X1'
-LineHalfB1Key = 'B1_Half'
-LineOwnerKey = 'Owner'
-LineCtrlModeKey = 'Mode_Ctrl'
-LineParNoKey = 'Par_No'
-LineCtrlBusKey = 'Bus_Ctrl'
-LineCtrlLineKey = 'Line_ctrl'
-LineCtrlValueKey = 'Value_Ctrl'
-LineRateKAKey = 'Rate_kA'
-LineUpLimitKey = 'Up_limit'
+UnknownDesc = 'Unknown_desc'
+UnknownInt = 'Unknown_int'
+#########---TRANSFORMER---#########
+TransTkKey = 'Tk'
+TransRmKey = 'Rm'
+TransXmKey = 'Xm'
+Trans2WKey = '2W'
+TransTPKey = 'TP'
+TransShiftAngKey = 'Ang_Shift'
+TransRateMVAKey = 'Rate_MVA'
+TransIDKey = 'ID'
+TransJKey = 'J*'
+TransTrsTypeKey = 'TrsType'
+TransNameKey = 'Transformer_Name'
+TransVi0KVKey = 'Vi0_kV'
+TransVj0KVKey = 'Vj0_kV'
+TransMaxTapPos2Key = 'Max_Tap2' # "最高档位2"
+TransMinTapPos2Key = 'Min_Tap2' # "最低档位2"
+TransMainTapPos2Key = 'Main_Tap2' # "主抽头档位2"
+TransVjstepPrcKey = 'Vjstep_Prc'
+TransVjPosKey = 'Vjpos'
+
+pos_lf_bus = [BusNameKey, BaseKVKey, AreaNoKey, VmaxKVKey, VminKVKey, SC1MVAKey, SC3MVAKey, convert2float_s]
+pos_lf_acline = [MarkKey, ACLineINameKey, ACLineJNameKey, ACLineIDNoKey, ACLineR1Key, ACLineX1Key, ACLineHalfB1Key,
+                 ACLineOwnerKey, ACLineCtrlModeKey, ACLineParNoKey, ACLineCtrlBusKey, ACLineCtrlLineKey,
+                 ACLineCtrlValueKey, ACLineRateKAKey, ACLineUpLimitKey, UnknownDesc, UnknownInt, ACLineNameKey]
+
+
+pos_lf_transformer = [MarkKey, ACLineINameKey, ACLineJNameKey, ACLineIDNoKey, ACLineR1Key, ACLineX1Key,
+                      TransTkKey, TransRmKey, TransXmKey, Trans2WKey,
+                      ACLineCtrlModeKey, ACLineParNoKey, TransTPKey, ACLineCtrlBusKey, ACLineCtrlLineKey,
+                      ACLineCtrlValueKey, TransShiftAngKey, TransRateMVAKey, ACLineUpLimitKey, TransIDKey,
+                      TransJKey, TransTrsTypeKey,UnknownDesc, UnknownInt, TransNameKey,
+                      TransVi0KVKey, TransVj0KVKey, TransMaxTapPos2Key,TransMinTapPos2Key,TransMainTapPos2Key,
+                      TransVjstepPrcKey,TransVjPosKey]
+
 
 dict_translate_lf_bus = {BusNameKey: None,
                          BaseKVKey: convert2float_s,
@@ -61,17 +102,27 @@ dict_translate_lf_bus = {BusNameKey: None,
                          SC1MVAKey: convert2float_s,
                          SC3MVAKey: convert2float_s}
 
-dict_translate_lf_line = {LineINameKey: int,
-                          LineJNameKey: int,
-                          LineIDNoKey: int,
-                          LineR1Key: convert2float_s,
-                          LineX1Key: convert2float_s,
-                          LineHalfB1Key: convert2float_s,
-                          LineOwnerKey: int,
-                          LineCtrlModeKey: int,
-                          LineParNoKey: int,
-                          LineCtrlBusKey: int,
-                          LineCtrlLineKey: int,
-                          LineCtrlValueKey: convert2float_s,
-                          LineRateKAKey: convert2float_s,
-                          LineUpLimitKey: convert2float_s}
+dict_translate_lf_common_acline_trans = {MarkKey: int,
+                                         ACLineINameKey: int,
+                                         ACLineJNameKey: int,
+                                         ACLineIDNoKey: int,
+                                         ACLineR1Key: convert2float_s,
+                                         ACLineX1Key: convert2float_s}
+
+# TODO: Some colomns are short here
+dict_translate_lf_acline = dict_translate_lf_common_acline_trans.copy()
+dict_translate_lf_acline.update({ACLineHalfB1Key: convert2float_s,
+                                 ACLineOwnerKey: int,
+                                 ACLineCtrlModeKey: int,
+                                 ACLineParNoKey: int,
+                                 ACLineCtrlBusKey: int,
+                                 ACLineCtrlLineKey: int,
+                                 ACLineCtrlValueKey: convert2float_s,
+                                 ACLineRateKAKey: convert2float_s,
+                                 ACLineUpLimitKey: convert2float_s,
+                                 UnknownDesc: None,
+                                 UnknownInt: int,
+                                 ACLineNameKey: None})
+
+dict_translate_lf_transformer = dict_translate_lf_common_acline_trans.copy()
+dict_translate_lf_transformer.update({})

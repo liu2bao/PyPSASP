@@ -5,6 +5,9 @@ import re
 
 
 def parse_lines_PSASP(lines, dict_translate, pattern_parse=const.Pattern_read, multi_line=1, key_busno=None):
+    if str.find(lines[0],'Created on')!=-1:
+        list.pop(lines,0)
+
     if multi_line > 1:
         num_lines = len(lines)
         Ndiv = math.ceil(num_lines / multi_line)
@@ -16,8 +19,6 @@ def parse_lines_PSASP(lines, dict_translate, pattern_parse=const.Pattern_read, m
     for h in range(len(lines)):
         line_t = lines[h]
         if isinstance(line_t, str):
-            if h==0 and str.find(line_t,'Created on')!=-1:
-                continue
             contents = re.findall(pattern_parse, line_t)
             if contents:
                 dict_t = [dict_translate[hh](contents[hh]) if dict_translate[hh]
