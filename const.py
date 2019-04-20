@@ -27,7 +27,7 @@ FILE_TEMPLATE_LF_RESULT = lambda x: FILE_TEMPLATE_LF(POSTFIX_FILE_LF_RESULT, x)
 DICT_FILES_LF = {POSTFIX_FILE_LF_RESULT: FILE_TEMPLATE_LF_RESULT}
 DICT_FILES_ST = {POSTFIX_FILE_LF_RESULT: FILE_TEMPLATE_LF_RESULT}
 
-Pattern_read = '([^\']*?|\'.*?\'),'
+Pattern_read = '([^\']*?|\'.*?\')[ ]*,'
 
 #################################################
 # ---COMMON---#
@@ -167,43 +167,142 @@ InterchangeToleranceKey = 'Tolerance'
 InterchangePmaxKey = 'Pmax'
 # -------END------#
 #################################################
+# ---COMMON---#
+VoltageKey = 'V'
+PiKey = 'Pi'
+QiKey = 'Qi'
+PjKey = 'Pj'
+QjKey = 'Qj'
+# ----END----#
+
+# ---BUS---#
+# ---END---#
+
+# ---ACLINE---#
+ACLineQciKey = 'Qci'
+ACLineQcjKey = 'Qcj'
+# ----END----#
+
+# ---TRANSFORMER---#
+# -------END-------#
+
+# ---DCLINE--#
+DCLineId10Key = 'Id10'
+DCLineId20Key = 'Id20'
+DCLineVaciKey = 'Vaci'
+DCLineVacjKey = 'Vacj'
+DCLinePd1iKey = 'Pd1i'
+DCLineQd1iKey = 'Qd1i'
+DCLineVd10iKey = 'Vd10i'
+DCLineTk1iKey = 'Tk1i'
+DCLineA10rKey = 'A10r'
+DCLineTk1iPercKey = 'Tk1iPerc'
+DCLinePd1jKey = 'Pd1j'
+DCLineQd1jKey = 'Qd1j'
+DCLineVd10jKey = 'Vd10j'
+DCLineTk1jKey = 'Tk1j'
+DCLineTk1jPercKey = 'Tk1jPerc'
+DCLinePd2iKey = 'Pd2i'
+DCLineQd2iKey = 'Qd2i'
+DCLineVd20iKey = 'Vd20i'
+DCLineTk2iKey = 'Tk2i'
+DCLineA20rKey = 'A20r'
+DCLineTk2iPercKey = 'Tk2iPerc'
+DCLinePd2jKey = 'Pd2j'
+DCLineQd2jKey = 'Qd2j'
+DCLineVd20jKey = 'Vd20j'
+DCLineTk2jKey = 'Tk2j'
+DCLineTk2jPercKey = 'Tk2jPerc'
+DCLineVbiKey = 'Vbi'
+DCLineVbjKey = 'Vbj'
+DCLineVdbKey = 'Vdb'
+DCLineIdbKey = 'Idb'
+DCLineZdbKey = 'Zdb'
+DCLineLdbKey = 'Ldb'
+DCLineTkbiKey = 'Tkbi'
+DCLineTkbjKey = 'Tkbj'
+
+DCLineXciKey = 'Xci'
+DCLineXcjKey = 'Xcj'
+DCLineTkimaxKey = 'Tkimax'
+DCLineTkiminKey = 'Tkimin'
+DCLineTkjmaxKey = 'Tkjmax'
+DCLineTkjminKey = 'Tkjmin'
+DCLineQcipKey = 'Qcip'
+DCLineQcjpKey = 'Qcjp'
+# ----END---#
+
+# ---GENERATOR--#
+# ------END-----#
+
+# ---LOAD--#
+# ---END--#
+
+# ---INTERCHANGE--#
+InterchangePsumKey = 'P_sum'
+InterchangeAdjPgKey = 'Pg_adj'
+# -------END------#
 
 
 #################################################
-pos_keys_lf_bus = [BusNameKey, BaseKVKey, AreaNoKey, VmaxKVKey, VminKVKey, SC1MVAKey, SC3MVAKey, convert2float_s]
+pos_keys_lf_settings_bus = [BusNameKey, BaseKVKey, AreaNoKey, VmaxKVKey, VminKVKey, SC1MVAKey, SC3MVAKey]
 
-pos_keys_lf_acline = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1Key, ACLineHalfB1Key,
-                      OwnerKey, CtrlModeKey, ParNoKey, CtrlBusKey, CtrlLineKey,
-                      CtrlValueKey, ACLineRateKAKey, UpLimitKey, UnknownDesc, UnknownInt, LineNameKey]
+pos_keys_lf_settings_acline = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1Key, ACLineHalfB1Key,
+                               OwnerKey, CtrlModeKey, ParNoKey, CtrlBusKey, CtrlLineKey,
+                               CtrlValueKey, ACLineRateKAKey, UpLimitKey, UnknownDesc, UnknownInt, LineNameKey]
 
-pos_keys_lf_transformer = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1Key,
-                           TransTkKey, TransRmKey, TransXmKey, Trans2WKey,
-                           CtrlModeKey, ParNoKey, TransTPKey, CtrlBusKey, CtrlLineKey, CtrlValueKey,
-                           TransShiftAngKey, TransRateMVAKey, UpLimitKey, TransIDKey,
-                           TransJKey, TransTrsTypeKey, UnknownDesc, UnknownInt, TransNameKey,
-                           TransVi0KVKey, TransVj0KVKey, TransMaxTapPos2Key, TransMinTapPos2Key, TransMainTapPos2Key,
-                           TransVjstepPrcKey, TransVjPosKey]
+pos_keys_lf_settings_transformer = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1Key,
+                                    TransTkKey, TransRmKey, TransXmKey, Trans2WKey,
+                                    CtrlModeKey, ParNoKey, TransTPKey, CtrlBusKey, CtrlLineKey, CtrlValueKey,
+                                    TransShiftAngKey, TransRateMVAKey, UpLimitKey, IDNoKey,
+                                    TransJKey, TransTrsTypeKey, UnknownDesc, UnknownInt, TransNameKey,
+                                    TransVi0KVKey, TransVj0KVKey, TransMaxTapPos2Key, TransMinTapPos2Key,
+                                    TransMainTapPos2Key, TransVjstepPrcKey, TransVjPosKey]
 
-pos_keys_lf_dcline = [MarkKey, INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey, DCLineRpiKey, DCLineLpiKey, DCLineRpjKey,
-                      DCLineLpjKey, DCLineRlKey, DCLineLlKey, DCLineReiKey, DCLineRejKey, DCLineLsiKey, DCLineLsjKey,
-                      DCLineVdnKey, DCLineVhiKey, DCLineVliKey, DCLineBiKey, DCLineStiKey, DCLineRtiKey, DCLineXtiKey,
-                      DCLineVtimaxKey, DCLineVtiminKey, DCLineNtapiKey, DCLineVhjKey, DCLineVljKey, DCLineBjKey,
-                      DCLineStjKey, DCLineRtjKey, DCLineXtjKey, DCLineVtjmaxKey, DCLineVtjminKey, DCLineNtapjKey,
-                      DCLineOPKey, DCLineQciKey, DCLineQcjKey, DCLinePd1Key, DCLineVd1Key, DCLineA1minKey, DCLineA10Key,
-                      DCLineGama1minKey, DCLineGama10Key, DCLinePd2Key, DCLineVd2Key, DCLineA2minKey, DCLineA20Key,
-                      DCLineGama2minKey, DCLineGama20Key]
+pos_keys_lf_settings_dcline = [MarkKey, INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey, DCLineRpiKey, DCLineLpiKey,
+                               DCLineRpjKey, DCLineLpjKey, DCLineRlKey, DCLineLlKey, DCLineReiKey, DCLineRejKey,
+                               DCLineLsiKey, DCLineLsjKey, DCLineVdnKey, DCLineVhiKey, DCLineVliKey, DCLineBiKey,
+                               DCLineStiKey, DCLineRtiKey, DCLineXtiKey, DCLineVtimaxKey, DCLineVtiminKey,
+                               DCLineNtapiKey, DCLineVhjKey, DCLineVljKey, DCLineBjKey, DCLineStjKey, DCLineRtjKey,
+                               DCLineXtjKey, DCLineVtjmaxKey, DCLineVtjminKey, DCLineNtapjKey, DCLineOPKey,
+                               DCLineQciKey, DCLineQcjKey, DCLinePd1Key, DCLineVd1Key, DCLineA1minKey, DCLineA10Key,
+                               DCLineGama1minKey, DCLineGama10Key, DCLinePd2Key, DCLineVd2Key, DCLineA2minKey,
+                               DCLineA20Key, DCLineGama2minKey, DCLineGama20Key]
 
-pos_keys_lf_generator = [MarkKey, BusNoKey, CtrlModeKey, GenPgKey, GenQgKey, V0Key, AngleKey,
-                         QmaxKey, QminKey, PmaxKey, PminKey, ParGroupKey,
-                         CtrlBusKey, CtrlLineKey, CtrlValueKey, GenKPrcKey, UnknownDesc, UnknownInt, GenNameKey]
+pos_keys_lf_settings_generator = [MarkKey, BusNoKey, CtrlModeKey, GenPgKey, GenQgKey, V0Key, AngleKey,
+                                  QmaxKey, QminKey, PmaxKey, PminKey, ParGroupKey,
+                                  CtrlBusKey, CtrlLineKey, CtrlValueKey, GenKPrcKey,
+                                  UnknownDesc, UnknownInt, GenNameKey]
 
-pos_keys_lf_load = [MarkKey, BusNoKey, LoadNoKey, CtrlModeKey, LoadPlKey, LoadQlKey, V0Key, AngleKey,
-                    QmaxKey, QminKey, PmaxKey, PminKey, ParGroupKey, CtrlBusKey, CtrlLineKey, CtrlValueKey,
-                    UnknownDesc, UnknownInt, GenNameKey]
+pos_keys_lf_settings_load = [MarkKey, BusNoKey, LoadNoKey, CtrlModeKey, LoadPlKey, LoadQlKey, V0Key, AngleKey,
+                             QmaxKey, QminKey, PmaxKey, PminKey, ParGroupKey, CtrlBusKey, CtrlLineKey, CtrlValueKey,
+                             UnknownDesc, UnknownInt, GenNameKey]
 
-pos_keys_lf_interchange = [MarkKey, InterchangeAreaNoKey, InterchangeAreaNameKey, InterchangeAdjGenKey,
-                           InterchangeSchedulePKey, InterchangeToleranceKey, InterchangePmaxKey]
+pos_keys_lf_settings_interchange = [MarkKey, InterchangeAreaNoKey, InterchangeAreaNameKey, InterchangeAdjGenKey,
+                                    InterchangeSchedulePKey, InterchangeToleranceKey, InterchangePmaxKey]
 #################################################
+# --------------------------------------------------------------------------------------------------------#
+#################################################
+pos_keys_lf_results_bus = [BusNoKey, VoltageKey, AngleKey]
+pos_keys_lf_results_acline = [INoKey, JNoKey, IDNoKey, PiKey, QiKey, PjKey, QjKey, ACLineQciKey, ACLineQcjKey]
+pos_keys_lf_results_transformer = [INoKey, JNoKey, IDNoKey, PiKey, QiKey, PjKey, QjKey]
+pos_keys_lf_results_dcline = [INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey, DCLineOPKey, DCLineId10Key, DCLineId20Key,
+                              DCLineVaciKey, DCLineVacjKey, DCLinePd1iKey, DCLineQd1iKey, DCLineVd10iKey, DCLineTk1iKey,
+                              DCLineA10rKey, DCLineTk1iPercKey, DCLinePd1jKey, DCLineQd1jKey, DCLineVd10jKey,
+                              DCLineTk1jKey, DCLineTk1jPercKey, DCLinePd2iKey, DCLineQd2iKey, DCLineVd20iKey,
+                              DCLineTk2iKey, DCLineA20rKey, DCLineTk2iPercKey, DCLinePd2jKey, DCLineQd2jKey,
+                              DCLineVd20jKey, DCLineTk2jKey, DCLineTk2jPercKey, DCLineVbiKey, DCLineVbjKey,
+                              DCLineVdbKey, DCLineIdbKey, DCLineZdbKey, DCLineLdbKey, DCLineTkbiKey, DCLineTkbjKey,
+                              DCLineRpiKey, DCLineLpiKey, DCLineRpjKey, DCLineLpjKey, DCLineRlKey, DCLineLlKey,
+                              DCLineReiKey, DCLineRejKey, DCLineLsiKey, DCLineLsjKey, DCLineXciKey, DCLineXcjKey,
+                              DCLineTkimaxKey, DCLineTkiminKey, DCLineTkjmaxKey, DCLineTkjminKey, DCLineQcipKey,
+                              DCLineQcjpKey, OwnerKey]
+pos_keys_lf_results_generator = [BusNoKey, GenPgKey, GenQgKey]
+pos_keys_lf_results_load = [BusNoKey, LoadNoKey, LoadPlKey, LoadQlKey]
+pos_keys_lf_results_interchange = [AreaNoKey, InterchangePsumKey, InterchangeAdjPgKey]
+
+#################################################
+
 
 '''
 LFL1 = ['NULL1               ',    0.0000,   0,    0.0000,    0.0000,    0.0000,    0.0000]
@@ -254,28 +353,67 @@ print(dict_types[int])
 print(dict_types[float])
 print(dict_types[str])
 '''
+
 dict_types = {
-    int: ['2W', 'J_Tap', 'Main_Tap2', 'TrsType', 'Unknown_int', 'J_No', 'Area_No', 'Load_No', 'K%', 'Vjpos', 'Gen_Adj',
-          'I_Bridge', 'Mark', 'ID', 'Max_Tap2', 'I_Tap', 'J_Bridge', 'Par_Group', 'J*', 'OP_Mode', 'P_Schedule',
-          'Min_Tap2', 'Bus_No', 'Bus_Ctrl', 'I_No', 'Owner', 'Mode_Ctrl', 'ID_No', 'Par_No', 'Line_Ctrl'],
-    convert2float_s: ['Ang_Shift', 'Vlj_Kv', 'Vtimin_kV', 'Pd1_MW', 'Rei_Ohm', 'Sti_MVA', 'A2min_D', 'Ql', 'Lpj_mH',
-                      'Vmax_kV', 'Vd2_kV', 'A20_D', 'Base_kV', 'Stj_MVA', 'Rpj_Ohm', 'Rate_kA', 'Xti_Perc', 'Rl_Ohm',
-                      'TP', 'Rate_MVA', 'Xtj_Perc', 'Tk', 'Qg', 'Rtj_Ohm', 'R1', 'Vjstep_Prc', 'Gam20_D', 'Qmax', 'Rm',
-                      'Xm', 'Lsi_mH', 'Lsj_mH', 'Gam1min_D', 'Vtjmin_kV', 'V0', 'Qcj_Mvar', 'I_tap', 'Qci_Mvar', 'Pmin',
-                      'Angle', 'B1_Half', 'Ll_mH', 'Up_Limit', 'Vtjmax_kV', 'J_tap', 'Vhj_kV', 'Rej_Ohm', 'Gam10_D',
-                      'A1min_D', 'Tolerance', 'Vj0_kV', 'Pmax', 'Rpi_Ohm', 'Rti_Ohm', 'Pl', 'Gam2min_D', 'Lpi_mH',
-                      'Vd1_kV', 'Vtimax_kV', 'SC1_MVA', 'Pg', 'A10_D', 'Vhi_kV', 'Vi0_kV', 'Pd2_MW', 'Vmin_kV',
-                      'Value_Ctrl', 'Vli_kV', 'SC3_MVA', 'X1', 'Qmin', 'Vdrate_kV'],
-    None: ['Transformer_Name', 'Area_Name', 'Generator_Name', 'Line_Name', 'Bus_Name', 'Unknown_desc']
+    int: [Trans2WKey, TransMainTapPos2Key, TransTrsTypeKey, UnknownInt, JNoKey, InterchangeAreaNoKey, LoadNoKey,
+          GenKPrcKey, TransVjPosKey, InterchangeAdjGenKey, DCLineBiKey, DCLineBjKey, MarkKey, TransIDKey,
+          TransMaxTapPos2Key, ParGroupKey, TransJKey, DCLineOPKey, TransMinTapPos2Key, BusNoKey, CtrlBusKey, INoKey,
+          OwnerKey, CtrlModeKey, IDNoKey, ParNoKey, CtrlLineKey],
+    convert2float_s: [TransShiftAngKey, DCLineVljKey, DCLineVtiminKey, DCLinePd1Key, DCLineReiKey, DCLineStiKey,
+                      DCLineA2minKey, LoadQlKey, DCLineLpjKey, VmaxKVKey, DCLineVd2Key, DCLineA20Key, BaseKVKey,
+                      DCLineStjKey, DCLineRpjKey, ACLineRateKAKey, DCLineXtiKey, DCLineRlKey, TransTPKey,
+                      TransRateMVAKey, DCLineXtjKey, TransTkKey, GenQgKey, DCLineRtjKey, R1Key, TransVjstepPrcKey,
+                      DCLineGama20Key, QmaxKey, TransRmKey, TransXmKey, DCLineLsiKey, DCLineLsjKey, DCLineGama1minKey,
+                      DCLineVtjminKey, V0Key, DCLineQcjKey, DCLineNtapiKey, DCLineQciKey, PminKey, AngleKey,
+                      ACLineHalfB1Key, DCLineLlKey, UpLimitKey, DCLineVtjmaxKey, DCLineNtapjKey, DCLineVhjKey,
+                      DCLineRejKey, DCLineGama10Key, DCLineA1minKey, InterchangeToleranceKey, TransVj0KVKey,
+                      InterchangePmaxKey, DCLineRpiKey, DCLineRtiKey, LoadPlKey, DCLineGama2minKey, DCLineLpiKey,
+                      DCLineVd1Key, DCLineVtimaxKey, SC1MVAKey, GenPgKey, DCLineA10Key, DCLineVhiKey, TransVi0KVKey,
+                      DCLinePd2Key, VminKVKey, CtrlValueKey, DCLineVliKey, SC3MVAKey, X1Key, QminKey, DCLineVdnKey,
+                      InterchangeSchedulePKey, VoltageKey, PiKey, QiKey, PjKey, QjKey, ACLineQciKey, ACLineQcjKey,
+                      DCLineId10Key, DCLineId20Key, DCLineVaciKey, DCLineVacjKey, DCLinePd1iKey, DCLineQd1iKey,
+                      DCLineVd10iKey, DCLineTk1iKey, DCLineA10rKey, DCLineTk1iPercKey, DCLinePd1jKey, DCLineQd1jKey,
+                      DCLineVd10jKey, DCLineTk1jKey, DCLineTk1jPercKey, DCLinePd2iKey, DCLineQd2iKey, DCLineVd20iKey,
+                      DCLineTk2iKey, DCLineA20rKey, DCLineTk2iPercKey, DCLinePd2jKey, DCLineQd2jKey, DCLineVd20jKey,
+                      DCLineTk2jKey, DCLineTk2jPercKey, DCLineVbiKey, DCLineVbjKey, DCLineVdbKey, DCLineIdbKey,
+                      DCLineZdbKey, DCLineLdbKey, DCLineTkbiKey, DCLineTkbjKey, DCLineXciKey, DCLineXcjKey,
+                      DCLineTkimaxKey, DCLineTkiminKey, DCLineTkjmaxKey, DCLineTkjminKey, DCLineQcipKey, DCLineQcjpKey,
+                      InterchangePsumKey, InterchangeAdjPgKey],
+    None: [TransNameKey, InterchangeAreaNameKey, GenNameKey, LineNameKey, BusNameKey, UnknownDesc]
 }
 
 dict_translate_lf = {kk: v for v, k in dict_types.items() for kk in k}
 
-dict_pos_keys_lf = {'LF.L1': pos_keys_lf_bus,
-                    'LF.L2': pos_keys_lf_acline,
-                    'LF.L3': pos_keys_lf_transformer,
-                    'LF.NL4': pos_keys_lf_dcline,
-                    'LF.L5': pos_keys_lf_generator,
-                    'LF.L6': pos_keys_lf_load,
-                    'LF.L7': pos_keys_lf_interchange}
-files_lf_settings = list(dict_pos_keys_lf.keys())
+file_lf_settings_bus = 'LF.L1'
+file_lf_settings_acline = 'LF.L2'
+file_lf_settings_transformer = 'LF.L3'
+file_lf_settings_dcline = 'LF.NL4'
+file_lf_settings_gen = 'LF.L5'
+file_lf_settings_load = 'LF.L6'
+file_lf_settings_interchange = 'LF.L7'
+dict_pos_keys_lf_settings = {file_lf_settings_bus: pos_keys_lf_settings_bus,
+                             file_lf_settings_acline: pos_keys_lf_settings_acline,
+                             file_lf_settings_transformer: pos_keys_lf_settings_transformer,
+                             file_lf_settings_dcline: pos_keys_lf_settings_dcline,
+                             file_lf_settings_gen: pos_keys_lf_settings_generator,
+                             file_lf_settings_load: pos_keys_lf_settings_load,
+                             file_lf_settings_interchange: pos_keys_lf_settings_interchange}
+
+file_lf_results_bus = 'LF.LP1'
+file_lf_results_acline = 'LF.LP2'
+file_lf_results_transformer = 'LF.LP3'
+file_lf_results_dcline = 'LF.NP4'
+file_lf_results_gen = 'LF.LP5'
+file_lf_results_load = 'LF.LP6'
+file_lf_results_interchange = 'LF.LP7'
+dict_pos_keys_lf_results = {file_lf_results_bus: pos_keys_lf_results_bus,
+                            file_lf_results_acline: pos_keys_lf_results_acline,
+                            file_lf_results_transformer: pos_keys_lf_results_transformer,
+                            file_lf_results_dcline: pos_keys_lf_results_dcline,
+                            file_lf_results_gen: pos_keys_lf_results_generator,
+                            file_lf_results_load: pos_keys_lf_results_load,
+                            file_lf_results_interchange: pos_keys_lf_results_interchange}
+
+dict_multiline_lf = {file_lf_settings_dcline: 8,
+                     file_lf_results_dcline: 10}
+files_lf_append_no = [file_lf_settings_bus]

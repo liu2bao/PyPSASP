@@ -11,4 +11,4 @@ def convert2float_s(str_t):
         dig_t = float(str_t)
     except:
         dig_t = float('nan')
-    return str_t
+    return dig_t
