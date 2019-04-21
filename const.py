@@ -1,10 +1,29 @@
 from Gadgets_PSASP import convert2float_s
 
+'''
+TT = ['reg_type','reg_fon','reg_par','reg_set','Amax','Amin','Ireg_fon','Ireg_par','Ireg_set','Vreg_fon','Vreg_par','Vreg_set','Greg_fon','Greg_par','Greg_set','Bmax','Bmin','Im','V_low','Idmax','Idmin','dKi','dKj','dTi','dTj','V_relay','T_relay','Type_fdc','K_fdc','Ts_fdc','Te_fdc','Tdo','Tda','Tdb','Tdc','N_rs','V_rs','Tg','Lg','Tvr','Lvr','Tgo','Lgo','Tpss','Lpss','Xdp','Xdpp','X2','Tj','Sh','Ph']
+for h in range(len(TT)):
+     str_t = TT[h]
+     list_str_t = str_t.split('_')
+     list_str_new = []
+     for str_tt in list_str_t:
+         str_tt_new = str_tt[0].upper()
+         if len(str_tt)>1:
+             str_tt_new+=str_tt[1:]
+         list_str_new.append(str_tt_new)
+     tt = ''.join(list_str_new)
+     TT[h] = tt
+print(TT)
+'''
+
 EXE_LF = 'WMLFRTMsg.exe'
 EXE_ST = 'wmudrt.exe'
 
 LABEL_LF = 'load_flow'
 LABEL_ST = 'transient_stability'
+
+LABEL_SETTINGS = 'settings'
+LABEL_RESULTS = 'results'
 
 LABEL_BUS = 'bus'
 LABEL_ACLINE = 'acline'
@@ -12,6 +31,7 @@ LABEL_TRANSFORMER = 'transformer'
 LABEL_DCLINE = 'dcline'
 LABEL_GENERATOR = 'generator'
 LABEL_LOAD = 'load'
+LABEL_INTERCHANGE = 'interchange'
 
 PREFIX_FILE_LF = 'LF'
 PREFIX_FILE_ST = 'ST'
@@ -40,6 +60,7 @@ CtrlValueKey = 'Value_Ctrl'
 INoKey = 'I_No'
 JNoKey = 'J_No'
 IDNoKey = 'ID_No'
+IDKey = 'ID'
 R1Key = 'R1'
 X1Key = 'X1'
 OwnerKey = 'Owner'
@@ -242,7 +263,94 @@ DCLineQcjpKey = 'Qcjp'
 InterchangePsumKey = 'P_sum'
 InterchangeAdjPgKey = 'Pg_adj'
 # -------END------#
+#################################################
+# ---COMMON---#
+R0Key = 'R0'
+X0Key = 'X0'
+# ----END----#
 
+# ---BUS---#
+# ---END---#
+
+# ---ACLINE---#
+ACLineHalfB0Key = 'B0_Half'
+# ----END----#
+
+# ---TRANSFORMER---#
+TransTk0Key = 'Tk0'
+# -------END-------#
+
+# ---DCLINE--#
+DCLineRegTypeKey = 'reg_type'
+DCLineRegFonKey = 'reg_fon'
+DCLineRegParKey = 'reg_par'
+DCLineRegSetKey = 'reg_set'
+DCLineAmaxKey = 'Amaxi_D'
+DCLineAminKey = 'Amini_D'
+DCLineIregFonKey = 'Ireg_fon'
+DCLineIregParKey = 'Ireg_par'
+DCLineIregSetKey = 'Ireg_set'
+DCLineVregFonKey = 'Vreg_fon'
+DCLineVregParKey = 'Vreg_par'
+DCLineVregSetKey = 'Vreg_set'
+DCLineGregFonKey = 'Greg_fon'
+DCLineGregParKey = 'Greg_par'
+DCLineGregSetKey = 'Greg_set'
+DCLineBmaxKey = 'Bmax_D'
+DCLineBminKey = 'Bmin_D'
+DCLineImKey = 'Im_Percent'
+DCLineVLowKey = 'Vlow_Perc'
+DCLineIdmaxKey = 'Idmax_kA'
+DCLineIdminKey = 'Idmin_ kA'
+DCLineDKiKey = 'dKi_Perc'
+DCLineDKjKey = 'dKj_Perc'
+DCLineDTiKey = 'dTi_s'
+DCLineDTjKey = 'dTj_s'
+DCLineVRelayKey = 'V_relay_Perc'
+DCLineTRelayKey = 'T_relay'
+DCLineTypeFdcKey = 'Type_fadc'
+DCLineKFdcKey = 'K_fadc'
+DCLineTsFdcKey = 'Ts_fadc'
+DCLineTeFdcKey = 'Te_fadc'
+DCLineTdoKey = 'Tdo'
+DCLineTdaKey = 'Tda'
+DCLineTdbKey = 'Tdb'
+DCLineTdcKey = 'Tdc'
+DCLineNRsKey = 'N_rs'
+DCLineVRsKey = 'V_rs_Perc'
+# ----END---#
+
+# ---GENERATOR--#
+GenTgKey = 'GEN_MODEL'
+GenLgKey = 'GEN_PAR'
+GenTvrKey = 'AVR_MODEL'
+GenLvrKey = 'AVR_PAR'
+GenTgoKey = 'GOV_MODEL'
+GenLgoKey = 'GOV_PAR'
+GenTpssKey = 'PSS_MODEL'
+GenLpssKey = 'PSS_PAR'
+GenXdpKey = 'XDP'
+GenXdppKey = 'XDPP'
+GenX2Key = 'X2'
+GenTjKey = 'TJ'
+GenShKey = 'RATE_MVA'
+GenPhKey = 'RATE_MW'
+# ------END-----#
+
+# ---LOAD--#
+LoadModelKey = 'LOAD_MODEL'
+LoadParKey = 'LOAD_PAR'
+LoadZPercentKey = 'Z_PERCENT'
+# ---END--#
+
+# ---SVC--#
+SVCSetBusKey = 'Set_Bus'
+SVCModelKey = 'SVC_MODEL'
+SVCXshKey = 'x_fixed'
+# --END--#
+
+#################################################
+# --------------------------------------------------------------------------------------------------------#
 
 #################################################
 pos_keys_lf_settings_bus = [BusNameKey, BaseKVKey, AreaNoKey, VmaxKVKey, VminKVKey, SC1MVAKey, SC3MVAKey]
@@ -254,7 +362,7 @@ pos_keys_lf_settings_acline = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1Key, A
 pos_keys_lf_settings_transformer = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1Key,
                                     TransTkKey, TransRmKey, TransXmKey, Trans2WKey,
                                     CtrlModeKey, ParNoKey, TransTPKey, CtrlBusKey, CtrlLineKey, CtrlValueKey,
-                                    TransShiftAngKey, TransRateMVAKey, UpLimitKey, IDNoKey,
+                                    TransShiftAngKey, TransRateMVAKey, UpLimitKey, IDKey,
                                     TransJKey, TransTrsTypeKey, UnknownDesc, UnknownInt, TransNameKey,
                                     TransVi0KVKey, TransVj0KVKey, TransMaxTapPos2Key, TransMinTapPos2Key,
                                     TransMainTapPos2Key, TransVjstepPrcKey, TransVjPosKey]
@@ -281,7 +389,7 @@ pos_keys_lf_settings_load = [MarkKey, BusNoKey, LoadNoKey, CtrlModeKey, LoadPlKe
 pos_keys_lf_settings_interchange = [MarkKey, InterchangeAreaNoKey, InterchangeAreaNameKey, InterchangeAdjGenKey,
                                     InterchangeSchedulePKey, InterchangeToleranceKey, InterchangePmaxKey]
 #################################################
-# --------------------------------------------------------------------------------------------------------#
+
 #################################################
 pos_keys_lf_results_bus = [BusNoKey, VoltageKey, AngleKey]
 pos_keys_lf_results_acline = [INoKey, JNoKey, IDNoKey, PiKey, QiKey, PjKey, QjKey, ACLineQciKey, ACLineQcjKey]
@@ -300,6 +408,15 @@ pos_keys_lf_results_dcline = [INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey, DC
 pos_keys_lf_results_generator = [BusNoKey, GenPgKey, GenQgKey]
 pos_keys_lf_results_load = [BusNoKey, LoadNoKey, LoadPlKey, LoadQlKey]
 pos_keys_lf_results_interchange = [AreaNoKey, InterchangePsumKey, InterchangeAdjPgKey]
+
+#################################################
+pos_keys_st_settings_bus = [BusNameKey]
+pos_keys_st_settings_acline = [MarkKey,INoKey,JNoKey,IDNoKey,R0Key,X0Key,ACLineHalfB0Key]
+pos_keys_st_settings_transformer = [MarkKey,INoKey,JNoKey,IDNoKey,R0Key,X0Key,TransTk0Key,IDKey]
+pos_keys_st_settings_dcline= [MarkKey,INoKey,JNoKey,IDNoKey,DCLineRegTypeKey,DCLineRegFonKey,DCLineRegParKey,DCLineRegSetKey,DCLineAmaxKey,DCLineAminKey,DCLineIregFonKey,DCLineIregParKey,DCLineIregSetKey,DCLineVregFonKey,DCLineVregParKey,DCLineVregSetKey,DCLineGregFonKey,DCLineGregParKey,DCLineGregSetKey,DCLineBmaxKey,DCLineBminKey,DCLineImKey,DCLineVLowKey,DCLineIdmaxKey,DCLineIdminKey,DCLineDKiKey,DCLineDKjKey,DCLineDTiKey,DCLineDTjKey,DCLineVRelayKey,DCLineTRelayKey,DCLineTypeFdcKey,DCLineKFdcKey,DCLineTsFdcKey,DCLineTeFdcKey,DCLineTdoKey,DCLineTdaKey,DCLineTdbKey,DCLineTdcKey,DCLineNRsKey,DCLineVRsKey,]
+pos_keys_st_settings_generator = [MarkKey,BusNoKey,GenTgKey,GenLgKey,GenTvrKey,GenLvrKey,GenTgoKey,GenLgoKey,GenTpssKey,GenLpssKey,GenXdpKey,GenXdppKey,GenX2Key,GenTjKey,GenShKey,GenPhKey,]
+pos_keys_st_settings_load = [MarkKey,BusNoKey,LoadNoKey,LoadModelKey,LoadParKey,LoadZPercentKey]
+pos_keys_st_settings_interchange = [MarkKey,SVCSetBusKey,CtrlBusKey,SVCModelKey,ParNoKey,SVCXshKey]
 
 #################################################
 
@@ -384,36 +501,39 @@ dict_types = {
 
 dict_translate_lf = {kk: v for v, k in dict_types.items() for kk in k}
 
-file_lf_settings_bus = 'LF.L1'
-file_lf_settings_acline = 'LF.L2'
-file_lf_settings_transformer = 'LF.L3'
-file_lf_settings_dcline = 'LF.NL4'
-file_lf_settings_gen = 'LF.L5'
-file_lf_settings_load = 'LF.L6'
-file_lf_settings_interchange = 'LF.L7'
-dict_pos_keys_lf_settings = {file_lf_settings_bus: pos_keys_lf_settings_bus,
-                             file_lf_settings_acline: pos_keys_lf_settings_acline,
-                             file_lf_settings_transformer: pos_keys_lf_settings_transformer,
-                             file_lf_settings_dcline: pos_keys_lf_settings_dcline,
-                             file_lf_settings_gen: pos_keys_lf_settings_generator,
-                             file_lf_settings_load: pos_keys_lf_settings_load,
-                             file_lf_settings_interchange: pos_keys_lf_settings_interchange}
+dict_files_lf_settings = {LABEL_BUS: 'LF.L1', LABEL_ACLINE: 'LF.L2', LABEL_TRANSFORMER: 'LF.L3',
+                          LABEL_DCLINE: 'LF.NL4', LABEL_GENERATOR: 'LF.L5', LABEL_LOAD: 'LF.L6',
+                          LABEL_INTERCHANGE: 'LF.L7'}
+dict_files_lf_results = {LABEL_BUS: 'LF.LP1', LABEL_ACLINE: 'LF.LP2', LABEL_TRANSFORMER: 'LF.LP3',
+                         LABEL_DCLINE: 'LF.NP4', LABEL_GENERATOR: 'LF.LP5', LABEL_LOAD: 'LF.LP6',
+                         LABEL_INTERCHANGE: 'LF.LP7'}
 
-file_lf_results_bus = 'LF.LP1'
-file_lf_results_acline = 'LF.LP2'
-file_lf_results_transformer = 'LF.LP3'
-file_lf_results_dcline = 'LF.NP4'
-file_lf_results_gen = 'LF.LP5'
-file_lf_results_load = 'LF.LP6'
-file_lf_results_interchange = 'LF.LP7'
-dict_pos_keys_lf_results = {file_lf_results_bus: pos_keys_lf_results_bus,
-                            file_lf_results_acline: pos_keys_lf_results_acline,
-                            file_lf_results_transformer: pos_keys_lf_results_transformer,
-                            file_lf_results_dcline: pos_keys_lf_results_dcline,
-                            file_lf_results_gen: pos_keys_lf_results_generator,
-                            file_lf_results_load: pos_keys_lf_results_load,
-                            file_lf_results_interchange: pos_keys_lf_results_interchange}
+dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANSFORMER: 'ST.S3',
+                         LABEL_DCLINE: 'ST.NS4', LABEL_GENERATOR: 'ST.S5', LABEL_LOAD: 'ST.S6',
+                         LABEL_INTERCHANGE: 'ST.S7'}
 
-dict_multiline_lf = {file_lf_settings_dcline: 8,
-                     file_lf_results_dcline: 10}
-files_lf_append_no = [file_lf_settings_bus]
+dict_pos_keys_lf_settings = {LABEL_BUS: pos_keys_lf_settings_bus,
+                             LABEL_ACLINE: pos_keys_lf_settings_acline,
+                             LABEL_TRANSFORMER: pos_keys_lf_settings_transformer,
+                             LABEL_DCLINE: pos_keys_lf_settings_dcline,
+                             LABEL_GENERATOR: pos_keys_lf_settings_generator,
+                             LABEL_LOAD: pos_keys_lf_settings_load,
+                             LABEL_INTERCHANGE: pos_keys_lf_settings_interchange}
+
+
+dict_pos_keys_lf_results = {LABEL_BUS: pos_keys_lf_results_bus,
+                            LABEL_ACLINE: pos_keys_lf_results_acline,
+                            LABEL_TRANSFORMER: pos_keys_lf_results_transformer,
+                            LABEL_DCLINE: pos_keys_lf_results_dcline,
+                            LABEL_GENERATOR: pos_keys_lf_results_generator,
+                            LABEL_LOAD: pos_keys_lf_results_load,
+                            LABEL_INTERCHANGE: pos_keys_lf_results_interchange}
+
+dict_multiline_lf = {dict_files_lf_settings[LABEL_DCLINE]: 8,
+                     dict_files_lf_results[LABEL_DCLINE]: 10}
+files_lf_append_no = [dict_files_lf_settings[LABEL_BUS]]
+
+dict_mapping_files = {LABEL_LF:{LABEL_SETTINGS:dict_files_lf_settings,LABEL_RESULTS:dict_files_lf_results},
+                      LABEL_ST:{LABEL_SETTINGS:[]}}
+dict_mapping_pos_keys = {LABEL_LF:{LABEL_SETTINGS:dict_pos_keys_lf_settings,LABEL_RESULTS:dict_pos_keys_lf_results},
+                         LABEL_ST:{LABEL_SETTINGS:[]}}
