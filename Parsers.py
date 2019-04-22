@@ -14,6 +14,11 @@ def parse_lines_PSASP(lines, pos_keys, dict_translate=const.dict_translate_files
     if str.find(lines_t[0], 'Created on') != -1:
         list.pop(lines_t, 0)
 
+    flag_single_row = False
+    if multi_line is True:
+        multi_line = len(lines)
+        flag_single_row = True
+
     if multi_line > 1:
         num_lines = len(lines_t)
         Ndiv = math.ceil(num_lines / multi_line)
@@ -38,8 +43,30 @@ def parse_lines_PSASP(lines, pos_keys, dict_translate=const.dict_translate_files
                 if append_no:
                     dict_t[key_busno] = h + 1
                 list_dict_parsed.append(dict_t)
-
+    if flag_single_row:
+        list_dict_parsed = list_dict_parsed[0]
     return list_dict_parsed
+
+
+def parse_lf_s(path_temp,label_calType,label_getType,label_eleType):
+    fnt = const.dict_mapping_files[label_calType][label_getType][label_eleType]
+    fpt = os.path.join(path_temp,fnt)
+    if os.path.isfile(fpt):
+        with open(fpt, 'r') as f:
+            lines_raw = f.readlines()
+        lines = [x.strip() for x in lines_raw]
+        if lines:
+            pos_keys = const.dict_mapping_pos_keys[label_calType][label_getType][label_eleType]
+            if fnt in const.dict_multiline.keys():
+                multi_line = const.dict_multiline[fnt]
+            else:
+                multi_line = 1
+            if fnt in const.files_lf_append_no:
+                key_busno = const.BusNoKey
+            else:
+                key_busno = None
+            list_dict_parsed = parse_lines_PSASP(lines, pos_keys, multi_line=multi_line, key_busno=key_busno)
+            return list_dict_parsed
 
 
 def parse_lf(path_lf, pos_keys):
@@ -49,8 +76,8 @@ def parse_lf(path_lf, pos_keys):
             lines_raw = f.readlines()
         lines = [x.strip() for x in lines_raw]
         if lines:
-            if lf_t in const.dict_multiline_lf.keys():
-                multi_line = const.dict_multiline_lf[lf_t]
+            if lf_t in const.dict_multiline.keys():
+                multi_line = const.dict_multiline[lf_t]
             else:
                 multi_line = 1
             if lf_t in const.files_lf_append_no:
@@ -64,26 +91,22 @@ def parse_lf(path_lf, pos_keys):
         return None
 
 
-def parse_all_files(path_temp, dict_files, dict_pos_keys, labels_do=None):
-    labels_do_ori = list(dict_files.keys())
-    flag_single = False
-    if labels_do is not None:
-        if isinstance(labels_do, str):
-            flag_single = True
-            labels_do = [labels_do]
-        labels_do = set(labels_do_ori).intersection(set(labels_do))
-    else:
-        labels_do = labels_do_ori
-    dict_r = {k: parse_lf(os.path.join(path_temp, dict_files[k]), dict_pos_keys[k]) for k in labels_do}
-    if flag_single and len(dict_r) == 1:
-        dict_r = list(dict_r.values())[0]
-    return dict_r
 
-
-def parse_all_files_s(path_temp, label_calType, label_getType, labels_do=None):
+def parse_all_files_s(path_temp, label_calType, label_getType, label_eles_do=None):
     dict_files = const.dict_mapping_files[label_calType][label_getType]
     dict_pos_keys = const.dict_mapping_pos_keys[label_calType][label_getType]
-    dict_r = parse_all_files(path_temp, dict_files, dict_pos_keys, labels_do)
+    labels_do_ori = list(dict_files.keys())
+    flag_single = False
+    if label_eles_do is not None:
+        if isinstance(label_eles_do, str):
+            flag_single = True
+            label_eles_do = [label_eles_do]
+        label_eles_do = set(labels_do_ori).intersection(set(label_eles_do))
+    else:
+        label_eles_do = labels_do_ori
+    dict_r = {k: parse_lf_s(path_temp,label_calType,label_getType,k) for k in label_eles_do}
+    if flag_single and len(dict_r) == 1:
+        dict_r = list(dict_r.values())[0]
     return dict_r
 
 
@@ -167,8 +190,8 @@ def get_output_data_raw(path_temp):
             break
     return data_FN
 
-
-def parse_conf(file_path, pos_keys, dict_translate=const.dict_translate_conf):
+'''
+def parse_conf_legacy(file_path, pos_keys, dict_translate=const.dict_translate_conf):
     dict_conf = {}
     if os.path.isdir(file_path):
         file_path = os.path.join(file_path, const.FILE_ST_CONF)
@@ -186,24 +209,11 @@ def parse_conf(file_path, pos_keys, dict_translate=const.dict_translate_conf):
                 vart_new = vart
             dict_conf[key_t] = vart_new
     return dict_conf
-
-
-def parse_conf_s(path_temp, label_calType, dict_translate=const.dict_translate_conf):
-    file_path_t = os.path.join(path_temp, const.dict_files_conf[label_calType])
-    pos_keys_t = const.dict_pos_keys_conf[label_calType]
-    return parse_conf(file_path_t, pos_keys_t, dict_translate)
-
-
-def parse_conf_LF(path_temp):
-    return parse_conf_s(path_temp, const.LABEL_LF)
-
-
-def parse_conf_ST(path_temp):
-    return parse_conf_s(path_temp, const.LABEL_ST)
+'''
 
 
 def get_sim_time(path_temp):
-    dict_conf_ST = parse_conf_ST(path_temp)
+    dict_conf_ST = parse_lf_s(path_temp,const.LABEL_ST,const.LABEL_SETTINGS,const.LABEL_CONF)
     Ttotal = dict_conf_ST[const.STTTotalKey]
     DT = dict_conf_ST[const.STDTKey]
     NT = round(Ttotal / DT) + 1
@@ -243,22 +253,21 @@ def write_to_file_s_lfs(path_temp, label_eleType, list_dict_values):
     return write_to_file_s(path_temp, const.LABEL_LF, const.LABEL_SETTINGS, label_eleType, list_dict_values)
 
 
-def write_to_file_s_lfs_autofit(path_temp,list_dict_values):
+def write_to_file_s_lfs_autofit(path_temp, list_dict_values):
     if list_dict_values:
-        #TODO: get all posible keys?
+        # TODO: get all posible keys?
         keys_t = set(list_dict_values[0].keys())
         dt = const.dict_pos_keys_lf_settings
-        K_overlap = {k:len(keys_t.intersection(set(v))) for k,v in dt.items()}
+        K_overlap = {k: len(keys_t.intersection(set(v))) for k, v in dt.items()}
         MK = max(list(K_overlap.values()))
-        labels_posible = [k for k,v in K_overlap.items() if v==MK]
-        if len(labels_posible)>1:
-            dL = {k:abs(len(keys_t)-len(v)) for k,v in dt.items() if k in labels_posible}
+        labels_posible = [k for k, v in K_overlap.items() if v == MK]
+        if len(labels_posible) > 1:
+            dL = {k: abs(len(keys_t) - len(v)) for k, v in dt.items() if k in labels_posible}
             mDL = min(list(dL.values()))
-            label_ele = [k for k,v in dL.items() if v==mDL][0]
+            label_ele = [k for k, v in dL.items() if v == mDL][0]
         else:
             label_ele = labels_posible[0]
         return write_to_file_s(path_temp, const.LABEL_LF, const.LABEL_SETTINGS, label_ele, list_dict_values)
-
 
 
 if __name__ == '__main__':
