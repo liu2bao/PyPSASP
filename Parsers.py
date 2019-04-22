@@ -3,7 +3,7 @@ import const
 import math
 import re
 import os
-from numpy import linspace
+
 
 # import numpy as np
 
@@ -80,9 +80,9 @@ def parse_all_files(path_temp, dict_files, dict_pos_keys, labels_do=None):
     return dict_r
 
 
-def parse_all_files_s(path_temp, label_calType, label_eleType, labels_do=None):
-    dict_files = const.dict_mapping_files[label_calType][label_eleType]
-    dict_pos_keys = const.dict_mapping_pos_keys[label_calType][label_eleType]
+def parse_all_files_s(path_temp, label_calType, label_getType, labels_do=None):
+    dict_files = const.dict_mapping_files[label_calType][label_getType]
+    dict_pos_keys = const.dict_mapping_pos_keys[label_calType][label_getType]
     dict_r = parse_all_files(path_temp, dict_files, dict_pos_keys, labels_do)
     return dict_r
 
@@ -102,7 +102,7 @@ def parse_all_settings_st(path_temp, labels_do=None):
 def parse_output_vars(path_STOUT):
     list_desc_outputs = []
     if os.path.isdir(path_STOUT):
-        path_STOUT = os.path.join(path_STOUT,const.FILE_STOUT)
+        path_STOUT = os.path.join(path_STOUT, const.FILE_STOUT)
     if os.path.isfile(path_STOUT):
         with open(path_STOUT, 'r') as f:
             data_raw = f.readlines()
@@ -128,7 +128,7 @@ def parse_output_vars(path_STOUT):
                 vec_no_t = [x for x in data_piece[2:] if x != 0]
                 num_var_t = round(len(vec_no_t) / num_pu)
                 no_var_t = [[vec_no_t[ii * num_pu + jj] for jj in range(num_pu)] for ii in range(num_var_t)]
-                vec_subtype_t = [0]*num_var_t
+                vec_subtype_t = [0] * num_var_t
             elif type_t in [3, 4, 5, 6, 7, 13, 14]:
                 if type_t in [3, 5]:
                     point_start_t = 3
@@ -141,7 +141,7 @@ def parse_output_vars(path_STOUT):
                 num_var_t = len(vec_subtype_t)
                 vec_no_t = data_piece[2:point_start_t]
                 no_var_t = [vec_no_t] * num_var_t
-            if all([x is not None for x in [num_var_t,vec_subtype_t,no_var_t]]):
+            if all([x is not None for x in [num_var_t, vec_subtype_t, no_var_t]]):
                 for hh in range(num_var_t):
                     dict_t = {}
                     dict_t[const.OutputKeyType] = type_t
@@ -155,7 +155,7 @@ def get_output_data_raw(path_temp):
     count_t = 1
     data_FN = []
     while True:
-        FNt = os.path.join(path_temp,const.FILE_TEMPLATE_OUTPUT_ST.format(count_t))
+        FNt = os.path.join(path_temp, const.FILE_TEMPLATE_OUTPUT_ST.format(count_t))
         if os.path.isfile(FNt):
             with open(FNt, 'r') as f:
                 data_raw = f.readlines()
@@ -187,24 +187,29 @@ def parse_conf(file_path, pos_keys, dict_translate=const.dict_translate_conf):
             dict_conf[key_t] = vart_new
     return dict_conf
 
-def parse_conf_s(path_temp,label_calType,dict_translate=const.dict_translate_conf):
+
+def parse_conf_s(path_temp, label_calType, dict_translate=const.dict_translate_conf):
     file_path_t = os.path.join(path_temp, const.dict_files_conf[label_calType])
     pos_keys_t = const.dict_pos_keys_conf[label_calType]
-    return parse_conf(file_path_t, pos_keys_t,dict_translate)
+    return parse_conf(file_path_t, pos_keys_t, dict_translate)
+
 
 def parse_conf_LF(path_temp):
-    return parse_conf_s(path_temp,const.LABEL_LF)
+    return parse_conf_s(path_temp, const.LABEL_LF)
+
 
 def parse_conf_ST(path_temp):
-    return parse_conf_s(path_temp,const.LABEL_ST)
+    return parse_conf_s(path_temp, const.LABEL_ST)
+
 
 def get_sim_time(path_temp):
     dict_conf_ST = parse_conf_ST(path_temp)
     Ttotal = dict_conf_ST[const.STTTotalKey]
     DT = dict_conf_ST[const.STDTKey]
-    NT = round(Ttotal/DT)+1
-    list_t = [x*DT for x in range(NT)]
+    NT = round(Ttotal / DT) + 1
+    list_t = [x * DT for x in range(NT)]
     return list_t
+
 
 def parse_output(path_temp):
     data_raw = get_output_data_raw(path_temp)
@@ -213,7 +218,46 @@ def parse_output(path_temp):
     for hh in range(len(list_outputs)):
         list_outputs[hh][const.OutputKeyValues] = data_raw[hh]
     list_t = get_sim_time(path_temp)
-    return list_t,list_outputs
+    return list_t, list_outputs
+
+
+def write_to_file(file_path, list_dict_values, pos_keys):
+    if list_dict_values:
+        if isinstance(list_dict_values, dict):
+            list_dict_values = [list_dict_values]
+        lines_write = [','.join([str(x[pos_keys[hh]]) for hh in range(len(pos_keys))]) + ',\n' for x in
+                       list_dict_values]
+        with open(file_path, 'w') as f:
+            f.writelines(lines_write)
+
+
+def write_to_file_s(path_temp, label_calType, label_getType, label_eleType, list_dict_values):
+    fnt = const.dict_mapping_files[label_calType][label_getType][label_eleType]
+    fpt = os.path.join(path_temp, fnt)
+    pos_keys_t = const.dict_mapping_pos_keys[label_calType][label_getType][label_eleType]
+    write_to_file(fpt, list_dict_values, pos_keys_t)
+    return fpt
+
+
+def write_to_file_s_lfs(path_temp, label_eleType, list_dict_values):
+    return write_to_file_s(path_temp, const.LABEL_LF, const.LABEL_SETTINGS, label_eleType, list_dict_values)
+
+
+def write_to_file_s_lfs_autofit(path_temp,list_dict_values):
+    if list_dict_values:
+        #TODO: get all posible keys?
+        keys_t = set(list_dict_values[0].keys())
+        dt = const.dict_pos_keys_lf_settings
+        K_overlap = {k:len(keys_t.intersection(set(v))) for k,v in dt.items()}
+        MK = max(list(K_overlap.values()))
+        labels_posible = [k for k,v in K_overlap.items() if v==MK]
+        if len(labels_posible)>1:
+            dL = {k:abs(len(keys_t)-len(v)) for k,v in dt.items() if k in labels_posible}
+            mDL = min(list(dL.values()))
+            label_ele = [k for k,v in dL.items() if v==mDL][0]
+        else:
+            label_ele = labels_posible[0]
+        return write_to_file_s(path_temp, const.LABEL_LF, const.LABEL_SETTINGS, label_ele, list_dict_values)
 
 
 
@@ -221,6 +265,8 @@ if __name__ == '__main__':
     # path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
     # b = parse_all_results_lf(path_t, const.LABEL_BUS)
     path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
+    dt = parse_all_settings_lf(path_t)
+    write_to_file_s_lfs_autofit('', dt[const.LABEL_GENERATOR])
     list_t, list_outputs = parse_output(path_t)
     data_FN = get_output_data_raw(path_t)
     var_types, var_subtypes, no_desc = parse_output_vars(path_t)
