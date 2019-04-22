@@ -62,13 +62,15 @@ def parse_lf(path_lf, pos_keys):
 
 
 def parse_all_files(path_temp, dict_files, dict_pos_keys, labels_do=None):
-    labels_do_ori = dict_files.keys()
+    labels_do_ori = list(dict_files.keys())
     flag_single = False
     if labels_do is not None:
         if isinstance(labels_do, str):
             flag_single = True
             labels_do = [labels_do]
         labels_do = set(labels_do_ori).intersection(set(labels_do))
+    else:
+        labels_do = labels_do_ori
     dict_r = {k: parse_lf(os.path.join(path_temp, dict_files[k]), dict_pos_keys[k]) for k in labels_do}
     if flag_single and len(dict_r) == 1:
         dict_r = list(dict_r.values())[0]
@@ -89,14 +91,15 @@ def parse_all_settings_lf(path_temp, labels_do=None):
 def parse_all_results_lf(path_temp, labels_do=None):
     return parse_all_files_s(path_temp, const.LABEL_LF, const.LABEL_RESULTS, labels_do)
 
-def parse_all_settings_st():
-    pass
+def parse_all_settings_st(path_temp, labels_do=None):
+    return parse_all_files_s(path_temp, const.LABEL_ST, const.LABEL_SETTINGS, labels_do)
 
 
 if __name__ == '__main__':
-    path_t = r'E:\01_Research\98_Data\华中电网大数据\HZ_t\Temp'
-    b = parse_all_results_lf(path_t, const.LABEL_BUS)
+    path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
+    # b = parse_all_results_lf(path_t, const.LABEL_BUS)
     # path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_LF+ST_SmallSystem_DoubleLine_backup_temp'
+    settings_st = parse_all_settings_st(path_t)
     dt_r = parse_all_results_lf(path_t)
     dt = parse_all_settings_lf(path_t)
     print(dt)
