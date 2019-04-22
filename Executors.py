@@ -7,6 +7,7 @@ import const
 
 TempBat = 'temp.bat'
 Lock_GetProcess = Lock()
+Lock_WriteBat = Lock()
 
 class executor_PSASP(object):
     def __init__(self, path_exe, path_env=None, path_flagfile=None):
@@ -68,10 +69,11 @@ class executor_PSASP(object):
             if idx_drive_t == -1:
                 raise ValueError('Drive not found')
             drive_t = self.__path_env[:idx_drive_t + 1]
-            with open(TempBat, 'w') as f:
-                f.write('%s\n' % drive_t)
-                f.write('cd "%s"\n' % self.__path_env)
-                f.write('"%s"' % self.__path_exe)
+            if Lock_WriteBat.acquire():
+                with open(TempBat, 'w') as f:
+                    f.write('%s\n' % drive_t)
+                    f.write('cd "%s"\n' % self.__path_env)
+                    f.write('"%s"' % self.__path_exe)
             exe_t = TempBat
         else:
             exe_t = self.__path_exe
@@ -87,6 +89,7 @@ class executor_PSASP(object):
                 thread_exe.start()
                 self.__process_inc_matched = self.__get_process_inc_matched()
                 Lock_GetProcess.release()
+            Lock_WriteBat.release()
             thread_kill.start()
             thread_kill.join()
             thread_exe.join()

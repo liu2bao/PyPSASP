@@ -8,7 +8,7 @@ import os
 # import numpy as np
 
 
-def parse_lines_PSASP(lines, pos_keys, dict_translate=const.dict_translate_files,
+def parse_lines_PSASP(lines, pos_keys, dict_translate=const.dict_translate,
                       pattern_parse=const.Pattern_read, multi_line=1, key_busno=None):
     lines_t = lines.copy()
     if str.find(lines_t[0], 'Created on') != -1:
@@ -122,55 +122,62 @@ def parse_all_settings_st(path_temp, labels_do=None):
     return parse_all_files_s(path_temp, const.LABEL_ST, const.LABEL_SETTINGS, labels_do)
 
 
-def parse_output_vars(path_STOUT):
-    list_desc_outputs = []
+def import_STOUT(path_STOUT):
+    data_STOUT = []
     if os.path.isdir(path_STOUT):
         path_STOUT = os.path.join(path_STOUT, const.FILE_STOUT)
     if os.path.isfile(path_STOUT):
         with open(path_STOUT, 'r') as f:
             data_raw = f.readlines()
         data_STOUT = [[int(xx) for xx in x.strip().split(',') if xx] for x in data_raw]
-        type_t = 0
-        for hh in range(len(data_STOUT)):
-            data_piece = data_STOUT[hh]
-            num_var_t = None
-            vec_subtype_t = None
-            no_var_t = None
-            if data_piece[0] == 0:
-                continue
-            typett = data_piece[1]
-            if typett in [8, 11]:
-                continue
-            if typett != 99:
-                type_t = typett
-            if type_t in [1, 2, 12]:
-                if type_t in [1, 12]:
-                    num_pu = 2
-                else:
-                    num_pu = 1
-                vec_no_t = [x for x in data_piece[2:] if x != 0]
-                num_var_t = round(len(vec_no_t) / num_pu)
-                no_var_t = [[vec_no_t[ii * num_pu + jj] for jj in range(num_pu)] for ii in range(num_var_t)]
-                vec_subtype_t = [0] * num_var_t
-            elif type_t in [3, 4, 5, 6, 7, 13, 14]:
-                if type_t in [3, 5]:
-                    point_start_t = 3
-                elif type_t in [6, 7, 13]:
-                    point_start_t = 5
-                else:
-                    point_start_t = 4
-                # num_no_t = point_start_t-2
-                vec_subtype_t = [x for x in data_piece[point_start_t:] if x != 0]
-                num_var_t = len(vec_subtype_t)
-                vec_no_t = data_piece[2:point_start_t]
-                no_var_t = [vec_no_t] * num_var_t
-            if all([x is not None for x in [num_var_t, vec_subtype_t, no_var_t]]):
-                for hh in range(num_var_t):
-                    dict_t = {}
-                    dict_t[const.OutputKeyType] = type_t
-                    dict_t[const.OutputKeySubType] = vec_subtype_t[hh]
-                    dict_t[const.OutputKeyNoDesc] = no_var_t[hh]
-                    list_desc_outputs.append(dict_t)
+    return data_STOUT
+
+
+def parse_output_vars(path_STOUT):
+    list_desc_outputs = []
+
+    data_STOUT = import_STOUT(path_STOUT)
+    type_t = 0
+    for hh in range(len(data_STOUT)):
+        data_piece = data_STOUT[hh]
+        num_var_t = None
+        vec_subtype_t = None
+        no_var_t = None
+        if data_piece[0] == 0:
+            continue
+        typett = data_piece[1]
+        if typett in [8, 11]:
+            continue
+        if typett != 99:
+            type_t = typett
+        if type_t in [1, 2, 12]:
+            if type_t in [1, 12]:
+                num_pu = 2
+            else:
+                num_pu = 1
+            vec_no_t = [x for x in data_piece[2:] if x != 0]
+            num_var_t = round(len(vec_no_t) / num_pu)
+            no_var_t = [[vec_no_t[ii * num_pu + jj] for jj in range(num_pu)] for ii in range(num_var_t)]
+            vec_subtype_t = [0] * num_var_t
+        elif type_t in [3, 4, 5, 6, 7, 13, 14]:
+            if type_t in [3, 5]:
+                point_start_t = 3
+            elif type_t in [6, 7, 13]:
+                point_start_t = 5
+            else:
+                point_start_t = 4
+            # num_no_t = point_start_t-2
+            vec_subtype_t = [x for x in data_piece[point_start_t:] if x != 0]
+            num_var_t = len(vec_subtype_t)
+            vec_no_t = data_piece[2:point_start_t]
+            no_var_t = [vec_no_t] * num_var_t
+        if all([x is not None for x in [num_var_t, vec_subtype_t, no_var_t]]):
+            for hh in range(num_var_t):
+                dict_t = {}
+                dict_t[const.OutputKeyType] = type_t
+                dict_t[const.OutputKeySubType] = vec_subtype_t[hh]
+                dict_t[const.OutputKeyNoDesc] = no_var_t[hh]
+                list_desc_outputs.append(dict_t)
     return list_desc_outputs
 
 
@@ -223,12 +230,20 @@ def get_sim_time(path_temp):
 
 def parse_output(path_temp):
     data_raw = get_output_data_raw(path_temp)
+    #data_raw = import_STOUT(path_temp)
     list_desc_outputs = parse_output_vars(path_temp)
+    list_t = get_sim_time(path_temp)
+    list_heads = [{const.ColNameKey:const.TimeKey}, *[dict({const.ColNameKey:const.VarKeyPrefix+str(hh)},**list_desc_outputs[hh]) for hh in range(len(list_desc_outputs))]]
+    list_values = [dict({const.TimeKey:list_t[hh]},**{const.VarKeyPrefix+str(ll):data_raw[ll][hh] for ll in range(len(data_raw))}) for hh in range(len(list_t))]
+
+    return list_heads,list_values
+'''
     list_outputs = list_desc_outputs.copy()
     for hh in range(len(list_outputs)):
         list_outputs[hh][const.OutputKeyValues] = data_raw[hh]
-    list_t = get_sim_time(path_temp)
     return list_t, list_outputs
+'''
+
 
 
 def write_to_file(file_path, list_dict_values, pos_keys):
@@ -274,6 +289,8 @@ if __name__ == '__main__':
     # path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
     # b = parse_all_results_lf(path_t, const.LABEL_BUS)
     path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
+    tt = parse_output(path_t)
+    t = parse_output_vars(path_t)
     dt = parse_all_settings_lf(path_t)
     write_to_file_s_lfs_autofit('', dt[const.LABEL_GENERATOR])
     list_t, list_outputs = parse_output(path_t)
