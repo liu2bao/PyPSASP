@@ -3,8 +3,6 @@ import sqlite3
 import const
 import traceback
 import datetime
-import time
-import Gadgets
 import contextlib
 from threading import Lock
 
@@ -234,7 +232,3 @@ def get_type_str_list(list_t):
             return type_str_t
     return 'CHAR'
 
-
-if __name__=='__main__':
-    db = r'F:\Data\Housing\Lianjia\DataWarehouse_new\db\dealed.db'
-    update_list_to_db_multiref(db,'temp',None,None,None,None)
