@@ -29,6 +29,18 @@ def copyfiles(path_src, path_dst, files):
         shutil.copy(file_src, file_dst)
 
 
+
+def copyfiles_pattern(path_src, path_dst, files, pattern):
+    if not os.path.isdir(path_dst):
+        os.makedirs(path_dst)
+
+    for file in files:
+        if re.match(file,pattern):
+            file_src = os.path.join(path_src, file)
+            file_dst = os.path.join(path_dst, file)
+            shutil.copy(file_src, file_dst)
+
+
 def delete_files_pattern(path_t, pattern):
     if isinstance(path_t, str) and isinstance(pattern, str):
         if os.path.isdir(path_t):

@@ -2,7 +2,7 @@ import os
 import re
 from Gadgets import copyfiles
 from const import FILE_STOUT, dict_files_st_settings, LABEL_CONF, dict_files_st_results, LABEL_ANA
-from const import FILE_PREFIX_LF,PATTERN_OUTPUT_ST
+from const import FILE_PREFIX_LF,PATTERN_OUTPUT_ST,PATTERN_SETTINGS_LF,PATTERN_RESULTS_LF
 
 
 def copyfiles_st(path_src,path_dst):
@@ -14,15 +14,22 @@ def copyfiles_st(path_src,path_dst):
         files_t = os.listdir(path_src)
         files_part_1 = list(set(files_t).intersection(ST_conf))
         files_part_2 = [x for x in files_t if re.match(PATTERN_OUTPUT_ST,x)]
-
         files_st = files_part_1+files_part_2
-
         copyfiles(path_src,path_dst,files_st)
+
 
 def copyfiles_lf(path_src,path_dst):
     if os.path.isdir(path_src):
         files_lf = [x for x in os.listdir(path_src) if x.startswith(FILE_PREFIX_LF)]
         copyfiles(path_src,path_dst,files_lf)
+
+
+def copyfiles_lfs(path_src,path_dst):
+    copyfiles(path_src,path_dst,PATTERN_SETTINGS_LF)
+
+
+def copyfiles_lfr(path_src,path_dst):
+    copyfiles(path_src,path_dst,PATTERN_RESULTS_LF)
 
 
 if __name__=='__main__':
