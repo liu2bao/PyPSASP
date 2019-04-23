@@ -11,7 +11,7 @@ Lock_GetProcess = Lock()
 Lock_WriteBat = Lock()
 
 class executor_PSASP(object):
-    def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None):
+    def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None, hide_window = False):
         if isinstance(path_flagfile, str):
             path_t, flag_t = os.path.split(path_flagfile)
             if not path_t:
@@ -28,6 +28,7 @@ class executor_PSASP(object):
         self.__process_inc_matched = []
         self.__flagfile_last_update_time = None
         self.__patterns_del = patterns_del
+        self.__hide_window = hide_window
 
     def __update_process(self):
         self.__current_process = Gadgets.get_all_process()
@@ -41,14 +42,19 @@ class executor_PSASP(object):
     def __get_process_inc_matched(self, wait_time=0.5, max_try=10):
         process_inc_matched = []
         count = 0
+        flag_found = False
         while count <= max_try:
             process_inc = self.__get_process_inc()
             process_inc_matched = [x for x in process_inc if x['exe'] == self.__path_exe]
             if not process_inc_matched:
                 time.sleep(wait_time)
             else:
+                flag_found = True
                 break
             count += 1
+        if flag_found:
+            pid = process_inc_matched[0]['pid']
+            self.hide_window(pid)
         return process_inc_matched
 
     def __update_mtime_flagfile(self):
@@ -114,6 +120,12 @@ class executor_PSASP(object):
             except:
                 print('error while removing %s' % temp_bat)
 
+    def hide_window(self,pid):
+        if self.__hide_window:
+            #TODO: hide window
+            pass
+            #Gadgets.hide_window_by_pid(pid)
+
 
 class executor_PSASP_lf(executor_PSASP):
     def __init__(self,path_exe,path_env):
@@ -124,7 +136,8 @@ class executor_PSASP_lf(executor_PSASP):
 class executor_PSASP_st(executor_PSASP):
     def __init__(self,path_exe,path_env):
         flag_file_st = const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF]
-        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st, (const.PATTERN_OUTPUT_ST,flag_file_st))
+        patterns_del = (const.PATTERN_OUTPUT_ST,flag_file_st)
+        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st,patterns_del,hide_window=True)
 
 
 

@@ -205,6 +205,7 @@ class CCT_generator(object):
 
 
 if __name__ == '__main__':
+    os.system('@echo off')
     Cc = CCT_generator(PATH_TEMP, PATH_RESOURCES, PATH_OUTPUT, func_change_lf_temp)
     count_t = 0
     max_count = 10000

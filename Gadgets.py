@@ -1,8 +1,15 @@
 import traceback
 from itertools import chain
 import shutil, os, re
-
+import time
 import psutil
+import ctypes
+
+user32 = ctypes.WinDLL('user32')
+SW_MAXIMISE = 3
+window_titles = []
+
+
 
 JoinSep = '_'
 
@@ -116,3 +123,45 @@ def generate_new_files_save_yield(path_save, prefix_save, postfix_save='', try_o
                     rt = file_name
                 yield rt
             count += 1
+
+def hide_window():
+    hWnd = user32.GetForegroundWindow()
+    if hWnd:
+        user32.ShowWindow(hWnd, 2)
+        ctypes.windll.kernel32.CloseHandle(hWnd)
+
+
+def foreach_window(hwnd, lParam):
+    global window_titles
+    GetWindowText = ctypes.windll.user32.GetWindowTextW
+    GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
+    IsWindowVisible = ctypes.windll.user32.IsWindowVisible
+    if IsWindowVisible(hwnd):
+        length = GetWindowTextLength(hwnd)
+        buff = ctypes.create_unicode_buffer(length + 1)
+        GetWindowText(hwnd, buff, length + 1)
+        window_titles.append(buff.value)
+    return True
+
+def get_window_titles():
+    global window_titles
+    window_titles = []
+    EnumWindows = ctypes.windll.user32.EnumWindows
+    EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
+    EnumWindows(EnumWindowsProc(foreach_window), 0)
+    return window_titles
+
+
+def hide_window_by_pid(pid_int):
+    hwnd = user32.GetForegroundWindow()
+    pid = ctypes.c_ulong(pid_int)
+    hWnd = user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+    if hWnd!=0:
+        user32.ShowWindow(hWnd, 2)
+        ctypes.windll.kernel32.CloseHandle(hWnd)
+
+
+if __name__=='__main__':
+    titles = get_window_titles()
+    time.sleep(5)
+    hide_window()
