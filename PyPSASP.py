@@ -98,6 +98,15 @@ class PSASP(object):
                 success_lf = LFCAL[const.MCalKey] == 1
         return success_lf
 
+    def calculate_ST(self):
+        success_st = False
+        self.__executor_st.execute_exe()
+        STCAL = self.parser.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
+        if STCAL:
+            if const.MCalKey in STCAL.keys():
+                success_st = STCAL[const.MCalKey] == 1
+        return success_st
+
     def calculate_CCT(self, path_save_left, path_save_right,
                       func_change_t=func_change_t_regular,
                       func_judge_stable=func_judge_stable_regular,

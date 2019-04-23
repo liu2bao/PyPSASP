@@ -3,6 +3,7 @@ from Gadgets import convert2float_s
 KeyInsertTimeStamp = 'insert_time'
 EXE_LF = 'WMLFRTMsg.exe'
 EXE_ST = 'wmudrt.exe'
+WINDOW_NAME_ST = 'Transient Stability Calculation'
 FILE_STOUT = 'STOUT.INF'
 FILE_TEMPLATE_OUTPUT_ST = 'FN{}.DAT'
 PATTERN_OUTPUT_ST = FILE_TEMPLATE_OUTPUT_ST.format(r'\d+')
@@ -44,7 +45,7 @@ DICT_FILES_ST = {POSTFIX_FILE_LF_RESULT: FILE_TEMPLATE_LF_RESULT}
 
 Pattern_read = '([^\']*?|\'.*?\')[ ]*,'
 
-ColNameKey = 'var_name'
+StOutVarNameKey = 'var_name'
 TimeKey = 'time'
 VarKeyPrefix = 'var_'
 VarDefinitionTable = 'VarDef'

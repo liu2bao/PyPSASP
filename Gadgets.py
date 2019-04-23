@@ -9,6 +9,11 @@ user32 = ctypes.WinDLL('user32')
 SW_MAXIMISE = 3
 window_titles = []
 
+GetWindowText = ctypes.windll.user32.GetWindowTextW
+GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
+IsWindowVisible = ctypes.windll.user32.IsWindowVisible
+EnumWindows = ctypes.windll.user32.EnumWindows
+EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
 
 
 JoinSep = '_'
@@ -124,6 +129,8 @@ def generate_new_files_save_yield(path_save, prefix_save, postfix_save='', try_o
                 yield rt
             count += 1
 
+
+
 def hide_window():
     hWnd = user32.GetForegroundWindow()
     if hWnd:
@@ -133,9 +140,6 @@ def hide_window():
 
 def foreach_window(hwnd, lParam):
     global window_titles
-    GetWindowText = ctypes.windll.user32.GetWindowTextW
-    GetWindowTextLength = ctypes.windll.user32.GetWindowTextLengthW
-    IsWindowVisible = ctypes.windll.user32.IsWindowVisible
     if IsWindowVisible(hwnd):
         length = GetWindowTextLength(hwnd)
         buff = ctypes.create_unicode_buffer(length + 1)
@@ -143,25 +147,36 @@ def foreach_window(hwnd, lParam):
         window_titles.append(buff.value)
     return True
 
+
+def foreach_window_hide(hwnd,window_name, lParam):
+    if IsWindowVisible(hwnd):
+        length = GetWindowTextLength(hwnd)
+        buff = ctypes.create_unicode_buffer(length + 1)
+        GetWindowText(hwnd, buff, length + 1)
+        if isinstance(buff.value,str):
+            if str.find(buff.value,window_name)!=-1:
+                user32.ShowWindow(hwnd, 2)
+                return True
+    return False
+
+
+def hide_window_by_name(window_name):
+    def foreach_window_t(x,y):
+        return foreach_window_hide(x,window_name,y)
+    EnumWindows(EnumWindowsProc(foreach_window_t), 0)
+
+
 def get_window_titles():
     global window_titles
     window_titles = []
-    EnumWindows = ctypes.windll.user32.EnumWindows
-    EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
     EnumWindows(EnumWindowsProc(foreach_window), 0)
     return window_titles
 
 
-def hide_window_by_pid(pid_int):
-    hwnd = user32.GetForegroundWindow()
-    pid = ctypes.c_ulong(pid_int)
-    hWnd = user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
-    if hWnd!=0:
-        user32.ShowWindow(hWnd, 2)
-        ctypes.windll.kernel32.CloseHandle(hWnd)
-
 
 if __name__=='__main__':
+    time.sleep(5)
+    hide_window_by_name('Transient Stability')
     titles = get_window_titles()
     time.sleep(5)
     hide_window()

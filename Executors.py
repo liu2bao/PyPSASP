@@ -6,12 +6,13 @@ import traceback
 import const
 import Gadgets
 
-#TempBat = 'temp.bat'
+# TempBat = 'temp.bat'
 Lock_GetProcess = Lock()
 Lock_WriteBat = Lock()
 
+
 class executor_PSASP(object):
-    def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None, hide_window = False):
+    def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None, hide_window=None):
         if isinstance(path_flagfile, str):
             path_t, flag_t = os.path.split(path_flagfile)
             if not path_t:
@@ -89,7 +90,7 @@ class executor_PSASP(object):
             if idx_drive_t == -1:
                 raise ValueError('Drive not found')
             drive_t = self.__path_env[:idx_drive_t + 1]
-            temp_bat = next(Gadgets.generate_new_files_save_yield('tempBats','temp','.bat'))
+            temp_bat = next(Gadgets.generate_new_files_save_yield('tempBats', 'temp', '.bat'))
             if not os.path.isdir('tempBats'):
                 os.makedirs('tempBats')
             with open(temp_bat, 'w') as f:
@@ -120,25 +121,24 @@ class executor_PSASP(object):
             except:
                 print('error while removing %s' % temp_bat)
 
-    def hide_window(self,pid):
-        if self.__hide_window:
-            #TODO: hide window
-            pass
-            #Gadgets.hide_window_by_pid(pid)
+    def hide_window(self, pid):
+        if isinstance(self.__hide_window, str):
+            # TODO: how to hide window more elegantly?
+            Gadgets.hide_window_by_name(self.__hide_window)
 
 
 class executor_PSASP_lf(executor_PSASP):
-    def __init__(self,path_exe,path_env):
+    def __init__(self, path_exe, path_env):
         flag_file_lf = const.dict_mapping_files[const.LABEL_LF][const.LABEL_RESULTS][const.LABEL_CONF]
-        executor_PSASP.__init__(self,path_exe,path_env,patterns_del=(flag_file_lf,))
+        executor_PSASP.__init__(self, path_exe, path_env, patterns_del=(flag_file_lf,))
 
 
 class executor_PSASP_st(executor_PSASP):
-    def __init__(self,path_exe,path_env):
+    def __init__(self, path_exe, path_env):
         flag_file_st = const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF]
-        patterns_del = (const.PATTERN_OUTPUT_ST,flag_file_st)
-        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st,patterns_del,hide_window=True)
-
+        patterns_del = (const.PATTERN_OUTPUT_ST, flag_file_st)
+        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st, patterns_del,
+                                hide_window=const.WINDOW_NAME_ST)
 
 
 def get_updated_time(file_path_t):

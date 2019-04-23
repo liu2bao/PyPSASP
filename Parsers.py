@@ -143,7 +143,7 @@ class PSASP_Parser(object):
         return data_STOUT
 
 
-    def parse_output_vars(self,path_STOUT=None):
+    def parse_output_st_varinfs(self, path_STOUT=None):
         if path_STOUT is None:
             path_STOUT = self.__path_temp
         list_desc_outputs = []
@@ -240,15 +240,18 @@ class PSASP_Parser(object):
         return list_t
 
 
-    def parse_output(self):
+    def parse_output_st(self):
         data_raw = self.get_output_data_raw()
         #data_raw = import_STOUT(path_temp)
-        list_desc_outputs = self.parse_output_vars(self.__path_temp)
+        list_desc_outputs = self.parse_output_st_varinfs(self.__path_temp)
         list_t = self.get_sim_time()
-        list_heads = [{const.ColNameKey:const.TimeKey}, *[dict({const.ColNameKey:const.VarKeyPrefix+str(hh)},**list_desc_outputs[hh]) for hh in range(len(list_desc_outputs))]]
-        list_values = [dict({const.TimeKey:list_t[hh]},**{const.VarKeyPrefix+str(ll):data_raw[ll][hh] for ll in range(len(data_raw))}) for hh in range(len(list_t))]
+        list_heads = [{const.StOutVarNameKey:const.TimeKey}, *[dict({const.StOutVarNameKey: const.VarKeyPrefix + str(hh)}, **list_desc_outputs[hh]) for hh in range(len(list_desc_outputs))]]
+        list_data_raw_col = [list_t,*data_raw]
+        LT = len(list_data_raw_col[0])
+        list_data_raw_row = [[x[hh] for x in list_data_raw_col] for hh in range(LT)]
+        #list_values = [dict({const.TimeKey:list_t[hh]},**{const.VarKeyPrefix+str(ll):data_raw[ll][hh] for ll in range(len(data_raw))}) for hh in range(len(list_t))]
 
-        return list_heads,list_values
+        return list_heads,list_data_raw_row
     '''
         list_outputs = list_desc_outputs.copy()
         for hh in range(len(list_outputs)):
@@ -303,14 +306,19 @@ if __name__ == '__main__':
     path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
     path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
     Parser_t = PSASP_Parser(path_t)
+    from Gadgets_sqlite import insert_from_list_to_db
+    list_heads, list_data = Parser_t.parse_output_st()
+    keys_t = [x[const.StOutVarNameKey] for x in list_heads]
+    insert_from_list_to_db(r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419\temp.db',
+                           'temp',keys_t,list_data)
     STCAL = Parser_t.parse_single_s(const.LABEL_ST,const.LABEL_RESULTS,const.LABEL_CONF)
     Parser_t_2 = PSASP_Parser(path_t_2)
-    t = Parser_t.parse_output_vars()
+    t = Parser_t.parse_output_st_varinfs()
     dt = Parser_t.parse_all_settings_lf()
     Parser_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
-    list_t, list_outputs = Parser_t.parse_output()
+    list_t, list_outputs = Parser_t.parse_output_st()
     data_FN = Parser_t.get_output_data_raw()
-    list_desc_outputs = Parser_t.parse_output_vars()
+    list_desc_outputs = Parser_t.parse_output_st_varinfs()
     settings_st = Parser_t.parse_all_settings_st()
     dt_r = Parser_t.parse_all_results_lf()
     dt = Parser_t.parse_all_settings_lf()
