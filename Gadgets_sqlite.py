@@ -4,9 +4,18 @@ import const
 import traceback
 import datetime
 import contextlib
+import pickle
 from threading import Lock
 
+ListType = 'LIST'
+TupleType = 'TUPLE'
+DatetimeType = 'DATETIME'
 DictLocks = {}
+sqlite3.register_converter(DatetimeType, lambda x: datetime.datetime.strptime(x.decode(), '%Y-%m-%d %H:%M:%S'))
+sqlite3.register_converter(ListType, pickle.loads)
+sqlite3.register_converter(TupleType, pickle.loads)
+sqlite3.register_adapter(list, pickle.dumps)
+sqlite3.register_adapter(tuple, pickle.dumps)
 
 @contextlib.contextmanager
 def my_sqlite3(db_path):
@@ -14,7 +23,7 @@ def my_sqlite3(db_path):
     if db_path not in DictLocks.keys():
         DictLocks[db_path] = Lock()
     if DictLocks[db_path].acquire():
-        conn_temp = sqlite3.connect(db_path)
+        conn_temp = sqlite3.connect(db_path,detect_types=sqlite3.PARSE_COLNAMES|sqlite3.PARSE_DECLTYPES)
         cursor_temp = conn_temp.cursor()
         try:
             yield cursor_temp
@@ -71,7 +80,7 @@ def read_db(db_path, table_name, list_keys=None, str_where=r'', return_dict_form
                 key_f_t = ','.join([r'%s as "%s [%s]"' % (k,k,dict_key_types[k]) for k in keys_sel])
                 X = r'SELECT %s FROM %s' % (key_f_t, table_name)
                 #X = X.replace('[DATETIME]','[TIMESTAMP]')
-                sqlite3.register_converter('DATETIME',lambda x:datetime.datetime.strptime(x.decode(),'%Y-%m-%d %H:%M:%S'))
+
                 X = X + ' ' + str_where
                 with my_sqlite3(db_path) as cursor_temp:
                     cursor_temp.execute(X)
@@ -219,7 +228,11 @@ def get_type_str(obj):
     elif isinstance(obj, float):
         type_str = 'DOUBLE'
     elif isinstance(obj, datetime.datetime):
-        type_str = 'DATETIME'
+        type_str = DatetimeType
+    elif isinstance(obj, list):
+        type_str = ListType
+    elif isinstance(obj, tuple):
+        type_str = TupleType
     else:
         type_str = 'CHAR'
     return type_str
@@ -232,3 +245,11 @@ def get_type_str_list(list_t):
             return type_str_t
     return 'CHAR'
 
+if __name__=='__main__':
+    db_t = 'temp.db'
+    table_t = 'rec'
+    keys_t = ['name','age','experiences']
+    data_t = [['Tom',18,['primary','middle']],['Jerry',20,['CattySchool','Others']]]
+    insert_from_list_to_db(db_t,table_t,keys_t,data_t)
+    D = read_db(db_t,table_t,return_dict_form=True)
+    print(D)
