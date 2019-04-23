@@ -1,10 +1,12 @@
-from Gadgets_PSASP import convert2float_s
+from Gadgets import convert2float_s
 
+KeyInsertTimeStamp = 'insert_time'
 EXE_LF = 'WMLFRTMsg.exe'
 EXE_ST = 'wmudrt.exe'
 FILE_STOUT = 'STOUT.INF'
-FILE_ST_CONF = 'ST.S0'
 FILE_TEMPLATE_OUTPUT_ST = 'FN{}.DAT'
+PATTERN_OUTPUT_ST = FILE_TEMPLATE_OUTPUT_ST.format(r'\d+')
+FILE_PREFIX_LF = 'LF.'
 
 LABEL_LF = 'load_flow'
 LABEL_ST = 'transient_stability'
@@ -672,9 +674,11 @@ dict_pos_keys_st_settings = {LABEL_BUS: pos_keys_st_settings_bus,
                              LABEL_LOAD: pos_keys_st_settings_load,
                              LABEL_SVC: pos_keys_st_settings_SVC,
                              LABEL_CONF: pos_keys_st_settings_conf,
+                             LABEL_ANA: pos_keys_st_settings_ana,
                              LABEL_FAULT: pos_keys_st_settings_fault}
 
-dict_pos_keys_st_results = {LABEL_CONF: pos_keys_st_results_conf}
+dict_pos_keys_st_results = {LABEL_CONF: pos_keys_st_results_conf,
+                            LABEL_ANA: pos_keys_st_results_ana}
 
 dict_multiline = {dict_files_lf_settings[LABEL_DCLINE]: 8,
                   dict_files_lf_results[LABEL_DCLINE]: 10,

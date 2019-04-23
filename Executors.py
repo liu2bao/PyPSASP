@@ -4,13 +4,14 @@ from threading import Thread, Lock
 import time
 import traceback
 import const
+import Gadgets
 
-TempBat = 'temp.bat'
+#TempBat = 'temp.bat'
 Lock_GetProcess = Lock()
 Lock_WriteBat = Lock()
 
 class executor_PSASP(object):
-    def __init__(self, path_exe, path_env=None, path_flagfile=None):
+    def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None):
         if isinstance(path_flagfile, str):
             path_t, flag_t = os.path.split(path_flagfile)
             if not path_t:
@@ -26,12 +27,13 @@ class executor_PSASP(object):
         self.__current_process = []
         self.__process_inc_matched = []
         self.__flagfile_last_update_time = None
+        self.__patterns_del = patterns_del
 
     def __update_process(self):
-        self.__current_process = get_all_process()
+        self.__current_process = Gadgets.get_all_process()
 
     def __get_process_inc(self):
-        process_new = get_all_process()
+        process_new = Gadgets.get_all_process()
         pid_old = [x['pid'] for x in self.__current_process]
         process_inc = [x for x in process_new if x['pid'] not in pid_old]
         return process_inc
@@ -54,7 +56,12 @@ class executor_PSASP(object):
 
     def __kill_process_while_flag(self, wait_time=2, max_try=60):
         count = 0
-        while get_updated_time(self.__path_flagfile) <= self.__flagfile_last_update_time and count <= max_try:
+        while count <= max_try:
+            if os.path.isfile(self.__path_flagfile):
+                if self.__flagfile_last_update_time is None:
+                    break
+                elif get_updated_time(self.__path_flagfile) <= self.__flagfile_last_update_time:
+                    break
             time.sleep(wait_time)
             count += 1
         if count >= max_try:
@@ -63,18 +70,27 @@ class executor_PSASP(object):
             os.system(r'taskkill /pid %d -t -f' % process_t['pid'])
             # print('process killed')
 
-    def execute_exe(self):
+    def delete_files_with_pattern(self):
         if self.__path_env:
+            for pattern_t in self.__patterns_del:
+                Gadgets.delete_files_pattern(self.__path_env, pattern_t)
+
+    def execute_exe(self):
+        temp_bat = None
+        if self.__path_env:
+            self.delete_files_with_pattern()
             idx_drive_t = str.find(self.__path_env, ':')
             if idx_drive_t == -1:
                 raise ValueError('Drive not found')
             drive_t = self.__path_env[:idx_drive_t + 1]
-            if Lock_WriteBat.acquire():
-                with open(TempBat, 'w') as f:
-                    f.write('%s\n' % drive_t)
-                    f.write('cd "%s"\n' % self.__path_env)
-                    f.write('"%s"' % self.__path_exe)
-            exe_t = TempBat
+            temp_bat = next(Gadgets.generate_new_files_save_yield('tempBats','temp','.bat'))
+            if not os.path.isdir('tempBats'):
+                os.makedirs('tempBats')
+            with open(temp_bat, 'w') as f:
+                f.write('%s\n' % drive_t)
+                f.write('cd "%s"\n' % self.__path_env)
+                f.write('"%s"' % self.__path_exe)
+            exe_t = temp_bat
         else:
             exe_t = self.__path_exe
         if not self.__path_flagfile:
@@ -89,34 +105,27 @@ class executor_PSASP(object):
                 thread_exe.start()
                 self.__process_inc_matched = self.__get_process_inc_matched()
                 Lock_GetProcess.release()
-            Lock_WriteBat.release()
             thread_kill.start()
             thread_kill.join()
             thread_exe.join()
+        if temp_bat:
+            try:
+                os.remove(temp_bat)
+            except:
+                print('error while removing %s' % temp_bat)
 
 
 class executor_PSASP_lf(executor_PSASP):
     def __init__(self,path_exe,path_env):
-        executor_PSASP.__init__(self,path_exe,path_env)
+        flag_file_lf = const.dict_mapping_files[const.LABEL_LF][const.LABEL_RESULTS][const.LABEL_CONF]
+        executor_PSASP.__init__(self,path_exe,path_env,patterns_del=(flag_file_lf,))
 
 
 class executor_PSASP_st(executor_PSASP):
     def __init__(self,path_exe,path_env):
         flag_file_st = const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF]
-        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st)
+        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st, (const.PATTERN_OUTPUT_ST,flag_file_st))
 
-
-def get_all_process():
-    attrs_as_dict = ['pid', 'name', 'username', 'exe', 'create_time']
-    pid_list = psutil.pids()
-    list_process = []
-    for pid in pid_list:
-        try:
-            dict_t = psutil.Process(pid).as_dict(attrs=attrs_as_dict)
-            list_process.append(dict_t)
-        except:
-            traceback.print_exc()
-    return list_process
 
 
 def get_updated_time(file_path_t):
