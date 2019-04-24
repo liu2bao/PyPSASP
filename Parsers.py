@@ -15,7 +15,7 @@ class PSASP_Parser(object):
     def parse_lines_PSASP(self, lines, pos_keys, dict_translate=const.dict_translate,
                           pattern_parse=const.Pattern_read, multi_line=1, key_busno=None):
         lines_t = lines.copy()
-        if str.find(lines_t[0], 'Created on') != -1:
+        if str.find(lines_t[0], const.CreatedOnPattern) != -1:
             list.pop(lines_t, 0)
 
         flag_single_row = False

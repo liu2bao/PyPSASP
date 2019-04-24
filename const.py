@@ -3,6 +3,8 @@ from Gadgets import convert2float_s
 KeyInsertTimeStamp = 'insert_time'
 EXE_LF = 'WMLFRTMsg.exe'
 EXE_ST = 'wmudrt.exe'
+EXE_SST_LIN = 'Wsstlin.exe'
+EXE_SST_EIG = 'Wssteig.exe'
 WINDOW_NAME_ST = 'Transient Stability Calculation'
 FILE_STOUT = 'STOUT.INF'
 FILE_TEMPLATE_OUTPUT_ST = 'FN{}.DAT'
@@ -34,6 +36,7 @@ PREFIX_FILE_ST = 'ST'
 POSTFIX_FILE_LF_SETTING = '.L{}'
 POSTFIX_FILE_ST_SETTING = '.L{}'
 POSTFIX_FILE_LF_RESULT = '.LP{}'
+CreatedOnPattern = 'Created on'
 
 FILE_TEMPLATE = lambda prefix, postfix, x: (prefix + postfix).format(x)
 FILE_TEMPLATE_LF = lambda postfix, x: FILE_TEMPLATE(PREFIX_FILE_LF, postfix, x)

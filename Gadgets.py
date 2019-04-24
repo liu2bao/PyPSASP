@@ -98,7 +98,6 @@ def get_all_process_tasklist(name=None):
     A = r.read()
     B = [x.split() for x in A.split('\n')]
     # TODO: how to split??
-    pass
 
 
 def generate_new_files_save_yield(path_save, prefix_save, postfix_save='', try_ori=False, flag_dir = False,
@@ -173,10 +172,11 @@ def get_window_titles():
     return window_titles
 
 
-
+'''
 if __name__=='__main__':
     time.sleep(5)
     hide_window_by_name('Transient Stability')
     titles = get_window_titles()
     time.sleep(5)
     hide_window()
+'''

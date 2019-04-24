@@ -18,13 +18,18 @@ def func_change_lf_temp(P):
         load_ori = P.parser.parse_single_s_lfs(const.LABEL_LOAD)
         gen_new = gen_ori.copy()
         load_new = load_ori.copy()
+        Psum = 0
         for hh in range(len(gen_new)):
             gen_new[hh][const.GenPgKey] = gen_new[hh][const.PmaxKey] * (random.random() * 0.5 + 0.5)
-            gen_new[hh][const.GenQgKey] = gen_new[hh][const.QmaxKey] * (random.random() * 0.5 + 0.5)
+            gen_new[hh][const.V0Key] = (random.random() * 0.2 + 0.95)
+            Psum = Psum+gen_new[hh][const.GenPgKey]
             '''
             for key_t in [const.GenPgKey,const.GenQgKey,const.V0Key,const.AngleKey]:
                 gen_new[hh][key_t] = gen_new[hh][key_t]*(random.random()*0.5+0.5)
             '''
+        rands_t = [random.random() for hh in range(len(load_new))]
+        Ap = random.random()*0.4+0.8
+        Pls_t = [x/sum(rands_t)*Ap*Psum for x in rands_t]
         for hh in range(len(load_new)):
             load_new[hh][const.LoadPlKey] = load_new[hh][const.PmaxKey] * (random.random() * 0.5 + 0.5)
             load_new[hh][const.LoadQlKey] = load_new[hh][const.QmaxKey] * (random.random() * 0.5 + 0.5)
