@@ -31,7 +31,7 @@ def func_change_lf_temp(P):
         Ap = random.random()*0.4+0.8
         Pls_t = [x/sum(rands_t)*Ap*Psum for x in rands_t]
         for hh in range(len(load_new)):
-            load_new[hh][const.LoadPlKey] = load_new[hh][const.PmaxKey] * (random.random() * 0.5 + 0.5)
+            load_new[hh][const.LoadPlKey] = Pls_t[hh]
             load_new[hh][const.LoadQlKey] = load_new[hh][const.QmaxKey] * (random.random() * 0.5 + 0.5)
             '''
             for key_t in [const.LoadPlKey,const.LoadQlKey,const.V0Key,const.AngleKey]:

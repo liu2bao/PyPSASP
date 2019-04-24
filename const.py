@@ -667,8 +667,8 @@ dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANS
                           LABEL_SVC: 'ST.S7', LABEL_CONF: 'ST.S0', LABEL_FAULT: 'ST.S11',
                           LABEL_ANA: 'STCRIT.DAT'}
 dict_files_st_results = {LABEL_CONF: 'ST.CAL', LABEL_ANA: 'STANA.DAT'}
-dict_files_sst_eig_results = {LABEL_CONF:'SST.CAL',LABEL_EIGVAL: 'SST.EG1'}
-dict_files_sst_lin_results = {LABEL_CONF:'SSTLIN.CAL',LABEL_EIGVAL: 'SST.EG1'}
+dict_files_sst_eig_results = {LABEL_CONF:'SST.CAL',LABEL_EIGVAL: 'SST.EG1',LABEL_EIGVEC: 'SST.EG2'}
+dict_files_sst_lin_results = {LABEL_CONF:'SSTLIN.CAL'}
 
 dict_pos_keys_lf_settings = {LABEL_BUS: pos_keys_lf_settings_bus,
                              LABEL_ACLINE: pos_keys_lf_settings_acline,
@@ -716,7 +716,8 @@ files_lf_append_no = [dict_files_lf_settings[LABEL_BUS],
 
 dict_mapping_files = {LABEL_LF: {LABEL_SETTINGS: dict_files_lf_settings, LABEL_RESULTS: dict_files_lf_results},
                       LABEL_ST: {LABEL_SETTINGS: dict_files_st_settings, LABEL_RESULTS: dict_files_st_results},
-                      LABEL_SST_EIG: {LABEL_RESULTS: dict_files_sst_eig_results}}
+                      LABEL_SST_EIG: {LABEL_RESULTS: dict_files_sst_eig_results},
+                      LABEL_SST_LIN: {LABEL_RESULTS: dict_files_sst_lin_results}}
 dict_mapping_pos_keys = {LABEL_LF: {LABEL_SETTINGS: dict_pos_keys_lf_settings, LABEL_RESULTS: dict_pos_keys_lf_results},
                          LABEL_ST: {LABEL_SETTINGS: dict_pos_keys_st_settings, LABEL_RESULTS: dict_pos_keys_st_results},
                          LABEL_SST_EIG: {LABEL_RESULTS:dict_pos_keys_sst_results}}
