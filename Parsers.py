@@ -1,4 +1,4 @@
-#import Gadgets
+import Gadgets
 import const
 import math
 import re
@@ -7,13 +7,12 @@ import os
 
 # import numpy as np
 
+
 class PSASP_Parser(object):
-    def __init__(self,path_temp):
+    def __init__(self, path_temp):
         self.__path_temp = path_temp
 
-
-    def parse_lines_PSASP(self, lines, pos_keys, dict_translate=const.dict_translate,
-                          pattern_parse=const.Pattern_read, multi_line=1, key_busno=None):
+    def parse_lines_PSASP(self, lines, pos_keys, pattern_parse=const.Pattern_read, multi_line=1, key_busno=None):
         lines_t = lines.copy()
         if str.find(lines_t[0], const.CreatedOnPattern) != -1:
             list.pop(lines_t, 0)
@@ -26,7 +25,8 @@ class PSASP_Parser(object):
         if multi_line > 1:
             num_lines = len(lines_t)
             Ndiv = math.ceil(num_lines / multi_line)
-            lines_t = [','.join([lines_t[hh].strip(',') for hh in range(h * multi_line, (h + 1) * multi_line)]) for h in range(Ndiv)]
+            lines_t = [','.join([lines_t[hh].strip(',') for hh in range(h * multi_line, (h + 1) * multi_line)]) for h in
+                       range(Ndiv)]
 
         list_dict_parsed = []
         append_no = isinstance(key_busno, str)
@@ -38,11 +38,14 @@ class PSASP_Parser(object):
                     dict_t = {}
                     for hh in range(min([len(contents), len(pos_keys)])):
                         key_t = pos_keys[hh]
+                        vt = Gadgets.convert_s(contents[hh])
+                        '''
                         trans_func_t = dict_translate[key_t]
                         if trans_func_t:
                             vt = trans_func_t(contents[hh])
                         else:
                             vt = contents[hh]
+                        '''
                         dict_t[key_t] = vt
                     if append_no:
                         dict_t[key_busno] = h + 1
@@ -51,10 +54,9 @@ class PSASP_Parser(object):
             list_dict_parsed = list_dict_parsed[0]
         return list_dict_parsed
 
-
     def parse_single_s(self, label_calType, label_getType, label_eleType):
         fnt = const.dict_mapping_files[label_calType][label_getType][label_eleType]
-        fpt = os.path.join(self.__path_temp,fnt)
+        fpt = os.path.join(self.__path_temp, fnt)
         if os.path.isfile(fpt):
             with open(fpt, 'r') as f:
                 lines_raw = f.readlines()
@@ -72,15 +74,17 @@ class PSASP_Parser(object):
                 list_dict_parsed = self.parse_lines_PSASP(lines, pos_keys, multi_line=multi_line, key_busno=key_busno)
                 return list_dict_parsed
 
-
     def parse_single_s_lfs(self, label_eleType):
-        return self.parse_single_s(const.LABEL_LF,const.LABEL_SETTINGS,label_eleType)
+        return self.parse_single_s(const.LABEL_LF, const.LABEL_SETTINGS, label_eleType)
 
     def parse_single_s_lfr(self, label_eleType):
-        return self.parse_single_s(const.LABEL_LF,const.LABEL_RESULTS,label_eleType)
+        return self.parse_single_s(const.LABEL_LF, const.LABEL_RESULTS, label_eleType)
 
-    def parse_lf(self,lf, pos_keys):
-        path_lf = os.path.join(self.__path_temp,lf)
+    def parse_single_s_sts(self, label_eleType):
+        return self.parse_single_s(const.LABEL_ST, const.LABEL_SETTINGS, label_eleType)
+
+    def parse_lf(self, lf, pos_keys):
+        path_lf = os.path.join(self.__path_temp, lf)
         if os.path.isfile(path_lf):
             with open(path_lf, 'r') as f:
                 lines_raw = f.readlines()
@@ -100,11 +104,9 @@ class PSASP_Parser(object):
         else:
             return None
 
-
-
     def parse_all_files_s(self, label_calType, label_getType, label_eles_do=None):
         dict_files = const.dict_mapping_files[label_calType][label_getType]
-        #dict_pos_keys = const.dict_mapping_pos_keys[label_calType][label_getType]
+        # dict_pos_keys = const.dict_mapping_pos_keys[label_calType][label_getType]
         labels_do_ori = list(dict_files.keys())
         flag_single = False
         if label_eles_do is not None:
@@ -119,20 +121,16 @@ class PSASP_Parser(object):
             dict_r = list(dict_r.values())[0]
         return dict_r
 
-
-    def parse_all_settings_lf(self,labels_do=None):
+    def parse_all_settings_lf(self, labels_do=None):
         return self.parse_all_files_s(const.LABEL_LF, const.LABEL_SETTINGS, labels_do)
 
-
-    def parse_all_results_lf(self,labels_do=None):
+    def parse_all_results_lf(self, labels_do=None):
         return self.parse_all_files_s(const.LABEL_LF, const.LABEL_RESULTS, labels_do)
 
-
-    def parse_all_settings_st(self,labels_do=None):
+    def parse_all_settings_st(self, labels_do=None):
         return self.parse_all_files_s(const.LABEL_ST, const.LABEL_SETTINGS, labels_do)
 
-
-    def import_STOUT(self,path_STOUT):
+    def import_STOUT(self, path_STOUT):
         data_STOUT = []
         if os.path.isdir(path_STOUT):
             path_STOUT = os.path.join(path_STOUT, const.FILE_STOUT)
@@ -141,7 +139,6 @@ class PSASP_Parser(object):
                 data_raw = f.readlines()
             data_STOUT = [[int(xx) for xx in x.strip().split(',') if xx] for x in data_raw]
         return data_STOUT
-
 
     def parse_output_st_varinfs(self, path_STOUT=None):
         if path_STOUT is None:
@@ -192,7 +189,6 @@ class PSASP_Parser(object):
                     list_desc_outputs.append(dict_t)
         return list_desc_outputs
 
-
     def get_output_data_raw(self):
         count_t = 1
         data_FN = []
@@ -239,19 +235,21 @@ class PSASP_Parser(object):
         list_t = [x * DT for x in range(NT)]
         return list_t
 
-
     def parse_output_st(self):
         data_raw = self.get_output_data_raw()
-        #data_raw = import_STOUT(path_temp)
+        # data_raw = import_STOUT(path_temp)
         list_desc_outputs = self.parse_output_st_varinfs(self.__path_temp)
         list_t = self.get_sim_time()
-        list_heads = [{const.StOutVarNameKey:const.TimeKey}, *[dict({const.StOutVarNameKey: const.VarKeyPrefix + str(hh)}, **list_desc_outputs[hh]) for hh in range(len(list_desc_outputs))]]
-        list_data_raw_col = [list_t,*data_raw]
+        list_heads = [{const.StOutVarNameKey: const.TimeKey},
+                      *[dict({const.StOutVarNameKey: const.VarKeyPrefix + str(hh)}, **list_desc_outputs[hh]) for hh in
+                        range(len(list_desc_outputs))]]
+        list_data_raw_col = [list_t, *data_raw]
         LT = len(list_data_raw_col[0])
         list_data_raw_row = [[x[hh] for x in list_data_raw_col] for hh in range(LT)]
-        #list_values = [dict({const.TimeKey:list_t[hh]},**{const.VarKeyPrefix+str(ll):data_raw[ll][hh] for ll in range(len(data_raw))}) for hh in range(len(list_t))]
+        # list_values = [dict({const.TimeKey:list_t[hh]},**{const.VarKeyPrefix+str(ll):data_raw[ll][hh] for ll in range(len(data_raw))}) for hh in range(len(list_t))]
 
-        return list_heads,list_data_raw_row
+        return list_heads, list_data_raw_row
+
     '''
         list_outputs = list_desc_outputs.copy()
         for hh in range(len(list_outputs)):
@@ -259,9 +257,7 @@ class PSASP_Parser(object):
         return list_t, list_outputs
     '''
 
-
-
-    def write_to_file(self,file_path, list_dict_values, pos_keys):
+    def write_to_file(self, file_path, list_dict_values, pos_keys):
         if list_dict_values:
             if isinstance(list_dict_values, dict):
                 list_dict_values = [list_dict_values]
@@ -270,7 +266,6 @@ class PSASP_Parser(object):
             with open(file_path, 'w') as f:
                 f.writelines(lines_write)
 
-
     def write_to_file_s(self, label_calType, label_getType, label_eleType, list_dict_values):
         fnt = const.dict_mapping_files[label_calType][label_getType][label_eleType]
         fpt = os.path.join(self.__path_temp, fnt)
@@ -278,10 +273,8 @@ class PSASP_Parser(object):
         self.write_to_file(fpt, list_dict_values, pos_keys_t)
         return fpt
 
-
     def write_to_file_s_lfs(self, label_eleType, list_dict_values):
         return self.write_to_file_s(const.LABEL_LF, const.LABEL_SETTINGS, label_eleType, list_dict_values)
-
 
     def write_to_file_s_lfs_autofit(self, list_dict_values):
         if list_dict_values:
@@ -301,22 +294,20 @@ class PSASP_Parser(object):
 
 
 if __name__ == '__main__':
-
-
     # path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
     # b = parse_all_results_lf(path_t, const.LABEL_BUS)
     # path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
     path_t = r'E:\05_Resources\Softwares\PSASP\SST\sst_pre'
     Parser_t = PSASP_Parser(path_t)
 
-
     path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
     from Gadgets_sqlite import insert_from_list_to_db
+
     list_heads, list_data = Parser_t.parse_output_st()
     keys_t = [x[const.StOutVarNameKey] for x in list_heads]
     insert_from_list_to_db(r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419\temp.db',
-                           'temp',keys_t,list_data)
-    STCAL = Parser_t.parse_single_s(const.LABEL_ST,const.LABEL_RESULTS,const.LABEL_CONF)
+                           'temp', keys_t, list_data)
+    STCAL = Parser_t.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
     Parser_t_2 = PSASP_Parser(path_t_2)
     t = Parser_t.parse_output_st_varinfs()
     dt = Parser_t.parse_all_settings_lf()

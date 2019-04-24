@@ -380,6 +380,14 @@ NLoadKey = 'NLoad'
 NAreaKey = 'Narea'
 NUPKey = 'NUP'
 NUDKey = 'UD_Time'
+NVRKey = 'NVR' # Number of voltage regulator
+NGovKey = 'NGov'
+NPssKey = 'NPss'
+NStaticLoadKey = 'NStaticLoad'
+NInductionMotorKey = 'NInductionMotor'
+NOtherUDKey = 'NOtherUD'
+NStateVariableKey = 'NStateVariable'
+NAugmentedStateVariableKey = 'NAugmentedStateVariable'
 CtrlUDKey = 'Ctrl_UD'
 MatlabIntKey = 'Ctrl_Matitf'
 CalDateKey = 'CAL_Date'
@@ -487,9 +495,14 @@ OutputKeyValues = 'values'
 EIGVALNoKey = 'eigen_value_no'
 EIGVALRealKey = 'eigen_value_real_part'
 EIGVALImgKey = 'eigen_value_image_part'
-EIGVALEmprKey = 'elcetro-mechanic_participation_ratio' # "Elcetro-mechanic participation ratio"
+EIGVALEmprKey = 'elcetro-mechanic_participation_ratio' # "Elcetro-mechanic participation ratio" "机电回路相关比"
 #################################################
-
+EIGVECNOKey = 'eigen_value_no'
+EIGVECNodeKey = 'eigenvector_generator_node'
+EIGVECRelatedKey = 'eigenvector_related_ratio'
+EIGVECRealKey = 'eigenvector_real_part'
+EIGVECImgKey = 'eigenvector_image_part'
+EIGVECBusKey = 'eigenvector_generator_bus'
 
 # --------------------------------------------------------------------------------------------------------#
 
@@ -599,7 +612,85 @@ pos_keys_st_results_ana = [ANATKey, ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, A
 
 #################################################
 pos_keys_sst_eig_results_eigval = [EIGVALNoKey,EIGVALRealKey,EIGVALImgKey,EIGVALEmprKey]
+pos_keys_sst_eig_results_eigenvec = [EIGVECNOKey, EIGVECNodeKey, EIGVECRelatedKey, EIGVECRealKey, EIGVECImgKey, EIGVECBusKey]
+pos_keys_sst_eig_results_conf = [MCalKey, CalDateKey, CalTimeKey, NBusKey, NGenKey, NVRKey, NGovKey, NPssKey, NDCKey,
+                                 NStaticLoadKey, NInductionMotorKey, NOtherUDKey,
+                                 NStateVariableKey, NAugmentedStateVariableKey]
+
 #################################################
+
+
+dict_files_lf_settings = {LABEL_BUS: 'LF.L1', LABEL_ACLINE: 'LF.L2', LABEL_TRANSFORMER: 'LF.L3',
+                          LABEL_DCLINE: 'LF.NL4', LABEL_GENERATOR: 'LF.L5', LABEL_LOAD: 'LF.L6',
+                          LABEL_INTERCHANGE: 'LF.L7', LABEL_CONF: 'LF.L0'}
+dict_files_lf_results = {LABEL_BUS: 'LF.LP1', LABEL_ACLINE: 'LF.LP2', LABEL_TRANSFORMER: 'LF.LP3',
+                         LABEL_DCLINE: 'LF.NP4', LABEL_GENERATOR: 'LF.LP5', LABEL_LOAD: 'LF.LP6',
+                         LABEL_INTERCHANGE: 'LF.LP7', LABEL_CONF: 'LF.CAL'}
+dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANSFORMER: 'ST.S3',
+                          LABEL_DCLINE: 'ST.NS4', LABEL_GENERATOR: 'ST.S5', LABEL_LOAD: 'ST.S6',
+                          LABEL_SVC: 'ST.S7', LABEL_CONF: 'ST.S0', LABEL_FAULT: 'ST.S11',
+                          LABEL_ANA: 'STCRIT.DAT'}
+dict_files_st_results = {LABEL_CONF: 'ST.CAL', LABEL_ANA: 'STANA.DAT'}
+dict_files_sst_eig_results = {LABEL_CONF:'SST.CAL',LABEL_EIGVAL: 'SST.EG1',LABEL_EIGVEC: 'SST.EG2'}
+dict_files_sst_lin_results = {LABEL_CONF:'SSTLIN.CAL'}
+
+dict_pos_keys_lf_settings = {LABEL_BUS: pos_keys_lf_settings_bus,
+                             LABEL_ACLINE: pos_keys_lf_settings_acline,
+                             LABEL_TRANSFORMER: pos_keys_lf_settings_transformer,
+                             LABEL_DCLINE: pos_keys_lf_settings_dcline,
+                             LABEL_GENERATOR: pos_keys_lf_settings_generator,
+                             LABEL_LOAD: pos_keys_lf_settings_load,
+                             LABEL_INTERCHANGE: pos_keys_lf_settings_interchange,
+                             LABEL_CONF: pos_keys_lf_settings_conf}
+
+dict_pos_keys_lf_results = {LABEL_BUS: pos_keys_lf_results_bus,
+                            LABEL_ACLINE: pos_keys_lf_results_acline,
+                            LABEL_TRANSFORMER: pos_keys_lf_results_transformer,
+                            LABEL_DCLINE: pos_keys_lf_results_dcline,
+                            LABEL_GENERATOR: pos_keys_lf_results_generator,
+                            LABEL_LOAD: pos_keys_lf_results_load,
+                            LABEL_INTERCHANGE: pos_keys_lf_results_interchange,
+                            LABEL_CONF: pos_keys_lf_results_conf}
+
+dict_pos_keys_st_settings = {LABEL_BUS: pos_keys_st_settings_bus,
+                             LABEL_ACLINE: pos_keys_st_settings_acline,
+                             LABEL_TRANSFORMER: pos_keys_st_settings_transformer,
+                             LABEL_DCLINE: pos_keys_st_settings_dcline,
+                             LABEL_GENERATOR: pos_keys_st_settings_generator,
+                             LABEL_LOAD: pos_keys_st_settings_load,
+                             LABEL_SVC: pos_keys_st_settings_SVC,
+                             LABEL_CONF: pos_keys_st_settings_conf,
+                             LABEL_ANA: pos_keys_st_settings_ana,
+                             LABEL_FAULT: pos_keys_st_settings_fault}
+
+dict_pos_keys_st_results = {LABEL_CONF: pos_keys_st_results_conf,
+                            LABEL_ANA: pos_keys_st_results_ana}
+
+dict_pos_keys_sst_eig_results = {LABEL_EIGVAL: pos_keys_sst_eig_results_eigval,
+                                 LABEL_EIGVEC: pos_keys_sst_eig_results_eigenvec,
+                                 LABEL_CONF: pos_keys_sst_eig_results_conf}
+
+dict_multiline = {dict_files_lf_settings[LABEL_DCLINE]: 8,
+                  dict_files_lf_results[LABEL_DCLINE]: 10,
+                  dict_files_st_settings[LABEL_DCLINE]: 5,
+                  dict_files_lf_settings[LABEL_CONF]: True,
+                  dict_files_st_settings[LABEL_CONF]: True,
+                  dict_files_lf_results[LABEL_CONF]: True,
+                  dict_files_st_results[LABEL_CONF]: True}
+files_lf_append_no = [dict_files_lf_settings[LABEL_BUS],
+                      dict_files_st_settings[LABEL_BUS]]
+
+dict_mapping_files = {LABEL_LF: {LABEL_SETTINGS: dict_files_lf_settings, LABEL_RESULTS: dict_files_lf_results},
+                      LABEL_ST: {LABEL_SETTINGS: dict_files_st_settings, LABEL_RESULTS: dict_files_st_results},
+                      LABEL_SST_EIG: {LABEL_RESULTS: dict_files_sst_eig_results},
+                      LABEL_SST_LIN: {LABEL_RESULTS: dict_files_sst_lin_results}}
+dict_mapping_pos_keys = {LABEL_LF: {LABEL_SETTINGS: dict_pos_keys_lf_settings, LABEL_RESULTS: dict_pos_keys_lf_results},
+                         LABEL_ST: {LABEL_SETTINGS: dict_pos_keys_st_settings, LABEL_RESULTS: dict_pos_keys_st_results},
+                         LABEL_SST_EIG: {LABEL_RESULTS:dict_pos_keys_sst_eig_results}}
+
+
+
+'''
 dict_types = {
     int: [Trans2WKey, TransMainTapPos2Key, TransTrsTypeKey, UnknownInt, JNoKey, InterchangeAreaNoKey, LoadNoKey,
           GenKPrcKey, TransVjPosKey, InterchangeAdjGenKey, DCLineBiKey, DCLineBjKey, MarkKey, IDKey,
@@ -655,72 +746,11 @@ dict_types = {
 }
 
 dict_translate = {kk: v for v, k in dict_types.items() for kk in k}
+'''
 
-dict_files_lf_settings = {LABEL_BUS: 'LF.L1', LABEL_ACLINE: 'LF.L2', LABEL_TRANSFORMER: 'LF.L3',
-                          LABEL_DCLINE: 'LF.NL4', LABEL_GENERATOR: 'LF.L5', LABEL_LOAD: 'LF.L6',
-                          LABEL_INTERCHANGE: 'LF.L7', LABEL_CONF: 'LF.L0'}
-dict_files_lf_results = {LABEL_BUS: 'LF.LP1', LABEL_ACLINE: 'LF.LP2', LABEL_TRANSFORMER: 'LF.LP3',
-                         LABEL_DCLINE: 'LF.NP4', LABEL_GENERATOR: 'LF.LP5', LABEL_LOAD: 'LF.LP6',
-                         LABEL_INTERCHANGE: 'LF.LP7', LABEL_CONF: 'LF.CAL'}
-dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANSFORMER: 'ST.S3',
-                          LABEL_DCLINE: 'ST.NS4', LABEL_GENERATOR: 'ST.S5', LABEL_LOAD: 'ST.S6',
-                          LABEL_SVC: 'ST.S7', LABEL_CONF: 'ST.S0', LABEL_FAULT: 'ST.S11',
-                          LABEL_ANA: 'STCRIT.DAT'}
-dict_files_st_results = {LABEL_CONF: 'ST.CAL', LABEL_ANA: 'STANA.DAT'}
-dict_files_sst_eig_results = {LABEL_CONF:'SST.CAL',LABEL_EIGVAL: 'SST.EG1',LABEL_EIGVEC: 'SST.EG2'}
-dict_files_sst_lin_results = {LABEL_CONF:'SSTLIN.CAL'}
 
-dict_pos_keys_lf_settings = {LABEL_BUS: pos_keys_lf_settings_bus,
-                             LABEL_ACLINE: pos_keys_lf_settings_acline,
-                             LABEL_TRANSFORMER: pos_keys_lf_settings_transformer,
-                             LABEL_DCLINE: pos_keys_lf_settings_dcline,
-                             LABEL_GENERATOR: pos_keys_lf_settings_generator,
-                             LABEL_LOAD: pos_keys_lf_settings_load,
-                             LABEL_INTERCHANGE: pos_keys_lf_settings_interchange,
-                             LABEL_CONF: pos_keys_lf_settings_conf}
 
-dict_pos_keys_lf_results = {LABEL_BUS: pos_keys_lf_results_bus,
-                            LABEL_ACLINE: pos_keys_lf_results_acline,
-                            LABEL_TRANSFORMER: pos_keys_lf_results_transformer,
-                            LABEL_DCLINE: pos_keys_lf_results_dcline,
-                            LABEL_GENERATOR: pos_keys_lf_results_generator,
-                            LABEL_LOAD: pos_keys_lf_results_load,
-                            LABEL_INTERCHANGE: pos_keys_lf_results_interchange,
-                            LABEL_CONF: pos_keys_lf_results_conf}
 
-dict_pos_keys_st_settings = {LABEL_BUS: pos_keys_st_settings_bus,
-                             LABEL_ACLINE: pos_keys_st_settings_acline,
-                             LABEL_TRANSFORMER: pos_keys_st_settings_transformer,
-                             LABEL_DCLINE: pos_keys_st_settings_dcline,
-                             LABEL_GENERATOR: pos_keys_st_settings_generator,
-                             LABEL_LOAD: pos_keys_st_settings_load,
-                             LABEL_SVC: pos_keys_st_settings_SVC,
-                             LABEL_CONF: pos_keys_st_settings_conf,
-                             LABEL_ANA: pos_keys_st_settings_ana,
-                             LABEL_FAULT: pos_keys_st_settings_fault}
-
-dict_pos_keys_st_results = {LABEL_CONF: pos_keys_st_results_conf,
-                            LABEL_ANA: pos_keys_st_results_ana}
-
-dict_pos_keys_sst_results = {LABEL_EIGVAL: pos_keys_sst_eig_results_eigval}
-
-dict_multiline = {dict_files_lf_settings[LABEL_DCLINE]: 8,
-                  dict_files_lf_results[LABEL_DCLINE]: 10,
-                  dict_files_st_settings[LABEL_DCLINE]: 5,
-                  dict_files_lf_settings[LABEL_CONF]: True,
-                  dict_files_st_settings[LABEL_CONF]: True,
-                  dict_files_lf_results[LABEL_CONF]: True,
-                  dict_files_st_results[LABEL_CONF]: True}
-files_lf_append_no = [dict_files_lf_settings[LABEL_BUS],
-                      dict_files_st_settings[LABEL_BUS]]
-
-dict_mapping_files = {LABEL_LF: {LABEL_SETTINGS: dict_files_lf_settings, LABEL_RESULTS: dict_files_lf_results},
-                      LABEL_ST: {LABEL_SETTINGS: dict_files_st_settings, LABEL_RESULTS: dict_files_st_results},
-                      LABEL_SST_EIG: {LABEL_RESULTS: dict_files_sst_eig_results},
-                      LABEL_SST_LIN: {LABEL_RESULTS: dict_files_sst_lin_results}}
-dict_mapping_pos_keys = {LABEL_LF: {LABEL_SETTINGS: dict_pos_keys_lf_settings, LABEL_RESULTS: dict_pos_keys_lf_results},
-                         LABEL_ST: {LABEL_SETTINGS: dict_pos_keys_st_settings, LABEL_RESULTS: dict_pos_keys_st_results},
-                         LABEL_SST_EIG: {LABEL_RESULTS:dict_pos_keys_sst_results}}
 
 '''
 LFL1 = ['NULL1               ',    0.0000,   0,    0.0000,    0.0000,    0.0000,    0.0000]
