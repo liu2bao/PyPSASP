@@ -7,9 +7,9 @@ import Gadgets
 from Parsers import PSASP_Parser
 import random
 
-PATH_TEMP = r'E:\05_Resources\Softwares\PSASP\SST\Temp'
-PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
-PATH_OUTPUT = r'F:\Data\Research\PyPSASP\CCT\3m'
+PATH_TEMP = r'E:\CNN\PSASP_SST\Temp2'
+PATH_RESOURCES = r'E:\CNN\PSASP_SST\Temp2'
+PATH_OUTPUT = r'E:\CNN\PSASP_SST\PyPSASP\eigenvalue'
 
 
 def func_change_lf_temp(P):
@@ -236,10 +236,10 @@ class CCT_generator(object):
 
 if __name__ == '__main__':
     path_save = 'save'
-    Pt_writer = PSASP(path_save,PATH_TEMP)
+    #Pt_writer = PSASP(PATH_OUTPUT,PATH_TEMP)
     Pt = PSASP(PATH_TEMP,PATH_TEMP)
-    Pt.calculate_LF()
-    Pt.calculate_ST()
+    #Pt.calculate_LF()
+    #Pt.calculate_ST()
     Pt.calculate_SST_LIN()
     Pt.calculate_SST_EIG()
     G = Pt.parser.parse_single_s(const.LABEL_LF,const.LABEL_SETTINGS,const.LABEL_GENERATOR)

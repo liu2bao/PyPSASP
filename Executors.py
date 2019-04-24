@@ -167,9 +167,9 @@ if __name__ == '__main__':
     # path_env = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
     # path_exe = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000\wmudrt.exe'
     # path_exe = r'E:\05_Resources\Softwares\PSASP\CriticalFiles\Wsstlin.exe'
-    path_exe_sstlin = r'E:\05_Resources\Softwares\PSASP\SST\Temp\Wsstlin.exe'
-    path_exe_ssteig = r'E:\05_Resources\Softwares\PSASP\SST\Temp\Wssteig.exe'
-    path_env = r'E:\05_Resources\Softwares\PSASP\SST\Temp'
+    path_exe_sstlin = r'E:\CNN\PSASP_SST\Temp2\Wsstlin.exe'
+    path_exe_ssteig = r'E:\CNN\PSASP_SST\Temp2\Wssteig.exe'
+    path_env = r'E:\CNN\PSASP_SST\Temp2'
 
     et1 = executor_PSASP_sstlin(path_exe_sstlin, path_env)
     et2 = executor_PSASP_ssteig(path_exe_ssteig, path_env)
