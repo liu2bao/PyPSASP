@@ -1,8 +1,8 @@
 import os
 import re
-from Gadgets.Gadgets import copyfiles
-from Constants.const import FILE_STOUT, dict_files_st_settings, LABEL_CONF, dict_files_st_results, LABEL_ANA
-from Constants.const import FILE_PREFIX_LF,PATTERN_OUTPUT_ST,PATTERN_SETTINGS_LF,PATTERN_RESULTS_LF
+from PyPSASP.utils.utils_gadgets import copyfiles,copyfiles_pattern
+from PyPSASP.constants.const import FILE_STOUT, dict_files_st_settings, LABEL_CONF, dict_files_st_results, LABEL_ANA
+from PyPSASP.constants.const import FILE_PREFIX_LF,PATTERN_OUTPUT_ST,PATTERN_SETTINGS_LF,PATTERN_RESULTS_LF
 
 
 def copyfiles_st(path_src,path_dst):
@@ -25,11 +25,11 @@ def copyfiles_lf(path_src,path_dst):
 
 
 def copyfiles_lfs(path_src,path_dst):
-    copyfiles(path_src,path_dst,PATTERN_SETTINGS_LF)
+    copyfiles_pattern(path_src,path_dst,PATTERN_SETTINGS_LF)
 
 
 def copyfiles_lfr(path_src,path_dst):
-    copyfiles(path_src,path_dst,PATTERN_RESULTS_LF)
+    copyfiles_pattern(path_src,path_dst,PATTERN_RESULTS_LF)
 
 
 if __name__=='__main__':

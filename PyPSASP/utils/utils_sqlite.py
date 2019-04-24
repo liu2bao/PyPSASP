@@ -1,11 +1,12 @@
 import os
 import sqlite3
-from Constants import const
 import traceback
 import datetime
 import contextlib
 import pickle
 from threading import Lock
+
+from PyPSASP.constants import const
 
 ListType = 'LIST'
 TupleType = 'TUPLE'

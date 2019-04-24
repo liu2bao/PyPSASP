@@ -57,7 +57,12 @@ def copyfiles(path_src, path_dst, files):
 
 
 
-def copyfiles_pattern(path_src, path_dst, files, pattern):
+def copyfiles_pattern(path_src, path_dst, pattern, files=None):
+    if files is None:
+        if os.path.isdir(path_src):
+            files = os.listdir(path_src)
+        else:
+            files = []
     if not os.path.isdir(path_dst):
         os.makedirs(path_dst)
 

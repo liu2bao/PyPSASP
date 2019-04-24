@@ -1,8 +1,8 @@
 import os
 from threading import Thread, Lock
 import time
-from Constants import const
-from Gadgets.Gadgets import get_all_process,delete_files_pattern,generate_new_files_save_yield
+from PyPSASP.constants import const
+from PyPSASP.utils.utils_gadgets import get_all_process,delete_files_pattern,generate_new_files_save_yield
 
 # TempBat = 'temp.bat'
 Lock_GetProcess = Lock()

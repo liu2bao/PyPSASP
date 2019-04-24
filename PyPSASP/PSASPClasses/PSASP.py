@@ -1,10 +1,10 @@
 import os
-import Gadgets_PSASP
-import const
-from Executors import executor_PSASP_lf, executor_PSASP_st, executor_PSASP_sstlin, executor_PSASP_ssteig
-import Gadgets_sqlite
-import Gadgets
-from Parsers import PSASP_Parser
+from PyPSASP.utils.utils_PSASP import copyfiles_st, copyfiles_lf, copyfiles_lfs
+from PyPSASP.utils.utils_gadgets import generate_new_files_save_yield
+from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
+from PyPSASP.constants import const
+from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st, executor_PSASP_sstlin
+from PyPSASP.PSASPClasses.Parsers import PSASP_Parser
 import random
 
 PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
@@ -22,14 +22,14 @@ def func_change_lf_temp(P):
         for hh in range(len(gen_new)):
             gen_new[hh][const.GenPgKey] = gen_new[hh][const.PmaxKey] * (random.random() * 0.5 + 0.5)
             gen_new[hh][const.V0Key] = (random.random() * 0.2 + 0.95)
-            Psum = Psum+gen_new[hh][const.GenPgKey]
+            Psum = Psum + gen_new[hh][const.GenPgKey]
             '''
             for key_t in [const.GenPgKey,const.GenQgKey,const.V0Key,const.AngleKey]:
                 gen_new[hh][key_t] = gen_new[hh][key_t]*(random.random()*0.5+0.5)
             '''
         rands_t = [random.random() for hh in range(len(load_new))]
-        Ap = random.random()*0.4+0.8
-        Pls_t = [x/sum(rands_t)*Ap*Psum for x in rands_t]
+        Ap = random.random() * 0.4 + 0.8
+        Pls_t = [x / sum(rands_t) * Ap * Psum for x in rands_t]
         for hh in range(len(load_new)):
             load_new[hh][const.LoadPlKey] = Pls_t[hh]
             load_new[hh][const.LoadQlKey] = 6 * random.random()
@@ -102,7 +102,7 @@ class PSASP(object):
         success_lf = False
         self.__executor_lf.execute_exe()
         LFCAL = self.parser.parse_single_s(const.LABEL_LF, const.LABEL_RESULTS, const.LABEL_CONF)
-        if LFCAL==1:
+        if LFCAL == 1:
             if const.MCalKey in LFCAL.keys():
                 success_lf = LFCAL[const.MCalKey] == 1
         return success_lf
@@ -111,7 +111,7 @@ class PSASP(object):
         success_st = False
         self.__executor_st.execute_exe()
         STCAL = self.parser.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
-        if STCAL==1:
+        if STCAL == 1:
             if const.MCalKey in STCAL.keys():
                 success_st = STCAL[const.MCalKey] == 1
         return success_st
@@ -163,7 +163,7 @@ class PSASP(object):
                 rec['fleft'] = stable
                 rec['CCT'] = CT_t
                 # TODO: Donnot copy?
-                Gadgets_PSASP.copyfiles_st(self.path_temp, rec['output_st_left'])
+                copyfiles_st(self.path_temp, rec['output_st_left'])
                 if not rec['flag_limit_touched']:
                     rec['tright'] = CT_t + Tstep_max
 
@@ -171,7 +171,7 @@ class PSASP(object):
                 rec['tright'] = CT_t
                 rec['fright'] = stable
                 # TODO: Donnot copy?
-                Gadgets_PSASP.copyfiles_st(self.path_temp, rec['output_st_right'])
+                copyfiles_st(self.path_temp, rec['output_st_right'])
                 rec['flag_limit_touched'] = True
 
             rec['count'] += 1
@@ -205,12 +205,12 @@ class CCT_generator(object):
         self.__PSASP = PSASP(path_temp, path_resources)
         self.path_output = path_output
         self.__func_change_lfs = func_change_lfs
-        self.__name_gen_st_left = Gadgets.generate_new_files_save_yield(self.__path_output_st_left, 'left',
-                                                                        flag_dir=True, return_path=True)
-        self.__name_gen_st_right = Gadgets.generate_new_files_save_yield(self.__path_output_st_right, 'right',
-                                                                         flag_dir=True, return_path=True)
-        self.__name_gen_lf = Gadgets.generate_new_files_save_yield(self.__path_output_lf, const.LABEL_LF, flag_dir=True,
-                                                                   return_path=True)
+        self.__name_gen_st_left = generate_new_files_save_yield(self.__path_output_st_left, 'left',
+                                                                flag_dir=True, return_path=True)
+        self.__name_gen_st_right = generate_new_files_save_yield(self.__path_output_st_right, 'right',
+                                                                 flag_dir=True, return_path=True)
+        self.__name_gen_lf = generate_new_files_save_yield(self.__path_output_lf, const.LABEL_LF, flag_dir=True,
+                                                           return_path=True)
 
     def run_sim_CCT_once(self):
         self.__func_change_lfs(self.__PSASP)
@@ -221,17 +221,17 @@ class CCT_generator(object):
         if success_lf:
             fstleftt = next(self.__name_gen_st_left)
             fstrightt = next(self.__name_gen_st_right)
-            Gadgets_PSASP.copyfiles_lf(self.__path_temp, flft)
+            copyfiles_lf(self.__path_temp, flft)
             rec_t['output_lf'] = flft
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
         else:
-            Gadgets_PSASP.copyfiles_lfs(self.__path_temp, flft)
+            copyfiles_lfs(self.__path_temp, flft)
             rec_t['output_lf'] = flft
 
         keys_t = list(rec_t.keys())
         values_t = list(rec_t.values())
-        Gadgets_sqlite.insert_from_list_to_db(self.__path_record_master, 'records', keys_t, [values_t])
+        insert_from_list_to_db(self.__path_record_master, 'records', keys_t, [values_t])
 
 
 if __name__ == '__main__':
@@ -266,4 +266,3 @@ if __name__ == '__main__':
         evec = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVEC)
     
     '''
-

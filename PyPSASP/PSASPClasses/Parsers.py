@@ -1,9 +1,9 @@
-import Gadgets
-from Constants import const
 import math
 import re
 import os
 
+from PyPSASP.utils import utils_gadgets
+from PyPSASP.constants import const
 
 # import numpy as np
 
@@ -38,7 +38,7 @@ class PSASP_Parser(object):
                     dict_t = {}
                     for hh in range(min([len(contents), len(pos_keys)])):
                         key_t = pos_keys[hh]
-                        vt = Gadgets.convert_s(contents[hh])
+                        vt = utils_gadgets.convert_s(contents[hh])
                         '''
                         trans_func_t = dict_translate[key_t]
                         if trans_func_t:
@@ -301,7 +301,7 @@ if __name__ == '__main__':
     Parser_t = PSASP_Parser(path_t)
 
     path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
-    from Gadgets.Gadgets_sqlite import insert_from_list_to_db
+    from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
 
     list_heads, list_data = Parser_t.parse_output_st()
     keys_t = [x[const.StOutVarNameKey] for x in list_heads]
