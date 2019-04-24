@@ -497,7 +497,12 @@ EIGVALRealKey = 'eigen_value_real_part'
 EIGVALImgKey = 'eigen_value_image_part'
 EIGVALEmprKey = 'elcetro-mechanic_participation_ratio' # "Elcetro-mechanic participation ratio" "机电回路相关比"
 #################################################
-
+EIGVECNOKey = 'eigen_value_no'
+EIGVECNodeKey = 'eigenvector_generator_node'
+EIGVECRelatedKey = 'eigenvector_related_ratio'
+EIGVECRealKey = 'eigenvector_real_part'
+EIGVECImgKey = 'eigenvector_image_part'
+EIGVECBusKey = 'eigenvector_generator_bus'
 
 # --------------------------------------------------------------------------------------------------------#
 
@@ -607,6 +612,7 @@ pos_keys_st_results_ana = [ANATKey, ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, A
 
 #################################################
 pos_keys_sst_eig_results_eigval = [EIGVALNoKey,EIGVALRealKey,EIGVALImgKey,EIGVALEmprKey]
+pos_keys_sst_eig_results_eigenvec = [EIGVECNOKey, EIGVECNodeKey, EIGVECRelatedKey, EIGVECRealKey, EIGVECImgKey, EIGVECBusKey]
 pos_keys_sst_eig_results_conf = [MCalKey, CalDateKey, CalTimeKey, NBusKey, NGenKey, NVRKey, NGovKey, NPssKey, NDCKey,
                                  NStaticLoadKey, NInductionMotorKey, NOtherUDKey,
                                  NStateVariableKey, NAugmentedStateVariableKey]
@@ -661,6 +667,7 @@ dict_pos_keys_st_results = {LABEL_CONF: pos_keys_st_results_conf,
                             LABEL_ANA: pos_keys_st_results_ana}
 
 dict_pos_keys_sst_eig_results = {LABEL_EIGVAL: pos_keys_sst_eig_results_eigval,
+                                 LABEL_EIGVEC: pos_keys_sst_eig_results_eigenvec,
                                  LABEL_CONF: pos_keys_sst_eig_results_conf}
 
 dict_multiline = {dict_files_lf_settings[LABEL_DCLINE]: 8,
