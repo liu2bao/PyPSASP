@@ -1,8 +1,8 @@
 import os
 import re
-from Gadgets import copyfiles
-from const import FILE_STOUT, dict_files_st_settings, LABEL_CONF, dict_files_st_results, LABEL_ANA
-from const import FILE_PREFIX_LF,PATTERN_OUTPUT_ST,PATTERN_SETTINGS_LF,PATTERN_RESULTS_LF
+from Gadgets.Gadgets import copyfiles
+from Constants.const import FILE_STOUT, dict_files_st_settings, LABEL_CONF, dict_files_st_results, LABEL_ANA
+from Constants.const import FILE_PREFIX_LF,PATTERN_OUTPUT_ST,PATTERN_SETTINGS_LF,PATTERN_RESULTS_LF
 
 
 def copyfiles_st(path_src,path_dst):

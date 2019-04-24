@@ -1,5 +1,5 @@
 import Gadgets
-import const
+from Constants import const
 import math
 import re
 import os
@@ -301,7 +301,7 @@ if __name__ == '__main__':
     Parser_t = PSASP_Parser(path_t)
 
     path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
-    from Gadgets_sqlite import insert_from_list_to_db
+    from Gadgets.Gadgets_sqlite import insert_from_list_to_db
 
     list_heads, list_data = Parser_t.parse_output_st()
     keys_t = [x[const.StOutVarNameKey] for x in list_heads]
