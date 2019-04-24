@@ -48,14 +48,6 @@ POSTFIX_FILE_ST_SETTING = '.L{}'
 POSTFIX_FILE_LF_RESULT = '.LP{}'
 CreatedOnPattern = 'Created on'
 
-FILE_TEMPLATE = lambda prefix, postfix, x: (prefix + postfix).format(x)
-FILE_TEMPLATE_LF = lambda postfix, x: FILE_TEMPLATE(PREFIX_FILE_LF, postfix, x)
-FILE_TEMPLATE_LF_SETTING = lambda x: FILE_TEMPLATE_LF(POSTFIX_FILE_LF_SETTING, x)
-FILE_TEMPLATE_LF_RESULT = lambda x: FILE_TEMPLATE_LF(POSTFIX_FILE_LF_RESULT, x)
-
-DICT_FILES_LF = {POSTFIX_FILE_LF_RESULT: FILE_TEMPLATE_LF_RESULT}
-DICT_FILES_ST = {POSTFIX_FILE_LF_RESULT: FILE_TEMPLATE_LF_RESULT}
-
 Pattern_read = '([^\']*?|\'.*?\')[ ]*,'
 
 StOutVarNameKey = 'var_name'

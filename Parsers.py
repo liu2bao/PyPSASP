@@ -82,6 +82,9 @@ class PSASP_Parser(object):
     def parse_single_s_lfr(self, label_eleType):
         return self.parse_single_s(const.LABEL_LF,const.LABEL_RESULTS,label_eleType)
 
+    def parse_single_s_sts(self, label_eleType):
+        return self.parse_single_s(const.LABEL_ST,const.LABEL_SETTINGS,label_eleType)
+
     def parse_lf(self,lf, pos_keys):
         path_lf = os.path.join(self.__path_temp,lf)
         if os.path.isfile(path_lf):
