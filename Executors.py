@@ -143,14 +143,14 @@ class executor_PSASP_st(executor_PSASP):
 
 class executor_PSASP_sstlin(executor_PSASP):
     def __init__(self, path_exe, path_env):
-        flag_file_sst = 'SSTLIN.CAL'
-        patterns_del = (flag_file_sst,)
+        flag_file_sst_lin = const.dict_mapping_files[const.LABEL_SST_LIN][const.LABEL_RESULTS][const.LABEL_CONF]
+        patterns_del = (flag_file_sst_lin,)
         executor_PSASP.__init__(self, path_exe, path_env, path_flagfile=None, patterns_del=patterns_del)
 
 
 class executor_PSASP_ssteig(executor_PSASP):
     def __init__(self, path_exe, path_env):
-        flag_file_sst_eig = 'SST.CAL'
+        flag_file_sst_eig = const.dict_mapping_files[const.LABEL_SST_EIG][const.LABEL_RESULTS][const.LABEL_CONF]
         patterns_del = (flag_file_sst_eig,)
         executor_PSASP.__init__(self, path_exe, path_env, flag_file_sst_eig, patterns_del)
 

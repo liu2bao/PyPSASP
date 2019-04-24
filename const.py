@@ -674,7 +674,8 @@ dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANS
                           LABEL_SVC: 'ST.S7', LABEL_CONF: 'ST.S0', LABEL_FAULT: 'ST.S11',
                           LABEL_ANA: 'STCRIT.DAT'}
 dict_files_st_results = {LABEL_CONF: 'ST.CAL', LABEL_ANA: 'STANA.DAT'}
-dict_files_sst_eig_results = {LABEL_EIGVAL: 'SST.EG1'}
+dict_files_sst_eig_results = {LABEL_CONF:'SST.CAL',LABEL_EIGVAL: 'SST.EG1'}
+dict_files_sst_lin_results = {LABEL_CONF:'SSTLIN.CAL',LABEL_EIGVAL: 'SST.EG1'}
 
 dict_pos_keys_lf_settings = {LABEL_BUS: pos_keys_lf_settings_bus,
                              LABEL_ACLINE: pos_keys_lf_settings_acline,

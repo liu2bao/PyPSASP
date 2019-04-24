@@ -235,13 +235,13 @@ class CCT_generator(object):
 
 
 if __name__ == '__main__':
+    path_save = 'save'
+    Pt_writer = PSASP(path_save,PATH_TEMP)
     Pt = PSASP(PATH_TEMP,PATH_TEMP)
     Pt.calculate_LF()
     Pt.calculate_ST()
     Pt.calculate_SST_LIN()
     Pt.calculate_SST_EIG()
-    Pt.parser.parse_single_s('whatever')
-    Pt.parser.write_to_file_s('w')
     G = Pt.parser.parse_single_s(const.LABEL_LF,const.LABEL_SETTINGS,const.LABEL_GENERATOR)
     G_new = G
     # modify G_new
@@ -252,6 +252,7 @@ if __name__ == '__main__':
         A = Pt.parser.parse_all_results_lf()
         R = Pt.parser.parse_all_results_lf((const.LABEL_BUS,const.LABEL_GENERATOR))
         evalue = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVAL)
+
         evec = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVEC)
 
     os.system('@echo off')
