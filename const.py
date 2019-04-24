@@ -380,6 +380,14 @@ NLoadKey = 'NLoad'
 NAreaKey = 'Narea'
 NUPKey = 'NUP'
 NUDKey = 'UD_Time'
+NVRKey = 'NVR' # Number of voltage regulator
+NGovKey = 'NGov'
+NPssKey = 'NPss'
+NStaticLoadKey = 'NStaticLoad'
+NInductionMotorKey = 'NInductionMotor'
+NOtherUDKey = 'NOtherUD'
+NStateVariableKey = 'NStateVariable'
+NAugmentedStateVariableKey = 'NAugmentedStateVariable'
 CtrlUDKey = 'Ctrl_UD'
 MatlabIntKey = 'Ctrl_Matitf'
 CalDateKey = 'CAL_Date'
@@ -487,7 +495,7 @@ OutputKeyValues = 'values'
 EIGVALNoKey = 'eigen_value_no'
 EIGVALRealKey = 'eigen_value_real_part'
 EIGVALImgKey = 'eigen_value_image_part'
-EIGVALEmprKey = 'elcetro-mechanic_participation_ratio' # "Elcetro-mechanic participation ratio"
+EIGVALEmprKey = 'elcetro-mechanic_participation_ratio' # "Elcetro-mechanic participation ratio" "机电回路相关比"
 #################################################
 
 
@@ -599,6 +607,10 @@ pos_keys_st_results_ana = [ANATKey, ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, A
 
 #################################################
 pos_keys_sst_eig_results_eigval = [EIGVALNoKey,EIGVALRealKey,EIGVALImgKey,EIGVALEmprKey]
+pos_keys_sst_eig_results_conf = [MCalKey, CalDateKey, CalTimeKey, NBusKey, NGenKey, NVRKey, NGovKey, NPssKey, NDCKey,
+                                 NStaticLoadKey, NInductionMotorKey, NOtherUDKey,
+                                 NStateVariableKey, NAugmentedStateVariableKey]
+
 #################################################
 dict_types = {
     int: [Trans2WKey, TransMainTapPos2Key, TransTrsTypeKey, UnknownInt, JNoKey, InterchangeAreaNoKey, LoadNoKey,
@@ -702,7 +714,8 @@ dict_pos_keys_st_settings = {LABEL_BUS: pos_keys_st_settings_bus,
 dict_pos_keys_st_results = {LABEL_CONF: pos_keys_st_results_conf,
                             LABEL_ANA: pos_keys_st_results_ana}
 
-dict_pos_keys_sst_results = {LABEL_EIGVAL: pos_keys_sst_eig_results_eigval}
+dict_pos_keys_sst_eig_results = {LABEL_EIGVAL: pos_keys_sst_eig_results_eigval,
+                                 LABEL_CONF: pos_keys_sst_eig_results_conf}
 
 dict_multiline = {dict_files_lf_settings[LABEL_DCLINE]: 8,
                   dict_files_lf_results[LABEL_DCLINE]: 10,
@@ -720,7 +733,7 @@ dict_mapping_files = {LABEL_LF: {LABEL_SETTINGS: dict_files_lf_settings, LABEL_R
                       LABEL_SST_LIN: {LABEL_RESULTS: dict_files_sst_lin_results}}
 dict_mapping_pos_keys = {LABEL_LF: {LABEL_SETTINGS: dict_pos_keys_lf_settings, LABEL_RESULTS: dict_pos_keys_lf_results},
                          LABEL_ST: {LABEL_SETTINGS: dict_pos_keys_st_settings, LABEL_RESULTS: dict_pos_keys_st_results},
-                         LABEL_SST_EIG: {LABEL_RESULTS:dict_pos_keys_sst_results}}
+                         LABEL_SST_EIG: {LABEL_RESULTS:dict_pos_keys_sst_eig_results}}
 
 '''
 LFL1 = ['NULL1               ',    0.0000,   0,    0.0000,    0.0000,    0.0000,    0.0000]
