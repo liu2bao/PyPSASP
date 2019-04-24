@@ -13,12 +13,17 @@ FILE_PREFIX_LF = 'LF.'
 PATTERN_SETTINGS_LF = FILE_PREFIX_LF+'.N{0,1}L\d+'
 PATTERN_RESULTS_LF = FILE_PREFIX_LF+'.[N|L]P\d+'
 
+# calType
 LABEL_LF = 'load_flow'
 LABEL_ST = 'transient_stability'
+LABEL_SST_LIN = 'small-signal_stability_linearity'
+LABEL_SST_EIG = 'small-signal_stability_eigenvalue'
 
+# getType
 LABEL_SETTINGS = 'settings'
 LABEL_RESULTS = 'results'
 
+# eleType
 LABEL_CONF = 'configuration'
 LABEL_BUS = 'bus'
 LABEL_ACLINE = 'acline'
@@ -31,6 +36,10 @@ LABEL_SVC = 'SVC'
 LABEL_FAULT = 'fault'
 LABEL_ANA = 'auto_analysis'
 
+LABEL_EIGVAL = 'eigenvalue'
+LABEL_EIGVEC= 'eigenvector'
+
+##########
 PREFIX_FILE_LF = 'LF'
 PREFIX_FILE_ST = 'ST'
 POSTFIX_FILE_LF_SETTING = '.L{}'
@@ -479,6 +488,16 @@ OutputKeyValues = 'values'
 
 #################################################
 
+
+
+#################################################
+EIGVALNoKey = 'eigen_value_no'
+EIGVALRealKey = 'eigen_value_real_part'
+EIGVALImgKey = 'eigen_value_image_part'
+EIGVALEmprKey = 'elcetro-mechanic_participation_ratio' # "Elcetro-mechanic participation ratio"
+#################################################
+
+
 # --------------------------------------------------------------------------------------------------------#
 
 #################################################
@@ -586,7 +605,8 @@ pos_keys_st_results_ana = [ANATKey, ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, A
                            ANAGenWMinKey, ANAWMinKey]
 
 #################################################
-
+pos_keys_sst_eig_results_eigval = [EIGVALNoKey,EIGVALRealKey,EIGVALImgKey,EIGVALEmprKey]
+#################################################
 dict_types = {
     int: [Trans2WKey, TransMainTapPos2Key, TransTrsTypeKey, UnknownInt, JNoKey, InterchangeAreaNoKey, LoadNoKey,
           GenKPrcKey, TransVjPosKey, InterchangeAdjGenKey, DCLineBiKey, DCLineBjKey, MarkKey, IDKey,
@@ -604,7 +624,7 @@ dict_types = {
           LFEQMethodKey, LFCtrlsubKey, LFUPCALLKey, LFCtrlRmXmKey, MCalKey, STIsStableKey, STGroupLoseStableKey,
           LFML23Key, NUDKey, FaultLocateKey, FaultAddedBusNameKey, FaultPhaseAKey, FaultPhaseBKey, FaultPhaseCKey,
           FaultGroundKey, FaultShortKey, FaultOpenKey, ANANanaGrpKey, ANALstopKey, ANATKey, ANAAngleKey,
-          ANAVminKey, ANAWMinKey],
+          ANAVminKey, ANAWMinKey,EIGVALNoKey],
     convert2float_s: [TransShiftAngKey, DCLineVljKey, DCLineVtiminKey, DCLinePd1Key, DCLineReiKey, DCLineStiKey,
                       DCLineA2minKey, LoadQlKey, DCLineLpjKey, VmaxKVKey, DCLineVd2Key, DCLineA20Key, BaseKVKey,
                       DCLineStjKey, DCLineRpjKey, ACLineRateKAKey, DCLineXtiKey, DCLineRlKey, TransTPKey,
@@ -635,7 +655,8 @@ dict_types = {
                       LFBasicCapacityKey, LFVmaxKey, LFVminKey, LFEpsKey, STTimeLoseStableKey,
                       FaultTstartKey, FaultTendKey, FaultRKey, FaultXKey, ANAMaxDAngKey, ANAMinVolKey,
                       ANATDVolKey, ANAMinFreqKey, ANATDFreqKey, ANATSDAngKey,
-                      ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, ANABusVMinKey, ANAGenWMinKey],
+                      ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, ANABusVMinKey, ANAGenWMinKey,
+                      EIGVALRealKey,EIGVALImgKey,EIGVALEmprKey],
     None: [TransNameKey, InterchangeAreaNameKey, GenNameKey, LineNameKey, BusNameKey, UnknownDesc,
            LoadNameKey, SVCNameKey, CalDateKey, CalTimeKey]
 }
@@ -653,6 +674,7 @@ dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANS
                           LABEL_SVC: 'ST.S7', LABEL_CONF: 'ST.S0', LABEL_FAULT: 'ST.S11',
                           LABEL_ANA: 'STCRIT.DAT'}
 dict_files_st_results = {LABEL_CONF: 'ST.CAL', LABEL_ANA: 'STANA.DAT'}
+dict_files_sst_eig_results = {LABEL_EIGVAL: 'SST.EG1'}
 
 dict_pos_keys_lf_settings = {LABEL_BUS: pos_keys_lf_settings_bus,
                              LABEL_ACLINE: pos_keys_lf_settings_acline,
@@ -686,6 +708,8 @@ dict_pos_keys_st_settings = {LABEL_BUS: pos_keys_st_settings_bus,
 dict_pos_keys_st_results = {LABEL_CONF: pos_keys_st_results_conf,
                             LABEL_ANA: pos_keys_st_results_ana}
 
+dict_pos_keys_sst_results = {LABEL_EIGVAL: pos_keys_sst_eig_results_eigval}
+
 dict_multiline = {dict_files_lf_settings[LABEL_DCLINE]: 8,
                   dict_files_lf_results[LABEL_DCLINE]: 10,
                   dict_files_st_settings[LABEL_DCLINE]: 5,
@@ -697,9 +721,11 @@ files_lf_append_no = [dict_files_lf_settings[LABEL_BUS],
                       dict_files_st_settings[LABEL_BUS]]
 
 dict_mapping_files = {LABEL_LF: {LABEL_SETTINGS: dict_files_lf_settings, LABEL_RESULTS: dict_files_lf_results},
-                      LABEL_ST: {LABEL_SETTINGS: dict_files_st_settings, LABEL_RESULTS: dict_files_st_results}}
+                      LABEL_ST: {LABEL_SETTINGS: dict_files_st_settings, LABEL_RESULTS: dict_files_st_results},
+                      LABEL_SST_EIG: {LABEL_RESULTS: dict_files_sst_eig_results}}
 dict_mapping_pos_keys = {LABEL_LF: {LABEL_SETTINGS: dict_pos_keys_lf_settings, LABEL_RESULTS: dict_pos_keys_lf_results},
-                         LABEL_ST: {LABEL_SETTINGS: dict_pos_keys_st_settings, LABEL_RESULTS: dict_pos_keys_st_results}}
+                         LABEL_ST: {LABEL_SETTINGS: dict_pos_keys_st_settings, LABEL_RESULTS: dict_pos_keys_st_results},
+                         LABEL_SST_EIG: {LABEL_RESULTS:dict_pos_keys_sst_results}}
 
 '''
 LFL1 = ['NULL1               ',    0.0000,   0,    0.0000,    0.0000,    0.0000,    0.0000]

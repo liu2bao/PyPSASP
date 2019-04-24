@@ -1,13 +1,13 @@
 import os
 import Gadgets_PSASP
 import const
-from Executors import executor_PSASP_lf, executor_PSASP_st
+from Executors import executor_PSASP_lf, executor_PSASP_st, executor_PSASP_sstlin, executor_PSASP_ssteig
 import Gadgets_sqlite
 import Gadgets
 from Parsers import PSASP_Parser
 import random
 
-PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
+PATH_TEMP = r'E:\05_Resources\Softwares\PSASP\SST\Temp'
 PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
 PATH_OUTPUT = r'F:\Data\Research\PyPSASP\CCT\3m'
 
@@ -87,8 +87,12 @@ class PSASP(object):
         self.__path_resources = value
         self.__path_exe_wmlfmsg = os.path.join(self.__path_resources, const.EXE_LF)
         self.__path_exe_wmudrt = os.path.join(self.__path_resources, const.EXE_ST)
+        self.__path_exe_wsstlin = os.path.join(self.__path_resources, const.EXE_SST_LIN)
+        self.__path_exe_wssteig = os.path.join(self.__path_resources, const.EXE_SST_EIG)
         self.__executor_lf = executor_PSASP_lf(self.__path_exe_wmlfmsg, self.path_temp)
         self.__executor_st = executor_PSASP_st(self.__path_exe_wmudrt, self.path_temp)
+        self.__executor_sstlin = executor_PSASP_sstlin(self.__path_exe_wsstlin, self.path_temp)
+        self.__executor_ssteig = executor_PSASP_sstlin(self.__path_exe_wssteig, self.path_temp)
 
     def __init__(self, path_temp, path_resources):
         self.path_temp = path_temp
@@ -98,7 +102,7 @@ class PSASP(object):
         success_lf = False
         self.__executor_lf.execute_exe()
         LFCAL = self.parser.parse_single_s(const.LABEL_LF, const.LABEL_RESULTS, const.LABEL_CONF)
-        if LFCAL:
+        if LFCAL==1:
             if const.MCalKey in LFCAL.keys():
                 success_lf = LFCAL[const.MCalKey] == 1
         return success_lf
@@ -107,10 +111,22 @@ class PSASP(object):
         success_st = False
         self.__executor_st.execute_exe()
         STCAL = self.parser.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
-        if STCAL:
+        if STCAL==1:
             if const.MCalKey in STCAL.keys():
                 success_st = STCAL[const.MCalKey] == 1
         return success_st
+
+    # TODO: read CAL file?
+    def calculate_SST_LIN(self):
+        success_sst_lin = True
+        self.__executor_sstlin.execute_exe()
+        return success_sst_lin
+
+    # TODO: read CAL file?
+    def calculate_SST_EIG(self):
+        success_sst_eig = True
+        self.__executor_ssteig.execute_exe()
+        return success_sst_eig
 
     def calculate_CCT(self, path_save_left, path_save_right,
                       func_change_t=func_change_t_regular,
@@ -219,6 +235,25 @@ class CCT_generator(object):
 
 
 if __name__ == '__main__':
+    Pt = PSASP(PATH_TEMP,PATH_TEMP)
+    Pt.calculate_LF()
+    Pt.calculate_ST()
+    Pt.calculate_SST_LIN()
+    Pt.calculate_SST_EIG()
+    Pt.parser.parse_single_s('whatever')
+    Pt.parser.write_to_file_s('w')
+    G = Pt.parser.parse_single_s(const.LABEL_LF,const.LABEL_SETTINGS,const.LABEL_GENERATOR)
+    G_new = G
+    # modify G_new
+    Pt.parser.write_to_file_s(const.LABEL_LF,const.LABEL_SETTINGS,const.LABEL_GENERATOR,G_new)
+    Pt.parser.write_to_file_s_lfs_autofit(G_new)
+    f = Pt.calculate_LF()
+    if f:
+        A = Pt.parser.parse_all_results_lf()
+        R = Pt.parser.parse_all_results_lf((const.LABEL_BUS,const.LABEL_GENERATOR))
+        evalue = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVAL)
+        evec = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVEC)
+
     os.system('@echo off')
     Cc = CCT_generator(PATH_TEMP, PATH_RESOURCES, PATH_OUTPUT, func_change_lf_temp)
     count_t = 0

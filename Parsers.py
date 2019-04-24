@@ -301,11 +301,16 @@ class PSASP_Parser(object):
 
 
 if __name__ == '__main__':
+
+
     # path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
     # b = parse_all_results_lf(path_t, const.LABEL_BUS)
-    path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
-    path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
+    # path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
+    path_t = r'E:\05_Resources\Softwares\PSASP\SST\sst_pre'
     Parser_t = PSASP_Parser(path_t)
+
+
+    path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
     from Gadgets_sqlite import insert_from_list_to_db
     list_heads, list_data = Parser_t.parse_output_st()
     keys_t = [x[const.StOutVarNameKey] for x in list_heads]
