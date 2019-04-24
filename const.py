@@ -13,6 +13,7 @@ FILE_PREFIX_LF = 'LF.'
 PATTERN_SETTINGS_LF = FILE_PREFIX_LF+'.N{0,1}L\d+'
 PATTERN_RESULTS_LF = FILE_PREFIX_LF+'.[N|L]P\d+'
 
+
 # calType
 LABEL_LF = 'load_flow'
 LABEL_ST = 'transient_stability'

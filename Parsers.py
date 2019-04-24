@@ -1,11 +1,11 @@
-#import Gadgets
+import Gadgets
 import const
 import math
 import re
 import os
-
-
 # import numpy as np
+
+
 
 class PSASP_Parser(object):
     def __init__(self,path_temp):
@@ -38,11 +38,14 @@ class PSASP_Parser(object):
                     dict_t = {}
                     for hh in range(min([len(contents), len(pos_keys)])):
                         key_t = pos_keys[hh]
+                        vt = Gadgets.convert_s(contents[hh])
+                        '''
                         trans_func_t = dict_translate[key_t]
                         if trans_func_t:
                             vt = trans_func_t(contents[hh])
                         else:
                             vt = contents[hh]
+                        '''
                         dict_t[key_t] = vt
                     if append_no:
                         dict_t[key_busno] = h + 1

@@ -5,6 +5,7 @@ import time
 import psutil
 import ctypes
 
+ASTERISKS = r'**********'
 user32 = ctypes.WinDLL('user32')
 SW_MAXIMISE = 3
 window_titles = []
@@ -30,6 +31,20 @@ def convert2float_s(str_t):
         dig_t = float('nan')
     return dig_t
 
+
+def convert_s(obj):
+    ret = obj
+    if isinstance(obj,str):
+        if obj==ASTERISKS:
+            ret = float('nan')
+        else:
+            for func in [int,float]:
+                try:
+                    ret = func(obj)
+                    break
+                except:
+                    pass
+    return ret
 
 def copyfiles(path_src, path_dst, files):
     if not os.path.isdir(path_dst):
