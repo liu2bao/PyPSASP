@@ -7,7 +7,7 @@ import Gadgets
 from Parsers import PSASP_Parser
 import random
 
-PATH_TEMP = r'E:\05_Resources\Softwares\PSASP\SST\Temp'
+PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
 PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
 PATH_OUTPUT = r'F:\Data\Research\PyPSASP\CCT\3m'
 
@@ -32,7 +32,7 @@ def func_change_lf_temp(P):
         Pls_t = [x/sum(rands_t)*Ap*Psum for x in rands_t]
         for hh in range(len(load_new)):
             load_new[hh][const.LoadPlKey] = Pls_t[hh]
-            load_new[hh][const.LoadQlKey] = load_new[hh][const.QmaxKey] * (random.random() * 0.5 + 0.5)
+            load_new[hh][const.LoadQlKey] = 6 * random.random()
             '''
             for key_t in [const.LoadPlKey,const.LoadQlKey,const.V0Key,const.AngleKey]:
                 load_new[hh][key_t] = load_new[hh][key_t]*(random.random()*0.5+0.5)
@@ -235,6 +235,16 @@ class CCT_generator(object):
 
 
 if __name__ == '__main__':
+
+    os.system('@echo off')
+    Cc = CCT_generator(PATH_TEMP, PATH_RESOURCES, PATH_OUTPUT, func_change_lf_temp)
+    count_t = 0
+    max_count = 10000
+    while count_t <= max_count:
+        Cc.run_sim_CCT_once()
+        count_t += 1
+
+    '''
     path_save = 'save'
     Pt_writer = PSASP(path_save,PATH_TEMP)
     Pt = PSASP(PATH_TEMP,PATH_TEMP)
@@ -254,21 +264,6 @@ if __name__ == '__main__':
         evalue = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVAL)
 
         evec = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVEC)
-
-    os.system('@echo off')
-    Cc = CCT_generator(PATH_TEMP, PATH_RESOURCES, PATH_OUTPUT, func_change_lf_temp)
-    count_t = 0
-    max_count = 10000
-    while count_t <= max_count:
-        Cc.run_sim_CCT_once()
-        count_t += 1
-
+    
     '''
-    path_resources_t = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
-    path_temp_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
-    path_save_left_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\left'
-    path_save_right_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\right'
-    PSASP_t = PSASP(path_temp_t,path_resources_t)
-    rec_t = PSASP_t.calculate_CCT(path_save_left_t,path_save_right_t)
-    print(rec_t)
-    '''
+
