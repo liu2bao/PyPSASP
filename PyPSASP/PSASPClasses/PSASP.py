@@ -3,7 +3,8 @@ from PyPSASP.utils.utils_PSASP import copyfiles_st, copyfiles_lf, copyfiles_lfs
 from PyPSASP.utils.utils_gadgets import generate_new_files_save_yield
 from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
 from PyPSASP.constants import const
-from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st, executor_PSASP_sstlin
+from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st
+from PyPSASP.PSASPClasses.Executors import executor_PSASP_sstlin, executor_PSASP_ssteig
 from PyPSASP.PSASPClasses.Parsers import PSASP_Parser
 import random
 
@@ -92,7 +93,7 @@ class PSASP(object):
         self.__executor_lf = executor_PSASP_lf(self.__path_exe_wmlfmsg, self.path_temp)
         self.__executor_st = executor_PSASP_st(self.__path_exe_wmudrt, self.path_temp)
         self.__executor_sstlin = executor_PSASP_sstlin(self.__path_exe_wsstlin, self.path_temp)
-        self.__executor_ssteig = executor_PSASP_sstlin(self.__path_exe_wssteig, self.path_temp)
+        self.__executor_ssteig = executor_PSASP_ssteig(self.__path_exe_wssteig, self.path_temp)
 
     def __init__(self, path_temp, path_resources):
         self.path_temp = path_temp
@@ -221,10 +222,10 @@ class CCT_generator(object):
         if success_lf:
             fstleftt = next(self.__name_gen_st_left)
             fstrightt = next(self.__name_gen_st_right)
-            copyfiles_lf(self.__path_temp, flft)
             rec_t['output_lf'] = flft
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
+            copyfiles_lf(self.__path_temp, flft)
         else:
             copyfiles_lfs(self.__path_temp, flft)
             rec_t['output_lf'] = flft

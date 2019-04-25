@@ -1,4 +1,7 @@
 
+
+# TODO: ORM?
+
 contributor='FYW'
 KeyInsertTimeStamp = 'insert_time'
 EXE_LF = 'WMLFRTMsg.exe'

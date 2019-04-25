@@ -53,7 +53,7 @@ class executor_PSASP(object):
             count += 1
         if flag_found:
             pid = process_inc_matched[0]['pid']
-            self.hide_window(pid)
+            self.__hide_window(pid)
         return process_inc_matched
 
     def __update_mtime_flagfile(self):
@@ -75,15 +75,21 @@ class executor_PSASP(object):
             os.system(r'taskkill /pid %d -t -f' % process_t['pid'])
             # print('process killed')
 
-    def delete_files_with_pattern(self):
+    def __delete_files_with_pattern(self):
         if self.__path_env:
             for pattern_t in self.__patterns_del:
                 delete_files_pattern(self.__path_env, pattern_t)
 
+    def __hide_window(self, pid):
+        if isinstance(self.__hide_window, str):
+            pass
+            # TODO: how to hide window more elegantly?
+            #hide_window_by_name(self.__hide_window)
+
     def execute_exe(self):
         temp_bat = None
         if self.__path_env:
-            self.delete_files_with_pattern()
+            self.__delete_files_with_pattern()
             idx_drive_t = str.find(self.__path_env, ':')
             if idx_drive_t == -1:
                 raise ValueError('Drive not found')
@@ -118,12 +124,6 @@ class executor_PSASP(object):
                 os.remove(temp_bat)
             except:
                 print('error while removing %s' % temp_bat)
-
-    def hide_window(self, pid):
-        if isinstance(self.__hide_window, str):
-            pass
-            # TODO: how to hide window more elegantly?
-            #hide_window_by_name(self.__hide_window)
 
 
 class executor_PSASP_lf(executor_PSASP):
