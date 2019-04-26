@@ -11,12 +11,15 @@ from PyPSASP.constants import const
 
 ListType = 'LIST'
 TupleType = 'TUPLE'
+DictType = 'DICT'
 DatetimeType = 'DATETIME'
 DictLocks = {}
 sqlite3.register_converter(DatetimeType, lambda x: datetime.datetime.strptime(x.decode(), '%Y-%m-%d %H:%M:%S'))
 sqlite3.register_converter(ListType, pickle.loads)
 sqlite3.register_converter(TupleType, pickle.loads)
+sqlite3.register_converter(DictType, pickle.loads)
 sqlite3.register_adapter(list, pickle.dumps)
+sqlite3.register_adapter(dict, pickle.dumps)
 sqlite3.register_adapter(tuple, pickle.dumps)
 
 @contextlib.contextmanager
@@ -241,6 +244,8 @@ def get_type_str(obj):
         type_str = ListType
     elif isinstance(obj, tuple):
         type_str = TupleType
+    elif isinstance(obj, dict):
+        type_str = DictType
     else:
         type_str = 'CHAR'
     return type_str

@@ -5,8 +5,9 @@ from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
 from PyPSASP.constants import const
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_sstlin, executor_PSASP_ssteig
-from PyPSASP.PSASPClasses.Parsers import PSASP_Parser
+from PyPSASP.PSASPClasses.Parsers import PSASP_Parser, PSASP_Converter
 import random
+import pickle
 
 PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
 PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
@@ -14,7 +15,7 @@ PATH_OUTPUT = r'F:\Data\Research\PyPSASP\CCT\3m'
 
 OUTPUT_LF_KEY = 'output_lf'
 SUCCESS_LF_KEY = 'success_lf'
-
+CCT_KEY = 'CCT'
 
 def func_change_lf_temp(P):
     if isinstance(P, PSASP):
@@ -81,6 +82,7 @@ class PSASP(object):
             os.makedirs(value)
         self.__path_temp = value
         self.parser = PSASP_Parser(value)
+        self.converter = PSASP_Converter()
 
     @path_resources.setter
     def path_resources(self, value):
@@ -147,7 +149,7 @@ class PSASP(object):
             'eps': 0.001,
             'tleft': 0,
             'tright': Tstep_max,
-            'CCT': float('nan'),
+            CCT_KEY: float('nan'),
             'fleft': False,
             'fright': True,
             'count': 0,
@@ -167,7 +169,7 @@ class PSASP(object):
             if stable:
                 rec['tleft'] = CT_t
                 rec['fleft'] = stable
-                rec['CCT'] = CT_t
+                rec[CCT_KEY] = CT_t
                 # TODO: Donnot copy?
                 copyfiles_st(self.path_temp, rec['output_st_left'])
                 if not rec['flag_limit_touched']:
@@ -182,7 +184,7 @@ class PSASP(object):
 
             rec['count'] += 1
             print('%s%d (%d): %.4f, %.4f' % (label, rec['count'], stable, rec['tleft'], rec['tright']))
-        print('%sCCT = %.4f' % (label, rec['CCT']))
+        print('%sCCT = %.4f' % (label, rec[CCT_KEY]))
 
         return rec
 
@@ -216,17 +218,16 @@ class CCT_generator(object):
         self.__name_gen_st_right = generate_new_files_save_yield(self.__path_output_st_right, 'right',
                                                                  flag_dir=True, return_path=True)
 
-    def insert_lf_into_db(self, token, table_name, label_sr):
-        Parser_t = self.__PSASP.parser
-        lf_t = Parser_t.parse_all_files_s(const.LABEL_LF, label_sr)
-        list_lf_t = Parser_t.convert_get2list(lf_t)
+    def insert_lf_into_db(self, token, table_name, label_sr, lf_t):
+        Converter_t = self.__PSASP.converter
+        list_lf_t = Converter_t.convert_get2list(lf_t)
         heads, values = formulate_list_of_dicts(list_lf_t)
         insert_from_list_to_db(self.__path_record_lf, table_name, heads, values)
         insert_from_list_to_db(self.__path_record_lf, const.CompletedLFTable,
                                [const.TokenKey, OUTPUT_LF_KEY, const.GetTypeKey], [[token, table_name, label_sr]],
                                primary_key=const.TokenKey)
 
-    def run_sim_CCT_once(self):
+    def run_sim_CCT_once(self,dump_lf=True):
         self.__func_change_lfs(self.__PSASP)
         success_lf = self.__PSASP.calculate_LF()
         # success_lf = True
@@ -243,8 +244,16 @@ class CCT_generator(object):
         else:
             label_t = const.LABEL_SETTINGS
 
-        self.insert_lf_into_db(token_t, flft, label_t)
-        rec_t['output_lf'] = flft
+        Parser_t = self.__PSASP.parser
+        lf_t = Parser_t.parse_all_files_s(const.LABEL_LF, label_t)
+        if dump_lf:
+            flft = None
+            lf_save_t = pickle.dumps(lf_t)
+        else:
+            lf_save_t = None
+            self.insert_lf_into_db(token_t, flft, label_t, lf_t)
+        rec_t[OUTPUT_LF_KEY] = flft
+        rec_t[const.LABEL_LF] = lf_save_t
         keys_t = list(rec_t.keys())
         values_t = list(rec_t.values())
         insert_from_list_to_db(self.__path_record_master, const.RecordMasterTable, keys_t, [values_t],
