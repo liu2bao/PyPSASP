@@ -28,6 +28,7 @@ class executor_PSASP(object):
         self.__flagfile_last_update_time = None
         self.__patterns_del = patterns_del
         self.__window_hide = window_hide
+        p,self.__exe_name = os.path.split(self.__path_exe)
 
     def __update_process(self):
         self.__current_process = get_all_process()
@@ -59,7 +60,7 @@ class executor_PSASP(object):
     def __update_mtime_flagfile(self):
         self.__flagfile_last_update_time = get_updated_time(self.__path_flagfile)
 
-    def __kill_process_while_flag(self, wait_time=2, max_try=60):
+    def __kill_process_while_flag(self, flag_kill_by_name=True, wait_time=0.2, max_try=60):
         count = 0
         while count <= max_try:
             if os.path.isfile(self.__path_flagfile):
@@ -71,9 +72,12 @@ class executor_PSASP(object):
             count += 1
         if count >= max_try:
             print('maximum try reached')
-        for process_t in self.__process_inc_matched:
-            os.system(r'taskkill /pid %d -t -f' % process_t['pid'])
-            # print('process killed')
+        if flag_kill_by_name:
+            os.system(r'taskkill /f /im %s -t' % self.__exe_name)
+        else:
+            for process_t in self.__process_inc_matched:
+                os.system(r'taskkill /pid %d -t -f' % process_t['pid'])
+                # print('process killed')
 
     def __delete_files_with_pattern(self):
         if self.__path_env:
@@ -86,7 +90,7 @@ class executor_PSASP(object):
             # TODO: how to hide window more elegantly?
             #hide_window_by_name(self.__hide_window)
 
-    def execute_exe(self):
+    def execute_exe(self,flag_kill_by_name=True):
         temp_bat = None
         if self.__path_env:
             self.__delete_files_with_pattern()
@@ -109,12 +113,14 @@ class executor_PSASP(object):
             return r
         else:
             thread_exe = Thread(target=os.system, args=(exe_t,))
-            thread_kill = Thread(target=self.__kill_process_while_flag)
+            thread_kill = Thread(target=self.__kill_process_while_flag, args={'flag_kill_by_name':flag_kill_by_name})
             if Lock_GetProcess.acquire():
-                self.__update_process()
+                if not flag_kill_by_name:
+                    self.__update_process()
                 self.__update_mtime_flagfile()
                 thread_exe.start()
-                self.__process_inc_matched = self.__get_process_inc_matched()
+                if not flag_kill_by_name:
+                    self.__process_inc_matched = self.__get_process_inc_matched()
                 Lock_GetProcess.release()
             thread_kill.start()
             thread_kill.join()
