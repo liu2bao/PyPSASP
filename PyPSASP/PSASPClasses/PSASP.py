@@ -83,7 +83,9 @@ def func_judge_stable_regular(P):
     F = None
     if isinstance(P, PSASP):
         STCAL = P.parser.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
-        F = STCAL[const.STIsStableKey] == 1
+        if STCAL:
+            STCAL = STCAL[0]
+            F = STCAL[const.STIsStableKey] == 1
     return F
 
 
