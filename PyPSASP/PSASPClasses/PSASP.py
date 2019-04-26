@@ -29,8 +29,15 @@ F_RIGHT_KEY = 'fright'
 COUNT_ITER_KEY = 'count'
 FLAG_LIMIT_TOUCHED_KEY = 'flag_limit_touched'
 
+Tstep_max_default = 0.2
+Tsim_default = 5
+eps_default = 0.001
+
 lf_output_prefix = 'lf_'
 st_output_prefix = 'st_'
+st_output_subfolder_left = 'left'
+st_output_subfolder_right = 'right'
+
 
 def func_change_lf_temp(P):
     if isinstance(P, PSASP):
@@ -151,17 +158,16 @@ class PSASP(object):
         self.__executor_ssteig.execute_exe()
         return success_sst_eig
 
-    def calculate_CCT(self, path_save_left, path_save_right,
-                      func_change_t=func_change_t_regular,
-                      func_judge_stable=func_judge_stable_regular,
-                      Tstep_max=0.2, label=None):
+    def calculate_CCT(self, path_save_left, path_save_right, func_change_t=func_change_t_regular,
+                      func_judge_stable=func_judge_stable_regular, label=None,
+                      Tstep_max=Tstep_max_default, Tsim=Tsim_default, eps=eps_default):
 
         if label is None:
             label = '-------AFFAIR-------'
         rec = {
             TMAX_STEP_KEY: Tstep_max,
-            T_SIM_KEY: 5,
-            EPS_KEY: 0.001,
+            T_SIM_KEY: Tsim,
+            EPS_KEY: eps,
             T_LEFT_KEY: 0,
             T_RIGHT_KEY: Tstep_max,
             CCT_KEY: float('nan'),
@@ -198,8 +204,9 @@ class PSASP(object):
                 rec[FLAG_LIMIT_TOUCHED_KEY] = True
 
             rec[COUNT_ITER_KEY] += 1
-            print('%s%d (%d,%.4f): %.4f, %.4f' % (label, rec[COUNT_ITER_KEY], stable, rec[T_RIGHT_KEY]-rec[T_LEFT_KEY],
-                                                  rec[T_LEFT_KEY], rec[T_RIGHT_KEY]))
+            print(
+                '%s%d (%d,%.4f): %.4f, %.4f' % (label, rec[COUNT_ITER_KEY], stable, rec[T_RIGHT_KEY] - rec[T_LEFT_KEY],
+                                                rec[T_LEFT_KEY], rec[T_RIGHT_KEY]))
         print('%sCCT = %.4f' % (label, rec[CCT_KEY]))
 
         return rec
@@ -218,11 +225,11 @@ class CCT_generator(object):
             if not os.path.isdir(value):
                 os.makedirs(value)
             self.__path_output = value
-            self.__path_record_master = os.path.join(value, 'record_master.db')
-            self.__path_record_lf = os.path.join(value, 'record_lf.db')
+            self.__path_record_master = os.path.join(value, const.RecordMasterTable)
+            self.__path_record_lf = os.path.join(value, const.RecordLFDb)
             self.__path_output_st = os.path.join(value, const.LABEL_ST)
-            self.__path_output_st_left = os.path.join(self.__path_output_st, 'left')
-            self.__path_output_st_right = os.path.join(self.__path_output_st, 'right')
+            self.__path_output_st_left = os.path.join(self.__path_output_st, st_output_subfolder_left)
+            self.__path_output_st_right = os.path.join(self.__path_output_st, st_output_subfolder_right)
 
     def __init__(self, path_temp, path_resources, path_output, func_change_lfs):
         self.__path_temp = path_temp
@@ -239,7 +246,7 @@ class CCT_generator(object):
                                [const.TokenKey, OUTPUT_LF_KEY, const.GetTypeKey], [[token, table_name, label_sr]],
                                primary_key=const.TokenKey)
 
-    def run_sim_CCT_once(self,dump_lf=True):
+    def run_sim_CCT_once(self, dump_lf=True):
         self.__func_change_lfs(self.__PSASP)
         success_lf = self.__PSASP.calculate_LF()
         # success_lf = True
@@ -249,8 +256,8 @@ class CCT_generator(object):
         flft = lf_output_prefix + token_t
         stft = token_t
         if success_lf:
-            fstleftt = os.path.join(self.__path_output_st_left,stft)
-            fstrightt = os.path.join(self.__path_output_st_right,stft)
+            fstleftt = os.path.join(self.__path_output_st_left, stft)
+            fstrightt = os.path.join(self.__path_output_st_right, stft)
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
             label_t = const.LABEL_RESULTS
