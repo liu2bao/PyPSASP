@@ -12,7 +12,6 @@ path_record_master_new_new = os.path.join(path_save, 'record_master_overall.db')
 path_record_lf = os.path.join(path_save, 'record_lf.db')
 
 
-S = utils_sqlite.read_db(path_record_master_new_new,const.RecordMasterTable,return_dict_form=True)
 
 Converter_t = PSASP_Converter()
 
@@ -36,3 +35,6 @@ for hh in range(len(lfs_brief)):
 
 results_list = list(results.values())
 utils_sqlite.insert_from_list_to_db(path_record_master_new_new,const.RecordMasterTable,None,results_list,primary_key=const.TokenKey)
+
+
+S = utils_sqlite.read_db(path_record_master_new_new,const.RecordMasterTable,return_dict_form=True)

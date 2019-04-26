@@ -14,8 +14,23 @@ PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
 PATH_OUTPUT = r'F:\Data\Research\PyPSASP\CCT\3m'
 
 OUTPUT_LF_KEY = 'output_lf'
+OUTPUT_ST_LEFT_KEY = 'output_st_left'
+OUTPUT_ST_RIGHT_KEY = 'output_st_right'
 SUCCESS_LF_KEY = 'success_lf'
 CCT_KEY = 'CCT'
+TMAX_STEP_KEY = 'Tmax'
+
+T_SIM_KEY = 'Tsim'
+EPS_KEY = 'eps'
+T_LEFT_KEY = 'tleft'
+T_RIGHT_KEY = 'tright'
+F_LEFT_KEY = 'fleft'
+F_RIGHT_KEY = 'fright'
+COUNT_ITER_KEY = 'count'
+FLAG_LIMIT_TOUCHED_KEY = 'flag_limit_touched'
+
+lf_output_prefix = 'lf_'
+st_output_prefix = 'st_'
 
 def func_change_lf_temp(P):
     if isinstance(P, PSASP):
@@ -144,46 +159,47 @@ class PSASP(object):
         if label is None:
             label = '-------AFFAIR-------'
         rec = {
-            'Tmax': Tstep_max,
-            'Tsim': 5,
-            'eps': 0.001,
-            'tleft': 0,
-            'tright': Tstep_max,
+            TMAX_STEP_KEY: Tstep_max,
+            T_SIM_KEY: 5,
+            EPS_KEY: 0.001,
+            T_LEFT_KEY: 0,
+            T_RIGHT_KEY: Tstep_max,
             CCT_KEY: float('nan'),
-            'fleft': False,
-            'fright': True,
-            'count': 0,
-            'flag_limit_touched': False,
-            'output_st_left': path_save_left,
-            'output_st_right': path_save_right
+            F_LEFT_KEY: False,
+            F_RIGHT_KEY: True,
+            COUNT_ITER_KEY: 0,
+            FLAG_LIMIT_TOUCHED_KEY: False,
+            OUTPUT_ST_LEFT_KEY: path_save_left,
+            OUTPUT_ST_RIGHT_KEY: path_save_right
         }
 
-        while abs(rec['tleft'] - rec['tright']) > rec['eps']:
-            if rec['count'] == 0 or (not rec['flag_limit_touched']):
-                CT_t = rec['tright']
+        while abs(rec[T_LEFT_KEY] - rec[T_RIGHT_KEY]) > rec[EPS_KEY]:
+            if rec[COUNT_ITER_KEY] == 0 or (not rec[FLAG_LIMIT_TOUCHED_KEY]):
+                CT_t = rec[T_RIGHT_KEY]
             else:
-                CT_t = (rec['tleft'] + rec['tright']) / 2
+                CT_t = (rec[T_LEFT_KEY] + rec[T_RIGHT_KEY]) / 2
             func_change_t(self, CT_t)
             self.__executor_st.execute_exe()
             stable = func_judge_stable(self)
             if stable:
-                rec['tleft'] = CT_t
-                rec['fleft'] = stable
+                rec[T_LEFT_KEY] = CT_t
+                rec[F_LEFT_KEY] = stable
                 rec[CCT_KEY] = CT_t
                 # TODO: Donnot copy?
-                copyfiles_st(self.path_temp, rec['output_st_left'])
-                if not rec['flag_limit_touched']:
-                    rec['tright'] = CT_t + Tstep_max
+                copyfiles_st(self.path_temp, rec[OUTPUT_ST_LEFT_KEY])
+                if not rec[FLAG_LIMIT_TOUCHED_KEY]:
+                    rec[T_RIGHT_KEY] = CT_t + Tstep_max
 
             else:
-                rec['tright'] = CT_t
-                rec['fright'] = stable
+                rec[T_RIGHT_KEY] = CT_t
+                rec[F_RIGHT_KEY] = stable
                 # TODO: Donnot copy?
-                copyfiles_st(self.path_temp, rec['output_st_right'])
-                rec['flag_limit_touched'] = True
+                copyfiles_st(self.path_temp, rec[OUTPUT_ST_RIGHT_KEY])
+                rec[FLAG_LIMIT_TOUCHED_KEY] = True
 
-            rec['count'] += 1
-            print('%s%d (%d): %.4f, %.4f' % (label, rec['count'], stable, rec['tleft'], rec['tright']))
+            rec[COUNT_ITER_KEY] += 1
+            print('%s%d (%d,%.4f): %.4f, %.4f' % (label, rec[COUNT_ITER_KEY], stable, rec[T_RIGHT_KEY]-rec[T_LEFT_KEY],
+                                                  rec[T_LEFT_KEY], rec[T_RIGHT_KEY]))
         print('%sCCT = %.4f' % (label, rec[CCT_KEY]))
 
         return rec
@@ -213,10 +229,6 @@ class CCT_generator(object):
         self.__PSASP = PSASP(path_temp, path_resources)
         self.path_output = path_output
         self.__func_change_lfs = func_change_lfs
-        self.__name_gen_st_left = generate_new_files_save_yield(self.__path_output_st_left, 'left',
-                                                                flag_dir=True, return_path=True)
-        self.__name_gen_st_right = generate_new_files_save_yield(self.__path_output_st_right, 'right',
-                                                                 flag_dir=True, return_path=True)
 
     def insert_lf_into_db(self, token, table_name, label_sr, lf_t):
         Converter_t = self.__PSASP.converter
@@ -234,10 +246,11 @@ class CCT_generator(object):
         rec_t = {SUCCESS_LF_KEY: success_lf}
         token_t = gen_token()
         rec_t[const.TokenKey] = token_t
-        flft = 'lf_' + token_t
+        flft = lf_output_prefix + token_t
+        stft = token_t
         if success_lf:
-            fstleftt = next(self.__name_gen_st_left)
-            fstrightt = next(self.__name_gen_st_right)
+            fstleftt = os.path.join(self.__path_output_st_left,stft)
+            fstrightt = os.path.join(self.__path_output_st_right,stft)
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
             label_t = const.LABEL_RESULTS

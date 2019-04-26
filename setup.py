@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="PyPSASP",
-    version="0.0.6",
+    version="0.1.0",
     author="liu2bao",
     author_email="liu2bao@yeah.net",
     description="Use python to manipulate PSASP",
