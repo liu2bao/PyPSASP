@@ -10,7 +10,7 @@ Lock_WriteBat = Lock()
 
 
 class executor_PSASP(object):
-    def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None, hide_window=None):
+    def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None, window_hide=None):
         if isinstance(path_flagfile, str):
             path_t, flag_t = os.path.split(path_flagfile)
             if not path_t:
@@ -27,7 +27,7 @@ class executor_PSASP(object):
         self.__process_inc_matched = []
         self.__flagfile_last_update_time = None
         self.__patterns_del = patterns_del
-        self.__hide_window = hide_window
+        self.__window_hide = window_hide
 
     def __update_process(self):
         self.__current_process = get_all_process()
@@ -81,7 +81,7 @@ class executor_PSASP(object):
                 delete_files_pattern(self.__path_env, pattern_t)
 
     def __hide_window(self, pid):
-        if isinstance(self.__hide_window, str):
+        if isinstance(self.__window_hide, str):
             pass
             # TODO: how to hide window more elegantly?
             #hide_window_by_name(self.__hide_window)
@@ -137,7 +137,7 @@ class executor_PSASP_st(executor_PSASP):
         flag_file_st = const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF]
         patterns_del = (const.PATTERN_OUTPUT_ST, flag_file_st)
         executor_PSASP.__init__(self, path_exe, path_env, flag_file_st, patterns_del,
-                                hide_window=const.WINDOW_NAME_ST)
+                                window_hide=const.WINDOW_NAME_ST)
 
 class executor_PSASP_sstlin(executor_PSASP):
     def __init__(self, path_exe, path_env):
