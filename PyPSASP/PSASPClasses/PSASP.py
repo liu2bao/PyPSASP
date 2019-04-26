@@ -1,6 +1,6 @@
 import os
 from PyPSASP.utils.utils_PSASP import copyfiles_st, copyfiles_lf, copyfiles_lfs
-from PyPSASP.utils.utils_gadgets import generate_new_files_save_yield
+from PyPSASP.utils.utils_gadgets import generate_new_files_save_yield,gen_token,formulate_list_of_dicts
 from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
 from PyPSASP.constants import const
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st
@@ -12,6 +12,8 @@ PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
 PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
 PATH_OUTPUT = r'F:\Data\Research\PyPSASP\CCT\3m'
 
+
+OUTPUT_LF = 'output_lf'
 
 def func_change_lf_temp(P):
     if isinstance(P, PSASP):
@@ -198,8 +200,8 @@ class CCT_generator(object):
                 os.makedirs(value)
             self.__path_output = value
             self.__path_record_master = os.path.join(value, 'record.db')
+            self.__path_record_lf = os.path.join(value, 'record_lf.db')
             self.__path_output_st = os.path.join(value, const.LABEL_ST)
-            self.__path_output_lf = os.path.join(value, const.LABEL_LF)
             self.__path_output_st_left = os.path.join(self.__path_output_st, 'left')
             self.__path_output_st_right = os.path.join(self.__path_output_st, 'right')
 
@@ -212,24 +214,32 @@ class CCT_generator(object):
                                                                 flag_dir=True, return_path=True)
         self.__name_gen_st_right = generate_new_files_save_yield(self.__path_output_st_right, 'right',
                                                                  flag_dir=True, return_path=True)
-        self.__name_gen_lf = generate_new_files_save_yield(self.__path_output_lf, const.LABEL_LF, flag_dir=True,
-                                                           return_path=True)
+
+
+    def insert_lf_into_db(self,table_name,label_sr):
+        Parser_t = self.__PSASP.parser
+        lf_t = Parser_t.parse_all_files_s(const.LABEL_LF,label_sr)
+        list_lf_t = Parser_t.convert_get2list(lf_t)
+        heads, values = formulate_list_of_dicts(list_lf_t)
+        insert_from_list_to_db(self.__path_record_lf, table_name, heads, values)
+        insert_from_list_to_db(self.__path_record_lf,const.CompletedLFTable,
+                               [OUTPUT_LF,const.GetTypeKey],[table_name,label_sr])
 
     def run_sim_CCT_once(self):
         self.__func_change_lfs(self.__PSASP)
         success_lf = self.__PSASP.calculate_LF()
         # success_lf = True
         rec_t = {'success_lf': success_lf}
-        flft = next(self.__name_gen_lf)
+        flft = 'lf_'+gen_token()
         if success_lf:
             fstleftt = next(self.__name_gen_st_left)
             fstrightt = next(self.__name_gen_st_right)
-            rec_t['output_lf'] = flft
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
-            copyfiles_lf(self.__path_temp, flft)
+            self.insert_lf_into_db(flft,const.LABEL_RESULTS)
+            rec_t['output_lf'] = flft
         else:
-            copyfiles_lfs(self.__path_temp, flft)
+            self.insert_lf_into_db(flft,const.LABEL_SETTINGS)
             rec_t['output_lf'] = flft
 
         keys_t = list(rec_t.keys())

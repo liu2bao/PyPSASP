@@ -1,7 +1,7 @@
 import traceback
 from itertools import chain
 import shutil, os, re
-import time
+from hashlib import sha1
 import psutil
 import ctypes
 
@@ -202,6 +202,10 @@ def arrange_list_dict_by_keys(list_dicts, list_keys, dict_translate=None):
     return list_result
 
 
+def gen_token():
+    return sha1(os.urandom(24)).hexdigest()
+
+
 def hide_window():
     hWnd = user32.GetForegroundWindow()
     if hWnd:
@@ -244,11 +248,8 @@ def get_window_titles():
     return window_titles
 
 
-'''
+
 if __name__=='__main__':
-    time.sleep(5)
-    hide_window_by_name('Transient Stability')
-    titles = get_window_titles()
-    time.sleep(5)
-    hide_window()
-'''
+    for i in range(100):
+        a = gen_token()
+        print(a)
