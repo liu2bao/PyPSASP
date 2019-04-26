@@ -227,7 +227,7 @@ class CCT_generator(object):
             if not os.path.isdir(value):
                 os.makedirs(value)
             self.__path_output = value
-            self.__path_record_master = os.path.join(value, const.RecordMasterTable)
+            self.__path_record_master = os.path.join(value, const.RecordMasterDb)
             self.__path_record_lf = os.path.join(value, const.RecordLFDb)
             self.__path_output_st = os.path.join(value, const.LABEL_ST)
             self.__path_output_st_left = os.path.join(self.__path_output_st, st_output_subfolder_left)
