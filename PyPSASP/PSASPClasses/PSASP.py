@@ -104,6 +104,7 @@ class PSASP(object):
         self.__executor_lf.execute_exe()
         LFCAL = self.parser.parse_single_s(const.LABEL_LF, const.LABEL_RESULTS, const.LABEL_CONF)
         if LFCAL:
+            LFCAL = LFCAL[0]
             if const.MCalKey in LFCAL.keys():
                 success_lf = LFCAL[const.MCalKey] == 1
         return success_lf
@@ -113,6 +114,7 @@ class PSASP(object):
         self.__executor_st.execute_exe()
         STCAL = self.parser.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
         if STCAL:
+            STCAL = STCAL[0]
             if const.MCalKey in STCAL.keys():
                 success_st = STCAL[const.MCalKey] == 1
         return success_st

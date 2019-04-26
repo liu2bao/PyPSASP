@@ -149,6 +149,58 @@ def generate_new_files_save_yield(path_save, prefix_save, postfix_save='', try_o
             count += 1
 
 
+def formulate_list_of_dicts(list_dicts):
+    list_keys = union_all_keys(list_dicts)
+    list_result = arrange_list_dict_by_keys(list_dicts, list_keys)
+    return list_keys, list_result
+
+def union_all_keys(list_dicts):
+    list_keys_raw = []
+    for dict_t in list_dicts:
+        if isinstance(dict_t, dict):
+            list_keys_raw.extend(dict_t.keys())
+
+    list_keys = list(set(list_keys_raw))
+
+    return list_keys
+
+def arrange_list_dict_by_keys(list_dicts, list_keys, dict_translate=None):
+    num_keys = len(list_keys)
+    list_result = []
+    if isinstance(dict_translate, dict):
+        dict_translate_reverse = {v: k for k, v in dict_translate.items()}
+        keys_o_r = dict_translate_reverse.keys()
+        keys_o = dict_translate.keys()
+    else:
+        dict_translate_reverse = {}
+        keys_o_r = []
+        keys_o = []
+    for dict_t in list_dicts:
+        if isinstance(dict_t, dict):
+            keys_dict_t = dict_t.keys()
+            result_t = []
+            for key_t in list_keys:
+                appended = False
+                if key_t in keys_dict_t:
+                    result_t.append(dict_t[key_t])
+                    appended = True
+                elif key_t in keys_o:
+                    key_t_n = dict_translate[key_t]
+                    if key_t_n in keys_dict_t:
+                        result_t.append(dict_t[key_t_n])
+                        appended = True
+                elif key_t in keys_o_r:
+                    key_t_n = dict_translate_reverse[key_t]
+                    if key_t_n in keys_dict_t:
+                        result_t.append(dict_t[key_t_n])
+                        appended = True
+                if not appended:
+                    result_t.append(None)
+        else:
+            result_t = [None] * num_keys
+        list_result.append(result_t)
+    return list_result
+
 
 def hide_window():
     hWnd = user32.GetForegroundWindow()

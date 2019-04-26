@@ -1,8 +1,15 @@
 
 
+contributor = ('LXZ','FYW',)
 # TODO: ORM?
 
-contributor='FYW'
+CalTypeKey = 'calculate_type' # LF, ST, SST_LIN, SST_EIG
+GetTypeKey = 'get_type' # settings, results
+EleTypeKey = 'element_type' # Bus, Tranformer, etc.
+EleAttrNameKey = 'attribute_name' # Pg, Qg, etc.
+EleIdKey = 'element_id'
+EleAttrValueKey = 'attribute_value'
+
 KeyInsertTimeStamp = 'insert_time'
 EXE_LF = 'WMLFRTMsg.exe'
 EXE_ST = 'wmudrt.exe'
