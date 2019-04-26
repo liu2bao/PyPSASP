@@ -62,6 +62,8 @@ Pattern_read = '([^\']*?|\'.*?\')[ ]*,'
 
 StOutVarNameKey = 'var_name'
 TimeKey = 'time'
+TokenKey = 'token'
+RecordMasterTable = 'records'
 CompletedLFTable = 'completed_lf'
 VarKeyPrefix = 'var_'
 VarDefinitionTable = 'VarDef'

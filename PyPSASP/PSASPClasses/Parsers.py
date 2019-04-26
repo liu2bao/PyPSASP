@@ -118,11 +118,14 @@ class PSASP_Parser(object):
             dict_r = list(dict_r.values())[0]
         return dict_r
 
+    def parse_all_lf(self,label_getType,labels_do=None):
+        return self.parse_all_files_s(const.LABEL_LF, label_getType, labels_do)
+
     def parse_all_settings_lf(self, labels_do=None):
-        return self.parse_all_files_s(const.LABEL_LF, const.LABEL_SETTINGS, labels_do)
+        return self.parse_all_lf(const.LABEL_SETTINGS, labels_do)
 
     def parse_all_results_lf(self, labels_do=None):
-        return self.parse_all_files_s(const.LABEL_LF, const.LABEL_RESULTS, labels_do)
+        return self.parse_all_lf(const.LABEL_RESULTS, labels_do)
 
     def parse_all_settings_st(self, labels_do=None):
         return self.parse_all_files_s(const.LABEL_ST, const.LABEL_SETTINGS, labels_do)

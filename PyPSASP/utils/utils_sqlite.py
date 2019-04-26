@@ -5,6 +5,7 @@ import datetime
 import contextlib
 import pickle
 from threading import Lock
+from PyPSASP.utils.utils_gadgets import formulate_list_of_dicts
 
 from PyPSASP.constants import const
 
@@ -160,6 +161,12 @@ def delete_list(db_path, table_name, ref_key, list_value_ref):
 def insert_from_list_to_db(db_path, table_name, list_keys, list_data, primary_key=None,
                            with_time_stamp=True, key_time_stamp=const.KeyInsertTimeStamp,
                            dict_keys_type_set=None):
+    if list_keys is None:
+        try:
+            list_keys,list_data = formulate_list_of_dicts(list_data)
+        except:
+            traceback.print_exc()
+            return
     if list_keys and list_data:
         if not isinstance(dict_keys_type_set,dict):
             dict_keys_type_set = {}
