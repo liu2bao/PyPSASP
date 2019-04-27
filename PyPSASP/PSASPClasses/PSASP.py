@@ -7,7 +7,6 @@ from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_sstlin, executor_PSASP_ssteig
 from PyPSASP.PSASPClasses.Manipulators import PSASP_Parser, PSASP_Converter, PSASP_Writer
 import random
-import pickle
 
 PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
 PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
@@ -268,15 +267,15 @@ class CCT_generator(object):
             fstrightt = os.path.join(self.__path_output_st_right, stft)
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
-            labels_t = const.LABEL_RESULTS
+            labels_t = [const.LABEL_RESULTS,const.LABEL_SETTINGS]
         else:
-            labels_t = const.LABEL_SETTINGS
+            labels_t = [const.LABEL_SETTINGS]
 
         Parser_t = self.__PSASP.parser
         lf_t = Parser_t.parse_all_lf_sr(labels_t)
         if dump_lf:
             flft = None
-            lf_save_t = pickle.dumps(lf_t)
+            lf_save_t = lf_t
         else:
             lf_save_t = None
             self.insert_lf_into_db(token_t, flft, lf_t)
