@@ -144,7 +144,7 @@ class PSASP_Parser(object):
         if labels_getType is None:
             lgt = tuple(const.dict_mapping_pos_keys.keys())
         else:
-            lgt = tuple(set(labels_getType).intersection(const.dict_mapping_pos_keys.keys()))
+            lgt = tuple(set(labels_getType).intersection(const.dict_mapping_pos_keys[label_calType].keys()))
         dict_t = {k:self.parse_all_files_s(label_calType,k,labels_do) for k in lgt}
         return dict_t
 
