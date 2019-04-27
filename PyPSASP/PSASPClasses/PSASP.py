@@ -286,6 +286,7 @@ class CCT_generator(object):
         values_t = list(rec_t.values())
         insert_from_list_to_db(self.__path_record_master, const.RecordMasterTable, keys_t, [values_t],
                                primary_key=const.TokenKey)
+        return rec_t
 
 
 if __name__ == '__main__':
