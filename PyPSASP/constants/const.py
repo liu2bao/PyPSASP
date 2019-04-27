@@ -1,12 +1,10 @@
-
-
-contributor = ('LXZ','FYW',)
+contributor = ('LXZ', 'FYW',)
 # TODO: ORM?
 
-CalTypeKey = 'calculate_type' # LF, ST, SST_LIN, SST_EIG
-GetTypeKey = 'get_type' # settings, results
-EleTypeKey = 'element_type' # Bus, Tranformer, etc.
-EleAttrNameKey = 'attribute_name' # Pg, Qg, etc.
+CalTypeKey = 'calculate_type'  # LF, ST, SST_LIN, SST_EIG
+GetTypeKey = 'get_type'  # settings, results
+EleTypeKey = 'element_type'  # Bus, Tranformer, etc.
+EleAttrNameKey = 'attribute_name'  # Pg, Qg, etc.
 EleIdKey = 'element_id'
 EleAttrValueKey = 'attribute_value'
 
@@ -20,9 +18,8 @@ FILE_STOUT = 'STOUT.INF'
 FILE_TEMPLATE_OUTPUT_ST = 'FN{}.DAT'
 PATTERN_OUTPUT_ST = FILE_TEMPLATE_OUTPUT_ST.format(r'\d+')
 FILE_PREFIX_LF = 'LF.'
-PATTERN_SETTINGS_LF = FILE_PREFIX_LF+'.N{0,1}L\d+'
-PATTERN_RESULTS_LF = FILE_PREFIX_LF+'.[N|L]P\d+'
-
+PATTERN_SETTINGS_LF = FILE_PREFIX_LF + '.N{0,1}L\d+'
+PATTERN_RESULTS_LF = FILE_PREFIX_LF + '.[N|L]P\d+'
 
 # calType
 LABEL_LF = 'load_flow'
@@ -48,7 +45,7 @@ LABEL_FAULT = 'fault'
 LABEL_ANA = 'auto_analysis'
 
 LABEL_EIGVAL = 'eigenvalue'
-LABEL_EIGVEC= 'eigenvector'
+LABEL_EIGVEC = 'eigenvector'
 
 ##########
 PREFIX_FILE_LF = 'LF'
@@ -395,7 +392,7 @@ NLoadKey = 'NLoad'
 NAreaKey = 'Narea'
 NUPKey = 'NUP'
 NUDKey = 'UD_Time'
-NVRKey = 'NVR' # Number of voltage regulator
+NVRKey = 'NVR'  # Number of voltage regulator
 NGovKey = 'NGov'
 NPssKey = 'NPss'
 NStaticLoadKey = 'NStaticLoad'
@@ -505,12 +502,11 @@ OutputKeyValues = 'values'
 #################################################
 
 
-
 #################################################
 EIGVALNoKey = 'eigen_value_no'
 EIGVALRealKey = 'eigen_value_real_part'
 EIGVALImgKey = 'eigen_value_image_part'
-EIGVALEmprKey = 'elcetro-mechanic_participation_ratio' # "Elcetro-mechanic participation ratio" "机电回路相关比"
+EIGVALEmprKey = 'elcetro-mechanic_participation_ratio'  # "Elcetro-mechanic participation ratio" "机电回路相关比"
 #################################################
 EIGVECNoKey = 'eigen_value_no'
 EIGVECRelatedKey = 'eigenvector_related_ratio'
@@ -520,7 +516,7 @@ EIGVECImgKey = 'eigenvector_image_part'
 # --------------------------------------------------------------------------------------------------------#
 
 #################################################
-# TODO: Alter pos_keys of dc,... to multiline
+
 pos_keys_lf_settings_bus = [BusNameKey, BaseKVKey, AreaNoKey, VmaxKVKey, VminKVKey, SC1MVAKey, SC3MVAKey]
 
 pos_keys_lf_settings_acline = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1Key, ACLineHalfB1Key,
@@ -535,15 +531,19 @@ pos_keys_lf_settings_transformer = [MarkKey, INoKey, JNoKey, IDNoKey, R1Key, X1K
                                     TransVi0KVKey, TransVj0KVKey, TransMaxTapPos2Key, TransMinTapPos2Key,
                                     TransMainTapPos2Key, TransVjstepPrcKey, TransVjPosKey]
 
-pos_keys_lf_settings_dcline = [MarkKey, INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey, DCLineRpiKey, DCLineLpiKey,
-                               DCLineRpjKey, DCLineLpjKey, DCLineRlKey, DCLineLlKey, DCLineReiKey, DCLineRejKey,
-                               DCLineLsiKey, DCLineLsjKey, DCLineVdnKey, DCLineVhiKey, DCLineVliKey, DCLineBiKey,
-                               DCLineStiKey, DCLineRtiKey, DCLineXtiKey, DCLineVtimaxKey, DCLineVtiminKey,
-                               DCLineNtapiKey, DCLineVhjKey, DCLineVljKey, DCLineBjKey, DCLineStjKey, DCLineRtjKey,
-                               DCLineXtjKey, DCLineVtjmaxKey, DCLineVtjminKey, DCLineNtapjKey, DCLineOPKey,
-                               DCLineQciKey, DCLineQcjKey, DCLinePd1Key, DCLineVd1Key, DCLineA1minKey, DCLineA10Key,
-                               DCLineGama1minKey, DCLineGama10Key, DCLinePd2Key, DCLineVd2Key, DCLineA2minKey,
-                               DCLineA20Key, DCLineGama2minKey, DCLineGama20Key]
+pos_keys_lf_settings_dcline = [
+    [MarkKey, INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey],
+    [DCLineRpiKey, DCLineLpiKey, DCLineRpjKey, DCLineLpjKey, DCLineRlKey, DCLineLlKey,
+     DCLineReiKey, DCLineRejKey, DCLineLsiKey, DCLineLsjKey],
+    [DCLineVdnKey],
+    [DCLineVhiKey, DCLineVliKey, DCLineBiKey, DCLineStiKey, DCLineRtiKey, DCLineXtiKey,
+     DCLineVtimaxKey, DCLineVtiminKey, DCLineNtapiKey],
+    [DCLineVhjKey, DCLineVljKey, DCLineBjKey, DCLineStjKey, DCLineRtjKey, DCLineXtjKey,
+     DCLineVtjmaxKey, DCLineVtjminKey, DCLineNtapjKey],
+    [DCLineOPKey, DCLineQciKey, DCLineQcjKey],
+    [DCLinePd1Key, DCLineVd1Key, DCLineA1minKey, DCLineA10Key, DCLineGama1minKey, DCLineGama10Key],
+    [DCLinePd2Key, DCLineVd2Key, DCLineA2minKey, DCLineA20Key, DCLineGama2minKey, DCLineGama20Key]
+]
 
 pos_keys_lf_settings_generator = [MarkKey, BusNoKey, CtrlModeKey, GenPgKey, GenQgKey, V0Key, AngleKey,
                                   QmaxKey, QminKey, PmaxKey, PminKey, ParGroupKey,
@@ -556,48 +556,58 @@ pos_keys_lf_settings_load = [MarkKey, BusNoKey, LoadNoKey, CtrlModeKey, LoadPlKe
 
 pos_keys_lf_settings_interchange = [MarkKey, InterchangeAreaNoKey, InterchangeAreaNameKey, InterchangeAdjGenKey,
                                     InterchangeSchedulePKey, InterchangeToleranceKey, InterchangePmaxKey]
-pos_keys_lf_settings_conf = \
-    [NBusKey, NACKey, NTransKey, NDCKey, NGenKey, NLoadKey, NAreaKey, NUDKey, LFNEQKey,
-     LFNSSKey, LFCtrlFactKey, LFBasicCapacityKey, LFVmaxKey, LFVminKey, LFEpsKey, LFMethodKey,
-     LFIterationKey, LFCtrlAreaKey, CtrlUDKey, LFEQMethodKey, LFCtrlsubKey, LFUPCALLKey, LFCtrlRmXmKey,
-     MatlabIntKey]
+
+pos_keys_lf_settings_conf = [
+    [NBusKey, NACKey, NTransKey, NDCKey, NGenKey, NLoadKey, NAreaKey, NUDKey, LFNEQKey, LFNSSKey, LFCtrlFactKey],
+    [LFBasicCapacityKey, LFVmaxKey, LFVminKey, LFEpsKey, LFMethodKey, LFIterationKey, LFCtrlAreaKey, CtrlUDKey,
+     LFEQMethodKey, LFCtrlsubKey, LFUPCALLKey, LFCtrlRmXmKey, MatlabIntKey]
+]
 #################################################
 
 #################################################
 pos_keys_lf_results_bus = [BusNoKey, VoltageKey, AngleKey]
 pos_keys_lf_results_acline = [INoKey, JNoKey, IDNoKey, PiKey, QiKey, PjKey, QjKey, ACLineQciKey, ACLineQcjKey]
 pos_keys_lf_results_transformer = [INoKey, JNoKey, IDNoKey, PiKey, QiKey, PjKey, QjKey]
-pos_keys_lf_results_dcline = [INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey, DCLineOPKey, DCLineId10Key, DCLineId20Key,
-                              DCLineVaciKey, DCLineVacjKey, DCLinePd1iKey, DCLineQd1iKey, DCLineVd10iKey, DCLineTk1iKey,
-                              DCLineA10rKey, DCLineTk1iPercKey, DCLinePd1jKey, DCLineQd1jKey, DCLineVd10jKey,
-                              DCLineTk1jKey, DCLineTk1jPercKey, DCLinePd2iKey, DCLineQd2iKey, DCLineVd20iKey,
-                              DCLineTk2iKey, DCLineA20rKey, DCLineTk2iPercKey, DCLinePd2jKey, DCLineQd2jKey,
-                              DCLineVd20jKey, DCLineTk2jKey, DCLineTk2jPercKey, DCLineVbiKey, DCLineVbjKey,
-                              DCLineVdbKey, DCLineIdbKey, DCLineZdbKey, DCLineLdbKey, DCLineTkbiKey, DCLineTkbjKey,
-                              DCLineRpiKey, DCLineLpiKey, DCLineRpjKey, DCLineLpjKey, DCLineRlKey, DCLineLlKey,
-                              DCLineReiKey, DCLineRejKey, DCLineLsiKey, DCLineLsjKey, DCLineXciKey, DCLineXcjKey,
-                              DCLineTkimaxKey, DCLineTkiminKey, DCLineTkjmaxKey, DCLineTkjminKey, DCLineQcipKey,
-                              DCLineQcjpKey, OwnerKey]
+
+pos_keys_lf_results_dcline = [
+    [INoKey, JNoKey, IDNoKey, OwnerKey, LineNameKey],
+    [DCLineOPKey],
+    [DCLineId10Key, DCLineId20Key, DCLineVaciKey, DCLineVacjKey],
+    [DCLinePd1iKey, DCLineQd1iKey, DCLineVd10iKey, DCLineTk1iKey, DCLineA10rKey, DCLineTk1iPercKey],
+    [DCLinePd1jKey, DCLineQd1jKey, DCLineVd10jKey, DCLineTk1jKey, DCLineTk1jPercKey],
+    [DCLinePd2iKey, DCLineQd2iKey, DCLineVd20iKey, DCLineTk2iKey, DCLineA20rKey, DCLineTk2iPercKey],
+    [DCLinePd2jKey, DCLineQd2jKey, DCLineVd20jKey, DCLineTk2jKey, DCLineTk2jPercKey],
+    [DCLineVbiKey, DCLineVbjKey, DCLineVdbKey, DCLineIdbKey, DCLineZdbKey, DCLineLdbKey, DCLineTkbiKey, DCLineTkbjKey],
+    [DCLineRpiKey, DCLineLpiKey, DCLineRpjKey, DCLineLpjKey, DCLineRlKey, DCLineLlKey, DCLineReiKey, DCLineRejKey,
+     DCLineLsiKey, DCLineLsjKey],
+    [DCLineXciKey, DCLineXcjKey, DCLineTkimaxKey, DCLineTkiminKey, DCLineTkjmaxKey, DCLineTkjminKey, DCLineQcipKey,
+     DCLineQcjpKey]
+]
 pos_keys_lf_results_generator = [BusNoKey, GenPgKey, GenQgKey]
 pos_keys_lf_results_load = [BusNoKey, LoadNoKey, LoadPlKey, LoadQlKey]
 pos_keys_lf_results_interchange = [AreaNoKey, InterchangePsumKey, InterchangeAdjPgKey]
-pos_keys_lf_results_conf = [MCalKey, LFML23Key, CalDateKey, CalTimeKey, NUDKey, NUPKey, NBusKey, NGenKey,
-                            NLoadKey, NACKey, NDCKey, NTransKey]
+
+pos_keys_lf_results_conf = [[MCalKey, LFML23Key],
+                            [CalDateKey, CalTimeKey],
+                            [NUDKey, NUPKey],
+                            [NBusKey, NGenKey, NLoadKey, NACKey, NDCKey, NTransKey]]
 
 #################################################
 pos_keys_st_settings_bus = [BusNameKey]
 pos_keys_st_settings_acline = [MarkKey, INoKey, JNoKey, IDNoKey, R0Key, X0Key, ACLineHalfB0Key, LineNameKey]
 pos_keys_st_settings_transformer = [MarkKey, INoKey, JNoKey, IDNoKey, R0Key, X0Key, TransTk0Key,
                                     TransGm0Key, TransBm0Key, TransNameKey]
-pos_keys_st_settings_dcline = [MarkKey, INoKey, JNoKey, IDNoKey, DCLineModelKey, LineNameKey,
-                               DCLineRegTypeKey, DCLineRegFonKey, DCLineRegParKey,
-                               DCLineRegSetKey, DCLineAmaxKey, DCLineAminKey, DCLineIregFonKey, DCLineIregParKey,
-                               DCLineIregSetKey, DCLineVregFonKey, DCLineVregParKey, DCLineVregSetKey, DCLineGregFonKey,
-                               DCLineGregParKey, DCLineGregSetKey, DCLineBmaxKey, DCLineBminKey, DCLineImKey,
-                               DCLineVLowKey, DCLineIdmaxKey, DCLineIdminKey, DCLineDKiKey, DCLineDKjKey, DCLineDTiKey,
-                               DCLineDTjKey, DCLineVRelayKey, DCLineTRelayKey, DCLineTypeFdcKey, DCLineKFdcKey,
-                               DCLineTsFdcKey, DCLineTeFdcKey, DCLineTdoKey, DCLineTdaKey, DCLineTdbKey, DCLineTdcKey,
-                               DCLineNRsKey, DCLineVRsKey]
+
+pos_keys_st_settings_dcline = [
+    [MarkKey, INoKey, JNoKey, IDNoKey, DCLineModelKey, LineNameKey],
+    [DCLineRegTypeKey, DCLineRegFonKey, DCLineRegParKey, DCLineRegSetKey, DCLineAmaxKey, DCLineAminKey],
+    [DCLineIregFonKey, DCLineIregParKey, DCLineIregSetKey, DCLineVregFonKey, DCLineVregParKey, DCLineVregSetKey,
+     DCLineGregFonKey, DCLineGregParKey, DCLineGregSetKey],
+    [DCLineBmaxKey, DCLineBminKey, DCLineImKey, DCLineVLowKey, DCLineIdmaxKey, DCLineIdminKey,
+     DCLineDKiKey, DCLineDKjKey, DCLineDTiKey, DCLineDTjKey, DCLineVRelayKey, DCLineTRelayKey],
+    [DCLineTypeFdcKey, DCLineKFdcKey, DCLineTsFdcKey, DCLineTeFdcKey, DCLineTdoKey, DCLineTdaKey,
+     DCLineTdbKey, DCLineTdcKey, DCLineNRsKey, DCLineVRsKey]
+]
 pos_keys_st_settings_generator = [MarkKey, BusNoKey, GenTgKey, GenLgKey, GenTvrKey, GenLvrKey, GenTgoKey, GenLgoKey,
                                   GenTpssKey, GenLpssKey, GenXdpKey, GenXdppKey, GenX2Key, GenTjKey, GenShKey,
                                   GenPhKey, GenNameKey]
@@ -605,11 +615,13 @@ pos_keys_st_settings_load = [MarkKey, BusNoKey, LoadNoKey, LoadModelKey, LoadPar
 pos_keys_st_settings_SVC = [MarkKey, SVCSetBusKey, CtrlBusKey, SVCModelKey, ParNoKey, SVCXshKey,
                             SVCAuxiliarySignal1ValidKey, SVCAuxiliarySignal1TypeKey, SVCAssBus1No, SVCAssBus2No,
                             SVCAssLineNo, SVCAuxiliarySignal2ValidKey, SVCAuxiliarySignal2TypeKey, SVCNameKey]
-pos_keys_st_settings_conf = \
-    [STNBPKey, STNL0Key, STNT0Key, NDCKey, NGenKey, NLoadKey, STNSVCKey, STNFaultKey,
-     STNDistKey, CtrlUDKey, STNM0Key, MatlabIntKey, STFSKey, STTTotalKey, STDTKey, STToutKey, STMeqKey,
-     STCeqKey, STF60Key, STMutKey, STF1Key, STCmKey, STAmaxKey, STAreaKey, STNUPKey, STDErrorKey]
 
+pos_keys_st_settings_conf = [
+    [STNBPKey, STNL0Key, STNT0Key, NDCKey, NGenKey, NLoadKey, STNSVCKey, STNFaultKey, STNDistKey, CtrlUDKey],
+    [STNM0Key, MatlabIntKey, STFSKey, STTTotalKey, STDTKey, STToutKey, STMeqKey, STCeqKey, STF60Key, STMutKey,
+     STF1Key, STCmKey, STAmaxKey, STAreaKey],
+    [STNUPKey, STDErrorKey]
+]
 pos_keys_st_settings_fault = [MarkKey, INoKey, JNoKey, IDNoKey, FaultLocateKey, FaultAddedBusNameKey,
                               FaultPhaseAKey, FaultPhaseBKey, FaultPhaseCKey, FaultGroundKey,
                               FaultShortKey, FaultOpenKey, FaultTstartKey, FaultTendKey, FaultRKey, FaultXKey]
@@ -618,18 +630,27 @@ pos_keys_st_settings_ana = [ANALstopKey, ANAMaxDAngKey, ANAMinVolKey, ANATDVolKe
                             ANANanaGrpKey, ANATSDAngKey]
 #################################################
 
-pos_keys_st_results_conf = [MCalKey, CalDateKey, CalTimeKey, CtrlUDKey, STNUPKey, NBusKey, NGenKey, NLoadKey,
-                            NDCKey, STNSVCKey, STNFaultKey, STNDistKey, STIsStableKey, STTimeLoseStableKey,
-                            STGroupLoseStableKey]
+pos_keys_st_results_conf = [
+    [MCalKey],
+    [CalDateKey, CalTimeKey],
+    [CtrlUDKey, STNUPKey],
+    [NBusKey, NGenKey, NLoadKey, NDCKey, STNSVCKey, STNFaultKey, STNDistKey],
+    [STIsStableKey, STTimeLoseStableKey, STGroupLoseStableKey]
+]
+
 pos_keys_st_results_ana = [ANATKey, ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, ANAAngleKey, ANABusVMinKey, ANAVminKey,
                            ANAGenWMinKey, ANAWMinKey]
 
 #################################################
-pos_keys_sst_eig_results_eigval = [EIGVALNoKey,EIGVALRealKey,EIGVALImgKey,EIGVALEmprKey]
+pos_keys_sst_eig_results_eigval = [EIGVALNoKey, EIGVALRealKey, EIGVALImgKey, EIGVALEmprKey]
 pos_keys_sst_eig_results_eigenvec = [EIGVECNoKey, BusNoKey, EIGVECRelatedKey, EIGVECRealKey, EIGVECImgKey, BusNameKey]
-pos_keys_sst_eig_results_conf = [MCalKey, CalDateKey, CalTimeKey, NBusKey, NGenKey, NVRKey, NGovKey, NPssKey, NDCKey,
-                                 NStaticLoadKey, NInductionMotorKey, NOtherUDKey,
-                                 NStateVariableKey, NAugmentedStateVariableKey]
+
+pos_keys_sst_eig_results_conf = [
+    [MCalKey],
+    [CalDateKey, CalTimeKey],
+    [NBusKey, NGenKey, NVRKey, NGovKey, NPssKey, NDCKey, NStaticLoadKey, NInductionMotorKey, NOtherUDKey],
+    [NStateVariableKey, NAugmentedStateVariableKey]
+]
 
 #################################################
 
@@ -645,8 +666,8 @@ dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANS
                           LABEL_SVC: 'ST.S7', LABEL_CONF: 'ST.S0', LABEL_FAULT: 'ST.S11',
                           LABEL_ANA: 'STCRIT.DAT'}
 dict_files_st_results = {LABEL_CONF: 'ST.CAL', LABEL_ANA: 'STANA.DAT'}
-dict_files_sst_eig_results = {LABEL_CONF:'SST.CAL',LABEL_EIGVAL: 'SST.EG1',LABEL_EIGVEC: 'SST.EG2'}
-dict_files_sst_lin_results = {LABEL_CONF:'SSTLIN.CAL'}
+dict_files_sst_eig_results = {LABEL_CONF: 'SST.CAL', LABEL_EIGVAL: 'SST.EG1', LABEL_EIGVEC: 'SST.EG2'}
+dict_files_sst_lin_results = {LABEL_CONF: 'SSTLIN.CAL'}
 
 dict_pos_keys_lf_settings = {LABEL_BUS: pos_keys_lf_settings_bus,
                              LABEL_ACLINE: pos_keys_lf_settings_acline,
@@ -684,13 +705,6 @@ dict_pos_keys_sst_eig_results = {LABEL_EIGVAL: pos_keys_sst_eig_results_eigval,
                                  LABEL_EIGVEC: pos_keys_sst_eig_results_eigenvec,
                                  LABEL_CONF: pos_keys_sst_eig_results_conf}
 
-dict_multiline = {dict_files_lf_settings[LABEL_DCLINE]: 8,
-                  dict_files_lf_results[LABEL_DCLINE]: 10,
-                  dict_files_st_settings[LABEL_DCLINE]: 5,
-                  dict_files_lf_settings[LABEL_CONF]: True,
-                  dict_files_st_settings[LABEL_CONF]: True,
-                  dict_files_lf_results[LABEL_CONF]: True,
-                  dict_files_st_results[LABEL_CONF]: True}
 files_lf_append_no = [dict_files_lf_settings[LABEL_BUS],
                       dict_files_st_settings[LABEL_BUS]]
 
@@ -700,133 +714,4 @@ dict_mapping_files = {LABEL_LF: {LABEL_SETTINGS: dict_files_lf_settings, LABEL_R
                       LABEL_SST_LIN: {LABEL_RESULTS: dict_files_sst_lin_results}}
 dict_mapping_pos_keys = {LABEL_LF: {LABEL_SETTINGS: dict_pos_keys_lf_settings, LABEL_RESULTS: dict_pos_keys_lf_results},
                          LABEL_ST: {LABEL_SETTINGS: dict_pos_keys_st_settings, LABEL_RESULTS: dict_pos_keys_st_results},
-                         LABEL_SST_EIG: {LABEL_RESULTS:dict_pos_keys_sst_eig_results}}
-
-
-
-'''
-dict_types = {
-    int: [Trans2WKey, TransMainTapPos2Key, TransTrsTypeKey, UnknownInt, JNoKey, InterchangeAreaNoKey, LoadNoKey,
-          GenKPrcKey, TransVjPosKey, InterchangeAdjGenKey, DCLineBiKey, DCLineBjKey, MarkKey, IDKey,
-          TransMaxTapPos2Key, ParGroupKey, TransJKey, DCLineOPKey, TransMinTapPos2Key, BusNoKey, CtrlBusKey, INoKey,
-          OwnerKey, CtrlModeKey, IDNoKey, ParNoKey, CtrlLineKey, DCLineRegTypeKey, DCLineRegFonKey, DCLineRegParKey,
-          DCLineIregFonKey, DCLineIregParKey, DCLineVregParKey, DCLineGregParKey,
-          DCLineNRsKey, GenTgKey, GenLgKey, GenTvrKey, GenLvrKey, GenTgoKey, GenLgoKey,
-          GenTpssKey, GenLpssKey, LoadModelKey, LoadParKey, LoadZPercentKey, SVCSetBusKey, SVCModelKey, DCLineModelKey,
-          DCLineKFdcKey, DCLineVregFonKey, DCLineGregFonKey, DCLineTypeFdcKey, SVCAssBus1No, SVCAssBus2No, SVCAssLineNo,
-          SVCAuxiliarySignal1ValidKey, SVCAuxiliarySignal1TypeKey, SVCAuxiliarySignal2ValidKey,
-          SVCAuxiliarySignal2TypeKey, STNBPKey, STNL0Key, STNT0Key, NDCKey, NGenKey, NLoadKey, STNSVCKey,
-          STNFaultKey, STNDistKey, CtrlUDKey, STNM0Key, MatlabIntKey, STFSKey, STMeqKey, STCeqKey, STF60Key, STMutKey,
-          STF1Key, STCmKey, STAreaKey, STNUPKey, NBusKey, NACKey, NTransKey, NUPKey, STNFaultKey, STNDistKey,
-          NAreaKey, LFNEQKey, LFNSSKey, LFCtrlFactKey, LFMethodKey, LFIterationKey, LFCtrlAreaKey,
-          LFEQMethodKey, LFCtrlsubKey, LFUPCALLKey, LFCtrlRmXmKey, MCalKey, STIsStableKey, STGroupLoseStableKey,
-          LFML23Key, NUDKey, FaultLocateKey, FaultAddedBusNameKey, FaultPhaseAKey, FaultPhaseBKey, FaultPhaseCKey,
-          FaultGroundKey, FaultShortKey, FaultOpenKey, ANANanaGrpKey, ANALstopKey, ANATKey, ANAAngleKey,
-          ANAVminKey, ANAWMinKey,EIGVALNoKey],
-    convert2float_s: [TransShiftAngKey, DCLineVljKey, DCLineVtiminKey, DCLinePd1Key, DCLineReiKey, DCLineStiKey,
-                      DCLineA2minKey, LoadQlKey, DCLineLpjKey, VmaxKVKey, DCLineVd2Key, DCLineA20Key, BaseKVKey,
-                      DCLineStjKey, DCLineRpjKey, ACLineRateKAKey, DCLineXtiKey, DCLineRlKey, TransTPKey,
-                      TransRateMVAKey, DCLineXtjKey, TransTkKey, GenQgKey, DCLineRtjKey, R1Key, TransVjstepPrcKey,
-                      DCLineGama20Key, QmaxKey, TransRmKey, TransXmKey, DCLineLsiKey, DCLineLsjKey, DCLineGama1minKey,
-                      DCLineVtjminKey, V0Key, DCLineQcjKey, DCLineNtapiKey, DCLineQciKey, PminKey, AngleKey,
-                      ACLineHalfB1Key, DCLineLlKey, UpLimitKey, DCLineVtjmaxKey, DCLineNtapjKey, DCLineVhjKey,
-                      DCLineRejKey, DCLineGama10Key, DCLineA1minKey, InterchangeToleranceKey, TransVj0KVKey,
-                      InterchangePmaxKey, DCLineRpiKey, DCLineRtiKey, LoadPlKey, DCLineGama2minKey, DCLineLpiKey,
-                      DCLineVd1Key, DCLineVtimaxKey, SC1MVAKey, GenPgKey, DCLineA10Key, DCLineVhiKey, TransVi0KVKey,
-                      DCLinePd2Key, VminKVKey, CtrlValueKey, DCLineVliKey, SC3MVAKey, X1Key, QminKey, DCLineVdnKey,
-                      InterchangeSchedulePKey, VoltageKey, PiKey, QiKey, PjKey, QjKey, ACLineQciKey, ACLineQcjKey,
-                      DCLineId10Key, DCLineId20Key, DCLineVaciKey, DCLineVacjKey, DCLinePd1iKey, DCLineQd1iKey,
-                      DCLineVd10iKey, DCLineTk1iKey, DCLineA10rKey, DCLineTk1iPercKey, DCLinePd1jKey, DCLineQd1jKey,
-                      DCLineVd10jKey, DCLineTk1jKey, DCLineTk1jPercKey, DCLinePd2iKey, DCLineQd2iKey, DCLineVd20iKey,
-                      DCLineTk2iKey, DCLineA20rKey, DCLineTk2iPercKey, DCLinePd2jKey, DCLineQd2jKey, DCLineVd20jKey,
-                      DCLineTk2jKey, DCLineTk2jPercKey, DCLineVbiKey, DCLineVbjKey, DCLineVdbKey, DCLineIdbKey,
-                      DCLineZdbKey, DCLineLdbKey, DCLineTkbiKey, DCLineTkbjKey, DCLineXciKey, DCLineXcjKey,
-                      DCLineTkimaxKey, DCLineTkiminKey, DCLineTkjmaxKey, DCLineTkjminKey, DCLineQcipKey, DCLineQcjpKey,
-                      InterchangePsumKey, InterchangeAdjPgKey, R0Key, X0Key, ACLineHalfB0Key, TransTk0Key,
-                      DCLineRegSetKey, DCLineAmaxKey, DCLineAminKey, DCLineBmaxKey,
-                      DCLineBminKey, DCLineImKey, DCLineVLowKey, DCLineIdmaxKey, DCLineIdminKey, DCLineDKiKey,
-                      DCLineDKjKey, DCLineDTiKey, DCLineDTjKey, DCLineVRelayKey, DCLineTRelayKey,
-                      DCLineTsFdcKey, DCLineTeFdcKey, DCLineTdaKey, DCLineTdbKey, DCLineTdcKey,
-                      DCLineVRsKey, GenXdpKey, GenXdppKey, GenX2Key, GenTjKey, GenShKey, GenPhKey, SVCXshKey,
-                      DCLineTdoKey, DCLineGregSetKey, TransGm0Key, TransBm0Key, DCLineIregSetKey, DCLineVregSetKey,
-                      STTTotalKey, STDTKey, STToutKey, STAmaxKey, STDErrorKey,
-                      LFBasicCapacityKey, LFVmaxKey, LFVminKey, LFEpsKey, STTimeLoseStableKey,
-                      FaultTstartKey, FaultTendKey, FaultRKey, FaultXKey, ANAMaxDAngKey, ANAMinVolKey,
-                      ANATDVolKey, ANAMinFreqKey, ANATDFreqKey, ANATSDAngKey,
-                      ANAGrpNoKey, ANAGenAMaxKey, ANAGenAMinKey, ANABusVMinKey, ANAGenWMinKey,
-                      EIGVALRealKey,EIGVALImgKey,EIGVALEmprKey],
-    None: [TransNameKey, InterchangeAreaNameKey, GenNameKey, LineNameKey, BusNameKey, UnknownDesc,
-           LoadNameKey, SVCNameKey, CalDateKey, CalTimeKey]
-}
-
-dict_translate = {kk: v for v, k in dict_types.items() for kk in k}
-'''
-
-
-
-
-
-'''
-LFL1 = ['NULL1               ',    0.0000,   0,    0.0000,    0.0000,    0.0000,    0.0000]
-LFL2 = [1,     4,     3,     0,       0.000000,       0.000010,       0.000000,   0, 0, 0,   0,   0,      0.000000,      0.000000,  0.00,'                        ',  15,'AC_5_8_0_ac']
-LFL3 = [1,     5,     4,301156,       0.000090,       0.017864,       1.021430,       0.000000,       0.000000,   0,   0,   0,   0,   0,   0,       0.000000,       0.000000,     810.000000,  0.00, 0, 0, 1,'                        ',  15,'T2W301156_2w_2w         ',      20.000000,     550.000000,  1,  3,  1,       2.500000,  2]
-LFNL4 = [1,24526,17591,1000,4001,'DC1000',0.000000,0.000000,0.000000,0.000000,12.600000,1590.000000,0.000000,0.000000,300.000000,300.000000,800.000000,530.000000,170.300003,4,3853.000000,0.000000,18.000000,682.375000,496.880005,29,525.000000,157.600006,4,3565.000000,0.000000,16.700001,637.500000,468.799988,28,20,0.000000,0.000000,800.000000,800.000000,5.000000,15.000000,8.000000,17.000000,800.000000,800.000000,5.000000,15.000000,8.000000,17.000000]
-LFL5 = [1,    10,   0,       7.600000,       1.000000,       0.980000,       0.000000,       3.000000,       0.500000,       7.600000,       0.000000,   0,   0,   0,       0.000000,  0,'                        ',  15,'鄂三峡左#07']
-LFL6 = [1,    11,     0,   1,       6.000000,       0.000000,       1.000000,       0.000000,       0.000000,       0.000000,       0.000000,       0.000000,   1,   0,   0,       0.000000,'                        ',  15,'鄂龙泉5000']
-LFL7 = [1,	0,		'全网                              ',	0,		0,		0,		0]
-
-maps = [(LFL1,pos_lf_bus),(LFL2,pos_lf_acline),(LFL3,pos_lf_transformer),(LFNL4,pos_lf_dcline),(LFL5,pos_lf_generator),
-        (LFL6,pos_lf_load), (LFL7,pos_lf_interchange)]
-dict_types = {}
-dicts = []
-
-for t in maps:
-    LF_t = t[0]
-    pos_t = t[1]
-    if len(LF_t)!=len(pos_t):
-        print('length not equal')
-    dict_t = {pos_t[h]:LF_t[h] for h in range(len(LF_t))}
-    list_type = [type(v) for v in dict_t.values()]
-    types = set(list_type)
-    for type_t in types:
-        list_t = [k for k,v in dict_t.items() if isinstance(v,type_t)]
-        if type_t in dict_types.keys():
-            dict_types[type_t].extend(list_t)
-        else:
-            dict_types[type_t] = list_t.copy()
-    dicts.append(dict_t)
-
-dict_types = {k:list(set(v)) for k,v in dict_types.items()}
-dict_intersection = {}
-for k1,v1 in dict_types.items():
-    for k2,v2 in dict_types.items():
-        if k1!=k2:
-            k_t = (k1,k2)
-            if k_t not in dict_intersection.keys():
-                dict_intersection[k_t] = set(v1).intersection(set(v2))
-
-keys_float = ['I_tap','J_tap','Tolerance','TP','Pmax']
-dict_types[int] = list(set(dict_types[int]).difference(keys_float))
-dict_types[float].extend(keys_float)
-dict_types[float] = list(set(dict_types[float]))
-
-
-print(dict_types[int])
-print(dict_types[float])
-print(dict_types[str])
-'''
-'''
-TT = ['reg_type','reg_fon','reg_par','reg_set','Amax','Amin','Ireg_fon','Ireg_par','Ireg_set','Vreg_fon','Vreg_par','Vreg_set','Greg_fon','Greg_par','Greg_set','Bmax','Bmin','Im','V_low','Idmax','Idmin','dKi','dKj','dTi','dTj','V_relay','T_relay','Type_fdc','K_fdc','Ts_fdc','Te_fdc','Tdo','Tda','Tdb','Tdc','N_rs','V_rs','Tg','Lg','Tvr','Lvr','Tgo','Lgo','Tpss','Lpss','Xdp','Xdpp','X2','Tj','Sh','Ph']
-for h in range(len(TT)):
-     str_t = TT[h]
-     list_str_t = str_t.split('_')
-     list_str_new = []
-     for str_tt in list_str_t:
-         str_tt_new = str_tt[0].upper()
-         if len(str_tt)>1:
-             str_tt_new+=str_tt[1:]
-         list_str_new.append(str_tt_new)
-     tt = ''.join(list_str_new)
-     TT[h] = tt
-print(TT)
-'''
+                         LABEL_SST_EIG: {LABEL_RESULTS: dict_pos_keys_sst_eig_results}}

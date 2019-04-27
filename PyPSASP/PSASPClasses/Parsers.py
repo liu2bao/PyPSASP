@@ -227,30 +227,9 @@ class PSASP_Parser(object):
                 break
         return data_FN
 
-    '''
-    def parse_conf_legacy(file_path, pos_keys, dict_translate=const.dict_translate_conf):
-        dict_conf = {}
-        if os.path.isdir(file_path):
-            file_path = os.path.join(file_path, const.FILE_ST_CONF)
-        if os.path.isfile(file_path):
-            with open(file_path, 'r') as f:
-                d = f.read()
-            contents = d.split(',')
-            for hh in range(len(pos_keys)):
-                key_t = pos_keys[hh]
-                vart = contents[hh]
-                funct = dict_translate[key_t]
-                if funct:
-                    vart_new = funct(vart)
-                else:
-                    vart_new = vart
-                dict_conf[key_t] = vart_new
-        return dict_conf
-    '''
-
     # TODO: consider the situation where we enable Lstop (stop simulation instantly at the unstable moment) ?
     def get_sim_time(self):
-        dict_conf_ST = self.parse_single_s(const.LABEL_ST, const.LABEL_SETTINGS, const.LABEL_CONF)
+        dict_conf_ST = self.parse_single_s(const.LABEL_ST, const.LABEL_SETTINGS, const.LABEL_CONF)[0]
         Ttotal = dict_conf_ST[const.STTTotalKey]
         DT = dict_conf_ST[const.STDTKey]
         NT = round(Ttotal / DT) + 1
@@ -318,6 +297,11 @@ class PSASP_Parser(object):
 
 
 if __name__ == '__main__':
+    folder_t = r'E:\01_Research\98_Data\temp_test'
+    folder_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
+    Parser_t = PSASP_Parser(folder_t)
+    dict_p = {c:{g:Parser_t.parse_all_files_s(c,g) for g in gTs} for c,gTs in const.dict_mapping_pos_keys.items()}
+
     pos_keys = [['a','b','x'],['ddd'],[9,10,2,1,7,1,142]]
     list_dict_values = {x:str(x)+'_value' for x in utils_gadgets.cat_lists(pos_keys)}
     pos_keys = ['a','b','x','ddd',9,10,2,1,7,1,142]
