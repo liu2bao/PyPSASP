@@ -5,7 +5,7 @@ from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
 from PyPSASP.constants import const
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_sstlin, executor_PSASP_ssteig
-from PyPSASP.PSASPClasses.Parsers import PSASP_Parser, PSASP_Converter
+from PyPSASP.PSASPClasses.Manipulators import PSASP_Parser, PSASP_Converter, PSASP_Writer
 import random
 import pickle
 
@@ -67,8 +67,8 @@ def func_change_lf_temp(P):
                 load_new[hh][key_t] = load_new[hh][key_t]*(random.random()*0.5+0.5)
             '''
 
-        P.parser.write_to_file_s_lfs_autofit(gen_new)
-        P.parser.write_to_file_s_lfs_autofit(load_new)
+        P.writer.write_to_file_s_lfs_autofit(gen_new)
+        P.writer.write_to_file_s_lfs_autofit(load_new)
 
 
 def func_change_t_regular(P, t):
@@ -78,7 +78,7 @@ def func_change_t_regular(P, t):
         STS11_new[0][const.FaultTstartKey] = 0
         STS11_new[1][const.FaultTstartKey] = t
         STS11_new[2][const.FaultTstartKey] = t + 0.01
-        P.parser.write_to_file_s(const.LABEL_ST, const.LABEL_SETTINGS, const.LABEL_FAULT, STS11_new)
+        P.writer.write_to_file_s(const.LABEL_ST, const.LABEL_SETTINGS, const.LABEL_FAULT, STS11_new)
 
 
 def func_judge_stable_regular(P):
@@ -108,6 +108,7 @@ class PSASP(object):
             os.makedirs(value)
         self.__path_temp = value
         self.parser = PSASP_Parser(value)
+        self.writer = PSASP_Writer(value)
         self.converter = PSASP_Converter()
 
     @path_resources.setter
@@ -126,9 +127,12 @@ class PSASP(object):
         self.__executor_sstlin = executor_PSASP_sstlin(self.__path_exe_wsstlin, self.path_temp)
         self.__executor_ssteig = executor_PSASP_ssteig(self.__path_exe_wssteig, self.path_temp)
 
-    def __init__(self, path_temp, path_resources):
+    def __init__(self, path_temp, path_resources=None):
         self.path_temp = path_temp
-        self.path_resources = path_resources
+        if path_resources is None:
+            self.path_resources = path_temp
+        else:
+            self.path_resources = path_resources
 
     def calculate_LF(self):
         success_lf = False
@@ -241,13 +245,13 @@ class CCT_generator(object):
         self.path_output = path_output
         self.__func_change_lfs = func_change_lfs
 
-    def insert_lf_into_db(self, token, table_name, label_sr, lf_t):
+    def insert_lf_into_db(self, token, table_name, lf_t):
         Converter_t = self.__PSASP.converter
         list_lf_t = Converter_t.convert_get2list(lf_t)
         heads, values = formulate_list_of_dicts(list_lf_t)
         insert_from_list_to_db(self.__path_record_lf, table_name, heads, values)
         insert_from_list_to_db(self.__path_record_lf, const.CompletedLFTable,
-                               [const.TokenKey, OUTPUT_LF_KEY, const.GetTypeKey], [[token, table_name, label_sr]],
+                               [const.TokenKey, OUTPUT_LF_KEY], [[token, table_name]],
                                primary_key=const.TokenKey)
 
     def run_sim_CCT_once(self, dump_lf=True):
@@ -264,18 +268,18 @@ class CCT_generator(object):
             fstrightt = os.path.join(self.__path_output_st_right, stft)
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
-            label_t = const.LABEL_RESULTS
+            labels_t = const.LABEL_RESULTS
         else:
-            label_t = const.LABEL_SETTINGS
+            labels_t = const.LABEL_SETTINGS
 
         Parser_t = self.__PSASP.parser
-        lf_t = Parser_t.parse_all_files_s(const.LABEL_LF, label_t)
+        lf_t = Parser_t.parse_all_lf_sr(labels_t)
         if dump_lf:
             flft = None
             lf_save_t = pickle.dumps(lf_t)
         else:
             lf_save_t = None
-            self.insert_lf_into_db(token_t, flft, label_t, lf_t)
+            self.insert_lf_into_db(token_t, flft, lf_t)
         rec_t[OUTPUT_LF_KEY] = flft
         rec_t[const.LABEL_LF] = lf_save_t
         keys_t = list(rec_t.keys())

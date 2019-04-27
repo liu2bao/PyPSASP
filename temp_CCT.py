@@ -4,7 +4,7 @@ import os, traceback
 
 PATH_TEMP = r'E:\LXZ\PythonWorks\PowerSystem\Temp_20190419'
 PATH_RESOURCES = PATH_TEMP
-PATH_OUTPUT = r'E:\Data\Research\PyPSASP\CCT\3m'
+PATH_OUTPUT = r'D:\LXZ\Data\Research\PyPSASP\CCT\3m'
 
 os.system('@echo off')
 Cc = CCT_generator(PATH_TEMP, PATH_RESOURCES, PATH_OUTPUT, func_change_lf_temp)

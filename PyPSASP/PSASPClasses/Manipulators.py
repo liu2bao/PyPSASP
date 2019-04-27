@@ -140,6 +140,17 @@ class PSASP_Parser(object):
             dict_r = list(dict_r.values())[0]
         return dict_r
 
+    def parse_all_calType(self,label_calType,labels_getType=None,labels_do=None):
+        if labels_getType is None:
+            lgt = tuple(const.dict_mapping_pos_keys.keys())
+        else:
+            lgt = tuple(set(labels_getType).intersection(const.dict_mapping_pos_keys.keys()))
+        dict_t = {k:self.parse_all_files_s(label_calType,k,labels_do) for k in lgt}
+        return dict_t
+
+    def parse_all_lf_sr(self,labels_getType=None,labels_do=None):
+        return self.parse_all_calType(const.LABEL_LF,labels_getType,labels_do)
+
     def parse_all_lf(self, label_getType, labels_do=None):
         return self.parse_all_files_s(const.LABEL_LF, label_getType, labels_do)
 
@@ -151,16 +162,6 @@ class PSASP_Parser(object):
 
     def parse_all_settings_st(self, labels_do=None):
         return self.parse_all_files_s(const.LABEL_ST, const.LABEL_SETTINGS, labels_do)
-
-    def import_STOUT(self, path_STOUT):
-        data_STOUT = []
-        if os.path.isdir(path_STOUT):
-            path_STOUT = os.path.join(path_STOUT, const.FILE_STOUT)
-        if os.path.isfile(path_STOUT):
-            with open(path_STOUT, 'r') as f:
-                data_raw = f.readlines()
-            data_STOUT = [[int(xx) for xx in x.strip().split(',') if xx] for x in data_raw]
-        return data_STOUT
 
     def parse_output_st_varinfs(self, path_STOUT=None):
         if path_STOUT is None:
@@ -258,6 +259,22 @@ class PSASP_Parser(object):
         return list_t, list_outputs
     '''
 
+    def import_STOUT(self, path_STOUT):
+        data_STOUT = []
+        if os.path.isdir(path_STOUT):
+            path_STOUT = os.path.join(path_STOUT, const.FILE_STOUT)
+        if os.path.isfile(path_STOUT):
+            with open(path_STOUT, 'r') as f:
+                data_raw = f.readlines()
+            data_STOUT = [[int(xx) for xx in x.strip().split(',') if xx] for x in data_raw]
+        return data_STOUT
+
+
+
+class PSASP_Writer(object):
+    def __init__(self, path_temp=None):
+        self.__path_temp = path_temp
+
     def write_to_file(self, file_path, list_dict_values, pos_keys):
         if list_dict_values:
             if isinstance(list_dict_values, dict):
@@ -279,12 +296,13 @@ class PSASP_Parser(object):
     def write_to_file_s_lfs(self, label_eleType, list_dict_values):
         return self.write_to_file_s(const.LABEL_LF, const.LABEL_SETTINGS, label_eleType, list_dict_values)
 
+
     def write_to_file_s_lfs_autofit(self, list_dict_values):
         if list_dict_values:
-            # TODO: get all posible keys?
+            # TODO: get all possible keys?
             keys_t = set(list_dict_values[0].keys())
             dt = const.dict_pos_keys_lf_settings
-            K_overlap = {k: len(keys_t.intersection(set(v))) for k, v in dt.items()}
+            K_overlap = {k: len(keys_t.intersection(set(utils_gadgets.cat_lists(reshape_pos_keys(v))))) for k, v in dt.items()}
             MK = max(list(K_overlap.values()))
             labels_posible = [k for k, v in K_overlap.items() if v == MK]
             if len(labels_posible) > 1:
@@ -307,7 +325,8 @@ if __name__ == '__main__':
     pos_keys = ['a','b','x','ddd',9,10,2,1,7,1,142]
     list_dict_values = {x:str(x)+'_value' for x in pos_keys}
     Parser_t = PSASP_Parser()
-    Parser_t.write_to_file('temp.txt',list_dict_values,pos_keys)
+    Writer_t = PSASP_Writer(folder_t)
+    Writer_t.write_to_file('temp.txt',list_dict_values,pos_keys)
 
 
     # path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
@@ -334,9 +353,10 @@ if __name__ == '__main__':
                            'temp', keys_t, list_data)
     STCAL = Parser_t.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
     Parser_t_2 = PSASP_Parser(path_t_2)
+    Writer_t_2 = PSASP_Writer(path_t_2)
     t = Parser_t.parse_output_st_varinfs()
     dt = Parser_t.parse_all_settings_lf()
-    Parser_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
+    Writer_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
     list_t, list_outputs = Parser_t.parse_output_st()
     data_FN = Parser_t.get_output_data_raw()
     list_desc_outputs = Parser_t.parse_output_st_varinfs()

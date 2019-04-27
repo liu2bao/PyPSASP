@@ -1,5 +1,5 @@
 from PyPSASP.utils import utils_sqlite, utils_gadgets
-from PyPSASP.PSASPClasses.Parsers import PSASP_Parser, PSASP_Converter
+from PyPSASP.PSASPClasses.Manipulators import PSASP_Parser, PSASP_Converter
 from PyPSASP.PSASPClasses.PSASP import OUTPUT_LF_KEY, SUCCESS_LF_KEY, CCT_KEY
 from PyPSASP.constants import const
 import os
