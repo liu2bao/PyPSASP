@@ -38,31 +38,6 @@ dict_map_type2attr = {
 }
 
 
-class PSASP_Converter(object):
-    def __init__(self):
-        pass
-
-    def convert_get2list(self, dict_get):
-        list_get = []
-        for ele_type, list_ele in dict_get.items():
-            if list_ele:
-                for hh in range(len(list_ele)):
-                    ele = list_ele[hh]
-                    list_get_t = [{const.EleTypeKey: ele_type, const.EleIdKey: hh, const.EleAttrNameKey: k,
-                                   const.EleAttrValueKey: v} for k, v in ele.items()]
-                    list_get.extend(list_get_t)
-        return list_get
-
-    def convert_get2dict(self, list_get):
-        eleTypes = set([x[const.EleTypeKey] for x in list_get])
-        idmax = {k: max([x[const.EleIdKey] for x in list_get if x[const.EleTypeKey] == k]) for k in eleTypes}
-        dict_get = {k: [dict()] * (v + 1) for k, v in idmax.items()}
-        for get_t in list_get:
-            dict_get[get_t[const.EleTypeKey]][get_t[const.EleIdKey]][get_t[const.EleAttrNameKey]] = get_t[
-                const.EleAttrValueKey]
-        return dict_get
-
-
 class LoadFlow(object):
     @property
     def dict_lf(self):
@@ -95,22 +70,3 @@ class LoadFlow(object):
         self.__dict_lf_expanded = expand_lf(self.__dict_lf)
         return self.dict_lf_expanded
 
-
-
-if __name__=='__main__':
-    from PyPSASP.PSASPClasses.Parsers import PSASP_Parser
-    from PyPSASP.utils import utils_gadgets
-    # path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
-    # b = parse_all_results_lf(path_t, const.LABEL_BUS)
-    path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
-    # path_t = r'E:\05_Resources\Softwares\PSASP\SST\sst_pre'
-    Parser_t = PSASP_Parser(path_t)
-    Converter_t = PSASP_Converter()
-    lfr = Parser_t.parse_all_results_lf()
-    list_lfr = Converter_t.convert_get2list(lfr)
-    heads, values = utils_gadgets.formulate_list_of_dicts(list_lfr)
-    from PyPSASP.utils.utils_sqlite import insert_from_list_to_db, read_db
-
-    insert_from_list_to_db('temp.db', 'temp', heads, values)
-    list_lfr = read_db('temp.db', 'temp', return_dict_form=True)
-    dict_lfr = Converter_t.convert_get2dict(list_lfr)
