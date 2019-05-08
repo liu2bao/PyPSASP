@@ -5,6 +5,7 @@ from PyPSASP.utils import utils_gadgets
 from PyPSASP.constants import const
 from PyPSASP.utils.utils_PSASP import reshape_pos_keys
 
+
 # import numpy as np
 
 
@@ -24,22 +25,25 @@ class PSASP_Parser(object):
         count_num = 0
         dict_t = {}
         for h in range(len(lines_t)):
-            line_t = lines_t[h]
-            pos_keys_t = pos_keys_multiline[count_t]
-            if isinstance(line_t, str):
-                contents = re.findall(pattern_parse, line_t)
-                if contents:
-                    dict_t_part = {pos_keys_t[hh]: utils_gadgets.convert_s(contents[hh]) for hh in
-                                   range(min([len(contents), len(pos_keys_t)]))}
-                    dict_t.update(dict_t_part)
-                    if append_no:
-                        dict_t[key_busno] = count_num + 1
-            count_t += 1
-            count_num += 1
-            if count_t>=len(pos_keys_multiline):
-                list_dict_parsed.append(dict_t)
-                dict_t = dict()
-                count_t = 0
+            line_t = lines_t[h].strip()
+            if line_t:
+                pos_keys_t = pos_keys_multiline[count_t]
+                if isinstance(line_t, str):
+                    contents = re.findall(pattern_parse, line_t)
+                    if not contents and len(pos_keys_t) == 1:
+                        contents = [line_t]
+                    if contents:
+                        dict_t_part = {pos_keys_t[hh]: utils_gadgets.convert_s(contents[hh]) for hh in
+                                       range(min([len(contents), len(pos_keys_t)]))}
+                        dict_t.update(dict_t_part)
+                        if append_no:
+                            dict_t[key_busno] = count_num + 1
+                count_t += 1
+                count_num += 1
+                if count_t >= len(pos_keys_multiline):
+                    list_dict_parsed.append(dict_t)
+                    dict_t = dict()
+                    count_t = 0
         return list_dict_parsed
 
     def parse_single_s(self, label_calType, label_getType, label_eleType):
@@ -50,13 +54,20 @@ class PSASP_Parser(object):
                 lines_raw = f.readlines()
             lines = [x.strip() for x in lines_raw]
             if lines:
-                pos_keys = const.dict_mapping_pos_keys[label_calType][label_getType][label_eleType]
-                if fnt in const.files_lf_append_no:
-                    key_busno = const.BusNoKey
-                else:
-                    key_busno = None
-                list_dict_parsed = self.parse_lines_PSASP(lines, pos_keys, key_busno=key_busno)
-                return list_dict_parsed
+                dmpk = const.dict_mapping_pos_keys
+                if label_calType in dmpk.keys():
+                    dmpk_sub_1 = dmpk[label_calType]
+                    if label_getType in dmpk_sub_1.keys():
+                        dmpk_sub_2 = dmpk_sub_1[label_getType]
+                        if label_eleType in dmpk_sub_2.keys():
+                            pos_keys = dmpk_sub_2[label_eleType]
+                            if fnt in const.files_lf_append_no:
+                                key_busno = const.BusNoKey
+                            else:
+                                key_busno = None
+                            list_dict_parsed = self.parse_lines_PSASP(lines, pos_keys, key_busno=key_busno)
+                            return list_dict_parsed
+
 
     def parse_single_s_lfs(self, label_eleType):
         return self.parse_single_s(const.LABEL_LF, const.LABEL_SETTINGS, label_eleType)
@@ -215,22 +226,33 @@ class PSASP_Parser(object):
 
         return list_heads, list_data_raw_row
 
+    def parse_all_parsable(self):
+        dict_parsable_all = {}
+        for label_calType, dict_files_sub_1 in const.dict_mapping_files.items():
+            dict_parsable_all[label_calType] = {}
+            for label_getType, dict_files_sub_2 in dict_files_sub_1.items():
+                dict_parsable_all[label_calType][label_getType] = {}
+                for label_eleType, dict_files_sub_3 in dict_files_sub_2.items():
+                    dt = self.parse_single_s(label_calType, label_getType, label_eleType)
+                    if dt:
+                        dict_parsable_all[label_calType][label_getType][label_eleType] =  dt
+        return dict_parsable_all
+
 
 if __name__ == '__main__':
     folder_t = r'E:\01_Research\98_Data\temp_test'
     folder_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
     Parser_t = PSASP_Parser(folder_t)
-    dict_p = {c:{g:Parser_t.parse_all_files_s(c,g) for g in gTs} for c,gTs in const.dict_mapping_pos_keys.items()}
+    dict_p = {c: {g: Parser_t.parse_all_files_s(c, g) for g in gTs} for c, gTs in const.dict_mapping_pos_keys.items()}
 
-    pos_keys = [['a','b','x'],['ddd'],[9,10,2,1,7,1,142]]
-    list_dict_values = {x:str(x)+'_value' for x in utils_gadgets.cat_lists(pos_keys)}
-    pos_keys = ['a','b','x','ddd',9,10,2,1,7,1,142]
-    list_dict_values = {x:str(x)+'_value' for x in pos_keys}
+    pos_keys = [['a', 'b', 'x'], ['ddd'], [9, 10, 2, 1, 7, 1, 142]]
+    list_dict_values = {x: str(x) + '_value' for x in utils_gadgets.cat_lists(pos_keys)}
+    pos_keys = ['a', 'b', 'x', 'ddd', 9, 10, 2, 1, 7, 1, 142]
+    list_dict_values = {x: str(x) + '_value' for x in pos_keys}
     from PyPSASP.PSASPClasses.Writers import PSASP_Writer
+
     Writer_t = PSASP_Writer(folder_t)
-    Writer_t.write_to_file('temp.txt',list_dict_values,pos_keys)
-
-
+    Writer_t.write_to_file('temp.txt', list_dict_values, pos_keys)
 
     path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
     from PyPSASP.utils.utils_sqlite import insert_from_list_to_db

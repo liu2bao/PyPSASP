@@ -619,10 +619,10 @@ pos_keys_st_settings_SVC = [MarkKey, SVCSetBusKey, CtrlBusKey, SVCModelKey, ParN
                             SVCAssLineNo, SVCAuxiliarySignal2ValidKey, SVCAuxiliarySignal2TypeKey, SVCNameKey]
 
 pos_keys_st_settings_conf = [
-    [STNBPKey, STNL0Key, STNT0Key, NDCKey, NGenKey, NLoadKey, STNSVCKey, STNFaultKey, STNDistKey, CtrlUDKey],
-    [STNM0Key, MatlabIntKey, STFSKey, STTTotalKey, STDTKey, STToutKey, STMeqKey, STCeqKey, STF60Key, STMutKey,
-     STF1Key, STCmKey, STAmaxKey, STAreaKey],
-    [STNUPKey, STDErrorKey]
+    [STNBPKey, STNL0Key, STNT0Key, NDCKey, NGenKey, NLoadKey, STNSVCKey, STNFaultKey, STNDistKey, CtrlUDKey,
+     STNM0Key, MatlabIntKey],
+    [STFSKey, STTTotalKey, STDTKey, STToutKey, STMeqKey, STCeqKey, STF60Key, STMutKey,
+     STF1Key, STCmKey, STAmaxKey, STAreaKey,STNUPKey, STDErrorKey]
 ]
 pos_keys_st_settings_fault = [MarkKey, INoKey, JNoKey, IDNoKey, FaultLocateKey, FaultAddedBusNameKey,
                               FaultPhaseAKey, FaultPhaseBKey, FaultPhaseCKey, FaultGroundKey,

@@ -32,11 +32,6 @@ def copyfiles_lfr(path_src,path_dst):
     copyfiles_pattern(path_src,path_dst,PATTERN_RESULTS_LF)
 
 
-if __name__=='__main__':
-    path_src_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
-    path_dst_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs\temp'
-    copyfiles_st(path_src_t, path_dst_t)
-
 
 def reshape_pos_keys(pos_keys):
     if isinstance(pos_keys[0], list) or isinstance(pos_keys[0], tuple):
@@ -45,3 +40,11 @@ def reshape_pos_keys(pos_keys):
         pos_keys_multiline = [pos_keys]
 
     return pos_keys_multiline
+
+
+
+
+if __name__=='__main__':
+    path_src_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
+    path_dst_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs\temp'
+    copyfiles_st(path_src_t, path_dst_t)
