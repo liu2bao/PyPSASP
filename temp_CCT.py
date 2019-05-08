@@ -4,8 +4,7 @@ import os, traceback
 
 '''
 if __name__=='__main__':
-    from PyPSASP.PSASPClasses.Parsers import PSASP_Parser
-    from PyPSASP.PSASPClasses.Writers import PSASP_Writer
+    from PyPSASP.PSASPClasses.Manipulators import PSASP_Parser,PSASP_Writer
 
     path_temp = r'E:\01_Research\98_Data\SmallSystem_PSASP\SMIB\2016_06_01T00_00_24'
     path_temp_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\SMIB\2016_06_01T00_00_24_copy'

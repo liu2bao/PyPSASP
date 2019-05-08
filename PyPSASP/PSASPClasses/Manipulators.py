@@ -49,8 +49,9 @@ class PSASP_Parser(object):
         count_num = 0
         dict_t = {}
         for h in range(len(lines_t)):
-            line_t = lines_t[h].strip()
-            if line_t:
+            line_t = lines_t[h]
+            if isinstance(line_t,str):
+                line_t = line_t.strip()
                 pos_keys_t = pos_keys_multiline[count_t]
                 if isinstance(line_t, str):
                     contents = re.findall(pattern_parse, line_t)
@@ -331,46 +332,4 @@ class PSASP_Writer(object):
 
 
 if __name__ == '__main__':
-    folder_t = r'E:\01_Research\98_Data\temp_test'
-    folder_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
-    Parser_t = PSASP_Parser(folder_t)
-    dict_p = {c: {g: Parser_t.parse_all_files_s(c, g) for g in gTs} for c, gTs in const.dict_mapping_pos_keys.items()}
-
-    pos_keys = [['a','b','x'],['ddd'],[9,10,2,1,7,1,142]]
-    list_dict_values = {x:str(x)+'_value' for x in utils_gadgets.cat_lists(pos_keys)}
-    pos_keys = ['a','b','x','ddd',9,10,2,1,7,1,142]
-    list_dict_values = {x:str(x)+'_value' for x in pos_keys}
-    Parser_t = PSASP_Parser()
-    Writer_t = PSASP_Writer(folder_t)
-    Writer_t.write_to_file('temp.txt',list_dict_values,pos_keys)
-
-    pos_keys = [['a', 'b', 'x'], ['ddd'], [9, 10, 2, 1, 7, 1, 142]]
-    list_dict_values = {x: str(x) + '_value' for x in utils_gadgets.cat_lists(pos_keys)}
-    pos_keys = ['a', 'b', 'x', 'ddd', 9, 10, 2, 1, 7, 1, 142]
-    list_dict_values = {x: str(x) + '_value' for x in pos_keys}
-
-    Writer_t = PSASP_Writer(folder_t)
-    Writer_t.write_to_file('temp.txt', list_dict_values, pos_keys)
-
-    path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
-    from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
-
-    list_heads, list_data = Parser_t.parse_output_st()
-    keys_t = [x[const.StOutVarNameKey] for x in list_heads]
-    insert_from_list_to_db(r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419\temp.db',
-                           'temp', keys_t, list_data)
-    STCAL = Parser_t.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
-    Parser_t_2 = PSASP_Parser(path_t_2)
-    Writer_t_2 = PSASP_Writer(path_t_2)
-    t = Parser_t.parse_output_st_varinfs()
-    dt = Parser_t.parse_all_settings_lf()
-    Writer_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
-    Writer_t_2 = PSASP_Writer(path_t_2)
-    Writer_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
-    list_t, list_outputs = Parser_t.parse_output_st()
-    data_FN = Parser_t.get_output_data_raw()
-    list_desc_outputs = Parser_t.parse_output_st_varinfs()
-    settings_st = Parser_t.parse_all_settings_st()
-    dt_r = Parser_t.parse_all_results_lf()
-    dt = Parser_t.parse_all_settings_lf()
-    print(dt)
+    pass
