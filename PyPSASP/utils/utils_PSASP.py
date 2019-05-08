@@ -36,3 +36,12 @@ if __name__=='__main__':
     path_src_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
     path_dst_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs\temp'
     copyfiles_st(path_src_t, path_dst_t)
+
+
+def reshape_pos_keys(pos_keys):
+    if isinstance(pos_keys[0], list) or isinstance(pos_keys[0], tuple):
+        pos_keys_multiline = pos_keys.copy()
+    else:
+        pos_keys_multiline = [pos_keys]
+
+    return pos_keys_multiline

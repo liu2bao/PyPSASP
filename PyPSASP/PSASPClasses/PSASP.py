@@ -5,7 +5,9 @@ from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
 from PyPSASP.constants import const
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_sstlin, executor_PSASP_ssteig
-from PyPSASP.PSASPClasses.Parsers import PSASP_Parser, PSASP_Converter
+from PyPSASP.PSASPClasses.Parsers import PSASP_Parser
+from PyPSASP.PSASPClasses.Converters import PSASP_Converter
+from PyPSASP.PSASPClasses.Writers import PSASP_Writer
 import random
 import pickle
 
@@ -67,8 +69,8 @@ def func_change_lf_temp(P):
                 load_new[hh][key_t] = load_new[hh][key_t]*(random.random()*0.5+0.5)
             '''
 
-        P.parser.write_to_file_s_lfs_autofit(gen_new)
-        P.parser.write_to_file_s_lfs_autofit(load_new)
+        P.writer.write_to_file_s_lfs_autofit(gen_new)
+        P.writer.write_to_file_s_lfs_autofit(load_new)
 
 
 def func_change_t_regular(P, t):
@@ -78,7 +80,7 @@ def func_change_t_regular(P, t):
         STS11_new[0][const.FaultTstartKey] = 0
         STS11_new[1][const.FaultTstartKey] = t
         STS11_new[2][const.FaultTstartKey] = t + 0.01
-        P.parser.write_to_file_s(const.LABEL_ST, const.LABEL_SETTINGS, const.LABEL_FAULT, STS11_new)
+        P.writer.write_to_file_s(const.LABEL_ST, const.LABEL_SETTINGS, const.LABEL_FAULT, STS11_new)
 
 
 def func_judge_stable_regular(P):
@@ -108,6 +110,7 @@ class PSASP(object):
             os.makedirs(value)
         self.__path_temp = value
         self.parser = PSASP_Parser(value)
+        self.writer = PSASP_Writer(value)
         self.converter = PSASP_Converter()
 
     @path_resources.setter

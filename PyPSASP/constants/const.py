@@ -209,6 +209,8 @@ InterchangePmaxKey = 'Pmax'
 #################################################
 # ---COMMON---#
 VoltageKey = 'V'
+VoltageRealKey = 'Vreal'
+VoltageImageKey = 'Vimg'
 PiKey = 'Pi'
 QiKey = 'Qi'
 PjKey = 'Pj'

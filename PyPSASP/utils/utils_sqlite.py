@@ -90,7 +90,7 @@ def read_db(db_path, table_name, list_keys=None, str_where=r'', return_dict_form
                 with my_sqlite3(db_path) as cursor_temp:
                     cursor_temp.execute(X)
                     data = cursor_temp.fetchall()
-                if flag_not_list and data:
+                if flag_not_list and data and not return_dict_form:
                     data = [x[0] for x in data]
         except:
             traceback.print_exc()

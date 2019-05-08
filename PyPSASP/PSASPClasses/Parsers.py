@@ -1,51 +1,15 @@
-import math
 import re
 import os
-from collections.abc import Iterable
+
 from PyPSASP.utils import utils_gadgets
 from PyPSASP.constants import const
-
+from PyPSASP.utils.utils_PSASP import reshape_pos_keys
 
 # import numpy as np
 
-class PSASP_Converter(object):
-    def __init__(self):
-        pass
-
-    def convert_get2list(self, dict_get):
-        list_get = []
-        for ele_type, list_ele in dict_get.items():
-            if list_ele:
-                for hh in range(len(list_ele)):
-                    ele = list_ele[hh]
-                    list_get_t = [{const.EleTypeKey: ele_type, const.EleIdKey: hh, const.EleAttrNameKey: k,
-                                   const.EleAttrValueKey: v} for k, v in ele.items()]
-                    list_get.extend(list_get_t)
-        return list_get
-
-    def convert_get2dict(self, list_get):
-        eleTypes = set([x[const.EleTypeKey] for x in list_get])
-        idmax = {k: max([x[const.EleIdKey] for x in list_get if x[const.EleTypeKey] == k]) for k in eleTypes}
-        dict_get = {k: [dict()] * (v + 1) for k, v in idmax.items()}
-        for get_t in list_get:
-            dict_get[get_t[const.EleTypeKey]][get_t[const.EleIdKey]][get_t[const.EleAttrNameKey]] = get_t[
-                const.EleAttrValueKey]
-        return dict_get
-
-
-
-def reshape_pos_keys(pos_keys):
-    if isinstance(pos_keys[0], list) or isinstance(pos_keys[0], tuple):
-        pos_keys_multiline = pos_keys.copy()
-    else:
-        pos_keys_multiline = [pos_keys]
-
-    return pos_keys_multiline
-
-
 
 class PSASP_Parser(object):
-    def __init__(self, path_temp=None):
+    def __init__(self, path_temp=''):
         self.__path_temp = path_temp
 
     def parse_lines_PSASP(self, lines, pos_keys, pattern_parse=const.Pattern_read, key_busno=None):
@@ -251,50 +215,6 @@ class PSASP_Parser(object):
 
         return list_heads, list_data_raw_row
 
-    '''
-        list_outputs = list_desc_outputs.copy()
-        for hh in range(len(list_outputs)):
-            list_outputs[hh][const.OutputKeyValues] = data_raw[hh]
-        return list_t, list_outputs
-    '''
-
-    def write_to_file(self, file_path, list_dict_values, pos_keys):
-        if list_dict_values:
-            if isinstance(list_dict_values, dict):
-                list_dict_values = [list_dict_values]
-            pos_keys_multiline = reshape_pos_keys(pos_keys)
-            lines_write = [','.join([str(x[pos_keys_t[hh]]) for hh in range(len(pos_keys_t))]) + ',\n'
-                           for pos_keys_t in pos_keys_multiline for x in list_dict_values]
-            with open(file_path, 'w') as f:
-                f.writelines(lines_write)
-
-    # TODO: this is not right for LF.L1 and ST.S1
-    def write_to_file_s(self, label_calType, label_getType, label_eleType, list_dict_values):
-        fnt = const.dict_mapping_files[label_calType][label_getType][label_eleType]
-        fpt = os.path.join(self.__path_temp, fnt)
-        pos_keys_t = const.dict_mapping_pos_keys[label_calType][label_getType][label_eleType]
-        self.write_to_file(fpt, list_dict_values, pos_keys_t)
-        return fpt
-
-    def write_to_file_s_lfs(self, label_eleType, list_dict_values):
-        return self.write_to_file_s(const.LABEL_LF, const.LABEL_SETTINGS, label_eleType, list_dict_values)
-
-    def write_to_file_s_lfs_autofit(self, list_dict_values):
-        if list_dict_values:
-            # TODO: get all posible keys?
-            keys_t = set(list_dict_values[0].keys())
-            dt = const.dict_pos_keys_lf_settings
-            K_overlap = {k: len(keys_t.intersection(set(v))) for k, v in dt.items()}
-            MK = max(list(K_overlap.values()))
-            labels_posible = [k for k, v in K_overlap.items() if v == MK]
-            if len(labels_posible) > 1:
-                dL = {k: abs(len(keys_t) - len(v)) for k, v in dt.items() if k in labels_posible}
-                mDL = min(list(dL.values()))
-                label_ele = [k for k, v in dL.items() if v == mDL][0]
-            else:
-                label_ele = labels_posible[0]
-            return self.write_to_file_s(const.LABEL_LF, const.LABEL_SETTINGS, label_ele, list_dict_values)
-
 
 if __name__ == '__main__':
     folder_t = r'E:\01_Research\98_Data\temp_test'
@@ -306,24 +226,11 @@ if __name__ == '__main__':
     list_dict_values = {x:str(x)+'_value' for x in utils_gadgets.cat_lists(pos_keys)}
     pos_keys = ['a','b','x','ddd',9,10,2,1,7,1,142]
     list_dict_values = {x:str(x)+'_value' for x in pos_keys}
-    Parser_t = PSASP_Parser()
-    Parser_t.write_to_file('temp.txt',list_dict_values,pos_keys)
+    from PyPSASP.PSASPClasses.Writers import PSASP_Writer
+    Writer_t = PSASP_Writer(folder_t)
+    Writer_t.write_to_file('temp.txt',list_dict_values,pos_keys)
 
 
-    # path_t = r'E:\01_Research\98_Data\华中电网大数据\华中2016夏（故障卡汇总）\Temp'
-    # b = parse_all_results_lf(path_t, const.LABEL_BUS)
-    path_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
-    # path_t = r'E:\05_Resources\Softwares\PSASP\SST\sst_pre'
-    Parser_t = PSASP_Parser(path_t)
-    Converter_t = PSASP_Converter()
-    lfr = Parser_t.parse_all_results_lf()
-    list_lfr = Converter_t.convert_get2list(lfr)
-    heads, values = utils_gadgets.formulate_list_of_dicts(list_lfr)
-    from PyPSASP.utils.utils_sqlite import insert_from_list_to_db, read_db
-
-    insert_from_list_to_db('temp.db', 'temp', heads, values)
-    list_lfr = read_db('temp.db', 'temp', return_dict_form=True)
-    dict_lfr = Converter_t.convert_get2dict(list_lfr)
 
     path_t_2 = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419_2'
     from PyPSASP.utils.utils_sqlite import insert_from_list_to_db
@@ -336,7 +243,8 @@ if __name__ == '__main__':
     Parser_t_2 = PSASP_Parser(path_t_2)
     t = Parser_t.parse_output_st_varinfs()
     dt = Parser_t.parse_all_settings_lf()
-    Parser_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
+    Writer_t_2 = PSASP_Writer(path_t_2)
+    Writer_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
     list_t, list_outputs = Parser_t.parse_output_st()
     data_FN = Parser_t.get_output_data_raw()
     list_desc_outputs = Parser_t.parse_output_st_varinfs()
