@@ -8,8 +8,8 @@ from PyPSASP.PSASPClasses.Executors import executor_PSASP_sstlin, executor_PSASP
 from PyPSASP.PSASPClasses.Parsers import PSASP_Parser
 from PyPSASP.PSASPClasses.Converters import PSASP_Converter
 from PyPSASP.PSASPClasses.Writers import PSASP_Writer
+from PyPSASP.PSASPClasses.Manipulators import PSASP_Parser, PSASP_Converter, PSASP_Writer
 import random
-import pickle
 
 PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
 PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
@@ -129,9 +129,12 @@ class PSASP(object):
         self.__executor_sstlin = executor_PSASP_sstlin(self.__path_exe_wsstlin, self.path_temp)
         self.__executor_ssteig = executor_PSASP_ssteig(self.__path_exe_wssteig, self.path_temp)
 
-    def __init__(self, path_temp, path_resources):
+    def __init__(self, path_temp, path_resources=None):
         self.path_temp = path_temp
-        self.path_resources = path_resources
+        if path_resources is None:
+            self.path_resources = path_temp
+        else:
+            self.path_resources = path_resources
 
     def calculate_LF(self):
         success_lf = False
@@ -244,13 +247,13 @@ class CCT_generator(object):
         self.path_output = path_output
         self.__func_change_lfs = func_change_lfs
 
-    def insert_lf_into_db(self, token, table_name, label_sr, lf_t):
+    def insert_lf_into_db(self, token, table_name, lf_t):
         Converter_t = self.__PSASP.converter
         list_lf_t = Converter_t.convert_get2list(lf_t)
         heads, values = formulate_list_of_dicts(list_lf_t)
         insert_from_list_to_db(self.__path_record_lf, table_name, heads, values)
         insert_from_list_to_db(self.__path_record_lf, const.CompletedLFTable,
-                               [const.TokenKey, OUTPUT_LF_KEY, const.GetTypeKey], [[token, table_name, label_sr]],
+                               [const.TokenKey, OUTPUT_LF_KEY], [[token, table_name]],
                                primary_key=const.TokenKey)
 
     def run_sim_CCT_once(self, dump_lf=True):
@@ -267,24 +270,25 @@ class CCT_generator(object):
             fstrightt = os.path.join(self.__path_output_st_right, stft)
             rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
             rec_t.update(rec_t_st)
-            label_t = const.LABEL_RESULTS
+            labels_t = [const.LABEL_RESULTS,const.LABEL_SETTINGS]
         else:
-            label_t = const.LABEL_SETTINGS
+            labels_t = [const.LABEL_SETTINGS]
 
         Parser_t = self.__PSASP.parser
-        lf_t = Parser_t.parse_all_files_s(const.LABEL_LF, label_t)
+        lf_t = Parser_t.parse_all_lf_sr(labels_t)
         if dump_lf:
             flft = None
-            lf_save_t = pickle.dumps(lf_t)
+            lf_save_t = lf_t
         else:
             lf_save_t = None
-            self.insert_lf_into_db(token_t, flft, label_t, lf_t)
+            self.insert_lf_into_db(token_t, flft, lf_t)
         rec_t[OUTPUT_LF_KEY] = flft
         rec_t[const.LABEL_LF] = lf_save_t
         keys_t = list(rec_t.keys())
         values_t = list(rec_t.values())
         insert_from_list_to_db(self.__path_record_master, const.RecordMasterTable, keys_t, [values_t],
                                primary_key=const.TokenKey)
+        return rec_t
 
 
 if __name__ == '__main__':

@@ -1,12 +1,48 @@
+import math
 import re
 import os
-
+from collections.abc import Iterable
 from PyPSASP.utils import utils_gadgets
 from PyPSASP.constants import const
 from PyPSASP.utils.utils_PSASP import reshape_pos_keys
 
 
 # import numpy as np
+
+class PSASP_Converter(object):
+    def __init__(self):
+        pass
+
+    def convert_get2list(self, dict_get):
+        list_get = []
+        for ele_type, list_ele in dict_get.items():
+            if list_ele:
+                for hh in range(len(list_ele)):
+                    ele = list_ele[hh]
+                    list_get_t = [{const.EleTypeKey: ele_type, const.EleIdKey: hh, const.EleAttrNameKey: k,
+                                   const.EleAttrValueKey: v} for k, v in ele.items()]
+                    list_get.extend(list_get_t)
+        return list_get
+
+    def convert_get2dict(self, list_get):
+        eleTypes = set([x[const.EleTypeKey] for x in list_get])
+        idmax = {k: max([x[const.EleIdKey] for x in list_get if x[const.EleTypeKey] == k]) for k in eleTypes}
+        dict_get = {k: [dict()] * (v + 1) for k, v in idmax.items()}
+        for get_t in list_get:
+            dict_get[get_t[const.EleTypeKey]][get_t[const.EleIdKey]][get_t[const.EleAttrNameKey]] = get_t[
+                const.EleAttrValueKey]
+        return dict_get
+
+
+
+def reshape_pos_keys(pos_keys):
+    if isinstance(pos_keys[0], list) or isinstance(pos_keys[0], tuple):
+        pos_keys_multiline = pos_keys.copy()
+    else:
+        pos_keys_multiline = [pos_keys]
+
+    return pos_keys_multiline
+
 
 
 class PSASP_Parser(object):
@@ -115,6 +151,17 @@ class PSASP_Parser(object):
             dict_r = list(dict_r.values())[0]
         return dict_r
 
+    def parse_all_calType(self,label_calType,labels_getType=None,labels_do=None):
+        if labels_getType is None:
+            lgt = tuple(const.dict_mapping_pos_keys.keys())
+        else:
+            lgt = tuple(set(labels_getType).intersection(const.dict_mapping_pos_keys[label_calType].keys()))
+        dict_t = {k:self.parse_all_files_s(label_calType,k,labels_do) for k in lgt}
+        return dict_t
+
+    def parse_all_lf_sr(self,labels_getType=None,labels_do=None):
+        return self.parse_all_calType(const.LABEL_LF,labels_getType,labels_do)
+
     def parse_all_lf(self, label_getType, labels_do=None):
         return self.parse_all_files_s(const.LABEL_LF, label_getType, labels_do)
 
@@ -126,16 +173,6 @@ class PSASP_Parser(object):
 
     def parse_all_settings_st(self, labels_do=None):
         return self.parse_all_files_s(const.LABEL_ST, const.LABEL_SETTINGS, labels_do)
-
-    def import_STOUT(self, path_STOUT):
-        data_STOUT = []
-        if os.path.isdir(path_STOUT):
-            path_STOUT = os.path.join(path_STOUT, const.FILE_STOUT)
-        if os.path.isfile(path_STOUT):
-            with open(path_STOUT, 'r') as f:
-                data_raw = f.readlines()
-            data_STOUT = [[int(xx) for xx in x.strip().split(',') if xx] for x in data_raw]
-        return data_STOUT
 
     def parse_output_st_varinfs(self, path_STOUT=None):
         if path_STOUT is None:
@@ -237,6 +274,66 @@ class PSASP_Parser(object):
                     if dt:
                         dict_parsable_all[label_calType][label_getType][label_eleType] =  dt
         return dict_parsable_all
+    '''
+        list_outputs = list_desc_outputs.copy()
+        for hh in range(len(list_outputs)):
+            list_outputs[hh][const.OutputKeyValues] = data_raw[hh]
+        return list_t, list_outputs
+    '''
+
+    def import_STOUT(self, path_STOUT):
+        data_STOUT = []
+        if os.path.isdir(path_STOUT):
+            path_STOUT = os.path.join(path_STOUT, const.FILE_STOUT)
+        if os.path.isfile(path_STOUT):
+            with open(path_STOUT, 'r') as f:
+                data_raw = f.readlines()
+            data_STOUT = [[int(xx) for xx in x.strip().split(',') if xx] for x in data_raw]
+        return data_STOUT
+
+
+
+class PSASP_Writer(object):
+    def __init__(self, path_temp=None):
+        self.__path_temp = path_temp
+
+    def write_to_file(self, file_path, list_dict_values, pos_keys):
+        if list_dict_values:
+            if isinstance(list_dict_values, dict):
+                list_dict_values = [list_dict_values]
+            pos_keys_multiline = reshape_pos_keys(pos_keys)
+            lines_write = [','.join([str(x[pos_keys_t[hh]]) for hh in range(len(pos_keys_t))]) + ',\n'
+                           for pos_keys_t in pos_keys_multiline for x in list_dict_values]
+            with open(file_path, 'w') as f:
+                f.writelines(lines_write)
+
+    # TODO: this is not right for LF.L1 and ST.S1
+    def write_to_file_s(self, label_calType, label_getType, label_eleType, list_dict_values):
+        fnt = const.dict_mapping_files[label_calType][label_getType][label_eleType]
+        fpt = os.path.join(self.__path_temp, fnt)
+        pos_keys_t = const.dict_mapping_pos_keys[label_calType][label_getType][label_eleType]
+        self.write_to_file(fpt, list_dict_values, pos_keys_t)
+        return fpt
+
+    def write_to_file_s_lfs(self, label_eleType, list_dict_values):
+        return self.write_to_file_s(const.LABEL_LF, const.LABEL_SETTINGS, label_eleType, list_dict_values)
+
+
+    def write_to_file_s_lfs_autofit(self, list_dict_values):
+        if list_dict_values:
+            # TODO: get all possible keys?
+            keys_t = set(list_dict_values[0].keys())
+            dt = const.dict_pos_keys_lf_settings
+            K_overlap = {k: len(keys_t.intersection(set(utils_gadgets.cat_lists(reshape_pos_keys(v))))) for k, v in dt.items()}
+            MK = max(list(K_overlap.values()))
+            labels_posible = [k for k, v in K_overlap.items() if v == MK]
+            if len(labels_posible) > 1:
+                dL = {k: abs(len(keys_t) - len(v)) for k, v in dt.items() if k in labels_posible}
+                mDL = min(list(dL.values()))
+                label_ele = [k for k, v in dL.items() if v == mDL][0]
+            else:
+                label_ele = labels_posible[0]
+            return self.write_to_file_s(const.LABEL_LF, const.LABEL_SETTINGS, label_ele, list_dict_values)
 
 
 if __name__ == '__main__':
@@ -244,6 +341,14 @@ if __name__ == '__main__':
     folder_t = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
     Parser_t = PSASP_Parser(folder_t)
     dict_p = {c: {g: Parser_t.parse_all_files_s(c, g) for g in gTs} for c, gTs in const.dict_mapping_pos_keys.items()}
+
+    pos_keys = [['a','b','x'],['ddd'],[9,10,2,1,7,1,142]]
+    list_dict_values = {x:str(x)+'_value' for x in utils_gadgets.cat_lists(pos_keys)}
+    pos_keys = ['a','b','x','ddd',9,10,2,1,7,1,142]
+    list_dict_values = {x:str(x)+'_value' for x in pos_keys}
+    Parser_t = PSASP_Parser()
+    Writer_t = PSASP_Writer(folder_t)
+    Writer_t.write_to_file('temp.txt',list_dict_values,pos_keys)
 
     pos_keys = [['a', 'b', 'x'], ['ddd'], [9, 10, 2, 1, 7, 1, 142]]
     list_dict_values = {x: str(x) + '_value' for x in utils_gadgets.cat_lists(pos_keys)}
@@ -263,8 +368,10 @@ if __name__ == '__main__':
                            'temp', keys_t, list_data)
     STCAL = Parser_t.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, const.LABEL_CONF)
     Parser_t_2 = PSASP_Parser(path_t_2)
+    Writer_t_2 = PSASP_Writer(path_t_2)
     t = Parser_t.parse_output_st_varinfs()
     dt = Parser_t.parse_all_settings_lf()
+    Writer_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
     Writer_t_2 = PSASP_Writer(path_t_2)
     Writer_t_2.write_to_file_s_lfs_autofit(dt[const.LABEL_GENERATOR])
     list_t, list_outputs = Parser_t.parse_output_st()
