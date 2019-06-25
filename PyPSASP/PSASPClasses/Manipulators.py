@@ -93,37 +93,24 @@ class PSASP_Parser(object):
                             list_dict_parsed = self.parse_lines_PSASP(lines, pos_keys, key_busno=key_busno)
                             return list_dict_parsed
 
-
     def parse_single_s_lfs(self, label_eleType):
+        """Parse single file of load flow settings (LF.L*)"""
         return self.parse_single_s(const.LABEL_LF, const.LABEL_SETTINGS, label_eleType)
 
     def parse_single_s_lfr(self, label_eleType):
+        """Parse single file of load flow results (LF.LP*)"""
         return self.parse_single_s(const.LABEL_LF, const.LABEL_RESULTS, label_eleType)
 
     def parse_single_s_sts(self, label_eleType):
+        """Parse single file of transient stability settings (ST.S*)"""
         return self.parse_single_s(const.LABEL_ST, const.LABEL_SETTINGS, label_eleType)
 
     def parse_single_s_str(self, label_eleType):
+        """Parse single file of transient stability results (ST.CAL, STANA.DAT)"""
         return self.parse_single_s(const.LABEL_ST, const.LABEL_RESULTS, label_eleType)
 
-    def parse_lf(self, lf, pos_keys):
-        path_lf = os.path.join(self.__path_temp, lf)
-        if os.path.isfile(path_lf):
-            with open(path_lf, 'r') as f:
-                lines_raw = f.readlines()
-            lines = [x.strip() for x in lines_raw]
-            if lines:
-                if lf in const.files_lf_append_no:
-                    key_busno = const.BusNoKey
-                else:
-                    key_busno = None
-
-                list_dict_parsed = self.parse_lines_PSASP(lines, pos_keys, key_busno=key_busno)
-                return list_dict_parsed
-        else:
-            return None
-
     def parse_all_files_s(self, label_calType, label_getType, label_eles_do=None):
+        """Parse all files of a given calculation-type and get-type"""
         dict_files = const.dict_mapping_files[label_calType][label_getType]
         # dict_pos_keys = const.dict_mapping_pos_keys[label_calType][label_getType]
         labels_do_ori = list(dict_files.keys())
@@ -141,6 +128,7 @@ class PSASP_Parser(object):
         return dict_r
 
     def parse_all_calType(self,label_calType,labels_getType=None,labels_do=None):
+        """Parse all files of a given calculation-type"""
         if labels_getType is None:
             lgt = tuple(const.dict_mapping_pos_keys.keys())
         else:
@@ -149,21 +137,27 @@ class PSASP_Parser(object):
         return dict_t
 
     def parse_all_lf_sr(self,labels_getType=None,labels_do=None):
+        """Parse all load flow files of given get-types"""
         return self.parse_all_calType(const.LABEL_LF,labels_getType,labels_do)
 
     def parse_all_lf(self, label_getType, labels_do=None):
+        """Parse all load flow files of a given get-types"""
         return self.parse_all_files_s(const.LABEL_LF, label_getType, labels_do)
 
     def parse_all_settings_lf(self, labels_do=None):
+        """Parse all setting files of load flow"""
         return self.parse_all_lf(const.LABEL_SETTINGS, labels_do)
 
     def parse_all_results_lf(self, labels_do=None):
+        """Parse all result files of load flow"""
         return self.parse_all_lf(const.LABEL_RESULTS, labels_do)
 
     def parse_all_settings_st(self, labels_do=None):
+        """arse all setting files of transient stability"""
         return self.parse_all_files_s(const.LABEL_ST, const.LABEL_SETTINGS, labels_do)
 
     def parse_output_st_varinfs(self, path_STOUT=None):
+        """Parse output meanings of transient stability"""
         if path_STOUT is None:
             path_STOUT = self.__path_temp
         list_desc_outputs = []
@@ -252,6 +246,13 @@ class PSASP_Parser(object):
 
         return list_heads, list_data_raw_row
 
+
+    def get_gen_angles_st(self):
+        list_heads, list_data_raw_row = self.parse_output_st()
+        idx_gen_angle = [hh for hh in range(len(list_heads)) if (const.OutputKeyType in list_heads[hh].keys()) and (list_heads[hh][const.OutputKeyType] == 1)]
+        gen_angles = [list_data_raw_row[hhh] for hhh in idx_gen_angle]
+        return gen_angles
+
     def parse_all_parsable(self):
         dict_parsable_all = {}
         for label_calType, dict_files_sub_1 in const.dict_mapping_files.items():
@@ -309,10 +310,10 @@ class PSASP_Writer(object):
 
     def write_to_file_s_lfs_autofit(self, list_dict_values):
         if list_dict_values:
-            # TODO: get all posible keys?
+            # TODO: get all possible keys?
             keys_t = set(list_dict_values[0].keys())
             dt = const.dict_pos_keys_lf_settings
-            K_overlap = {k: len(keys_t.intersection(set(v))) for k, v in dt.items()}
+            K_overlap = {k: len(keys_t.intersection(set(utils_gadgets.cat_lists(v) if isinstance(v[0],list) else v))) for k, v in dt.items()}
             MK = max(list(K_overlap.values()))
             labels_posible = [k for k, v in K_overlap.items() if v == MK]
             if len(labels_posible) > 1:
@@ -332,4 +333,7 @@ class PSASP_Writer(object):
 
 
 if __name__ == '__main__':
+    path_temp = r'E:\01_Research\98_Data\SmallSystem_PSASP\SMIB\SMIB_0'
+    Parser_t = PSASP_Parser(path_temp)
+    list_heads,list_output = Parser_t.parse_output_st()
     pass

@@ -1,13 +1,16 @@
 import os
 from threading import Thread, Lock
 import time
+from warnings import warn
 from PyPSASP.constants import const
 from PyPSASP.utils.utils_gadgets import get_all_process,delete_files_pattern,generate_new_files_save_yield
 
 # TempBat = 'temp.bat'
 Lock_GetProcess = Lock()
 Lock_WriteBat = Lock()
-
+MAX_TRY = 60
+WAIT_TIME = 0.2
+MAX_TRY_GETINC = 10
 
 class executor_PSASP(object):
     def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None, window_hide=None):
@@ -19,7 +22,8 @@ class executor_PSASP(object):
             path_t, exe_t = os.path.split(path_exe)
             path_exe = os.path.join(path_env, exe_t)
             if not os.path.isfile(path_exe):
-                raise ValueError('%s not exist' % path_exe)
+                # raise ValueError('%s not exist' % path_exe)
+                warn('%s not exist' % path_exe)
         self.__path_exe = path_exe
         self.__path_env = path_env
         self.__path_flagfile = path_flagfile
@@ -39,7 +43,7 @@ class executor_PSASP(object):
         process_inc = [x for x in process_new if x['pid'] not in pid_old]
         return process_inc
 
-    def __get_process_inc_matched(self, wait_time=0.5, max_try=10):
+    def __get_process_inc_matched(self, wait_time=0.5, max_try=MAX_TRY_GETINC):
         process_inc_matched = []
         count = 0
         flag_found = False
@@ -60,7 +64,7 @@ class executor_PSASP(object):
     def __update_mtime_flagfile(self):
         self.__flagfile_last_update_time = get_updated_time(self.__path_flagfile)
 
-    def __kill_process_while_flag(self, flag_kill_by_name=True, wait_time=0.2, max_try=60):
+    def __kill_process_while_flag(self, flag_kill_by_name=True, wait_time=WAIT_TIME, max_try=MAX_TRY):
         count = 0
         while count <= max_try:
             if os.path.isfile(self.__path_flagfile):

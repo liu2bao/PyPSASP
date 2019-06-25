@@ -7,10 +7,13 @@ from PyPSASP.PSASPClasses.Executors import executor_PSASP_lf, executor_PSASP_st
 from PyPSASP.PSASPClasses.Executors import executor_PSASP_sstlin, executor_PSASP_ssteig
 from PyPSASP.PSASPClasses.Manipulators import PSASP_Parser, PSASP_Converter, PSASP_Writer
 import random
+import time
 
 PATH_TEMP = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190419'
 PATH_RESOURCES = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000'
 PATH_OUTPUT = r'F:\Data\Research\PyPSASP\CCT\3m'
+
+PATH_OUTPUT_DEFAULT = 'CCT_RESULTS'
 
 OUTPUT_LF_KEY = 'output_lf'
 OUTPUT_ST_LEFT_KEY = 'output_st_left'
@@ -29,10 +32,11 @@ F_LEFT_KEY = 'fleft'
 F_RIGHT_KEY = 'fright'
 COUNT_ITER_KEY = 'count'
 FLAG_LIMIT_TOUCHED_KEY = 'flag_limit_touched'
+ELAPSED_KEY = 'elapsed'
 
 Tstep_max_default = 0.2
 Tsim_default = 5
-eps_default = 0.001
+eps_default = 0.005
 
 lf_output_prefix = 'lf_'
 st_output_prefix = 'st_'
@@ -150,7 +154,7 @@ class PSASP(object):
         if STCAL:
             STCAL = STCAL[0]
             if const.MCalKey in STCAL.keys():
-                success_st = STCAL[const.MCalKey] == 1
+                success_st = STCAL[const.MCalKey] > 0
         return success_st
 
     # TODO: read CAL file?
@@ -167,7 +171,8 @@ class PSASP(object):
 
     def calculate_CCT(self, path_save_left, path_save_right, func_change_t=func_change_t_regular,
                       func_judge_stable=func_judge_stable_regular, label=None,
-                      Tstep_max=Tstep_max_default, Tsim=Tsim_default, eps=eps_default):
+                      Tstep_max=Tstep_max_default, Tsim=Tsim_default, eps=eps_default,
+                      copy_output=False):
 
         if label is None:
             label = '-------AFFAIR-------'
@@ -186,6 +191,7 @@ class PSASP(object):
             OUTPUT_ST_RIGHT_KEY: path_save_right
         }
 
+        start_time = time.clock()
         while abs(rec[T_LEFT_KEY] - rec[T_RIGHT_KEY]) > rec[EPS_KEY]:
             if rec[COUNT_ITER_KEY] == 0 or (not rec[FLAG_LIMIT_TOUCHED_KEY]):
                 CT_t = rec[T_RIGHT_KEY]
@@ -198,23 +204,28 @@ class PSASP(object):
                 rec[T_LEFT_KEY] = CT_t
                 rec[F_LEFT_KEY] = stable
                 rec[CCT_KEY] = CT_t
-                # TODO: Donnot copy?
-                copyfiles_st(self.path_temp, rec[OUTPUT_ST_LEFT_KEY])
+                if copy_output:
+                    copyfiles_st(self.path_temp, rec[OUTPUT_ST_LEFT_KEY])
                 if not rec[FLAG_LIMIT_TOUCHED_KEY]:
                     rec[T_RIGHT_KEY] = CT_t + Tstep_max
 
             else:
                 rec[T_RIGHT_KEY] = CT_t
                 rec[F_RIGHT_KEY] = stable
-                # TODO: Donnot copy?
-                copyfiles_st(self.path_temp, rec[OUTPUT_ST_RIGHT_KEY])
+                if copy_output:
+                    copyfiles_st(self.path_temp, rec[OUTPUT_ST_RIGHT_KEY])
                 rec[FLAG_LIMIT_TOUCHED_KEY] = True
 
             rec[COUNT_ITER_KEY] += 1
             print(
                 '%s%d (%d,%.4f): %.4f, %.4f' % (label, rec[COUNT_ITER_KEY], stable, rec[T_RIGHT_KEY] - rec[T_LEFT_KEY],
                                                 rec[T_LEFT_KEY], rec[T_RIGHT_KEY]))
+        elapsed = time.clock() - start_time
+        rec[ELAPSED_KEY] = elapsed
         print('%sCCT = %.4f' % (label, rec[CCT_KEY]))
+        if not rec[OUTPUT_ST_LEFT_KEY]:
+            rec[OUTPUT_ST_LEFT_KEY] = None
+            rec[OUTPUT_ST_RIGHT_KEY] = None
 
         return rec
 
@@ -238,7 +249,8 @@ class CCT_generator(object):
             self.__path_output_st_left = os.path.join(self.__path_output_st, st_output_subfolder_left)
             self.__path_output_st_right = os.path.join(self.__path_output_st, st_output_subfolder_right)
 
-    def __init__(self, path_temp, path_resources, path_output, func_change_lfs):
+    def __init__(self, path_temp, path_resources=None, path_output=PATH_OUTPUT_DEFAULT,
+                 func_change_lfs=func_change_lf_temp):
         self.__path_temp = path_temp
         self.__PSASP = PSASP(path_temp, path_resources)
         self.path_output = path_output
@@ -253,7 +265,7 @@ class CCT_generator(object):
                                [const.TokenKey, OUTPUT_LF_KEY], [[token, table_name]],
                                primary_key=const.TokenKey)
 
-    def run_sim_CCT_once(self, dump_lf=True):
+    def run_sim_CCT_once(self, dump_lf=True, copy_output=False):
         self.__func_change_lfs(self.__PSASP)
         success_lf = self.__PSASP.calculate_LF()
         # success_lf = True
@@ -265,7 +277,7 @@ class CCT_generator(object):
         if success_lf:
             fstleftt = os.path.join(self.__path_output_st_left, stft)
             fstrightt = os.path.join(self.__path_output_st_right, stft)
-            rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt)
+            rec_t_st = self.__PSASP.calculate_CCT(fstleftt, fstrightt, copy_output=copy_output)
             rec_t.update(rec_t_st)
             labels_t = [const.LABEL_RESULTS,const.LABEL_SETTINGS]
         else:
@@ -290,7 +302,18 @@ class CCT_generator(object):
 
 if __name__ == '__main__':
 
-    os.system('@echo off')
+    #os.system('@echo off')
+    Pt = PSASP(r'E:\01_Research\98_Data\2016_06_01\2016_06_01T00_00_24')
+    lf = Pt.parser.parse_all_results_lf()
+    d = Pt.parser.parse_single_s(const.LABEL_LF,const.LABEL_SETTINGS,const.LABEL_GENERATOR)
+    d[1][const.V0Key] = 1.0
+
+    Pt.writer.write_to_file_s_lfs_autofit(d)
+
+    Pt.calculate_LF()
+
+    Pt.parser.parse
+
     Cc = CCT_generator(PATH_TEMP, PATH_RESOURCES, PATH_OUTPUT, func_change_lf_temp)
     count_t = 0
     max_count = 10000
