@@ -95,6 +95,14 @@ def func_judge_stable_regular(P):
 
 
 class PSASP(object):
+    def __init__(self, path_temp, path_resources=None):
+        self.path_temp = path_temp
+        if path_resources is None:
+            self.path_resources = path_temp
+        else:
+            self.path_resources = path_resources
+        self.__lfs = None
+
     @property
     def path_temp(self):
         return self.__path_temp
@@ -130,12 +138,6 @@ class PSASP(object):
         self.__executor_sstlin = executor_PSASP_sstlin(self.__path_exe_wsstlin, self.path_temp)
         self.__executor_ssteig = executor_PSASP_ssteig(self.__path_exe_wssteig, self.path_temp)
 
-    def __init__(self, path_temp, path_resources=None):
-        self.path_temp = path_temp
-        if path_resources is None:
-            self.path_resources = path_temp
-        else:
-            self.path_resources = path_resources
 
     def calculate_LF(self):
         success_lf = False
@@ -218,7 +220,8 @@ class PSASP(object):
 
             rec[COUNT_ITER_KEY] += 1
             print(
-                '%s%d (%d,%.4f): %.4f, %.4f' % (label, rec[COUNT_ITER_KEY], stable, rec[T_RIGHT_KEY] - rec[T_LEFT_KEY],
+                '%s%d (%s,%.4f): %.4f, %.4f' % (label, rec[COUNT_ITER_KEY], str(stable),
+                                                rec[T_RIGHT_KEY] - rec[T_LEFT_KEY],
                                                 rec[T_LEFT_KEY], rec[T_RIGHT_KEY]))
         elapsed = time.clock() - start_time
         rec[ELAPSED_KEY] = elapsed
@@ -311,8 +314,6 @@ if __name__ == '__main__':
     Pt.writer.write_to_file_s_lfs_autofit(d)
 
     Pt.calculate_LF()
-
-    Pt.parser.parse
 
     Cc = CCT_generator(PATH_TEMP, PATH_RESOURCES, PATH_OUTPUT, func_change_lf_temp)
     count_t = 0
