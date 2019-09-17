@@ -33,6 +33,7 @@ LABEL_RESULTS = 'results'
 
 # eleType
 LABEL_CONF = 'configuration'
+LABEL_ERR = 'errors'
 LABEL_BUS = 'bus'
 LABEL_ACLINE = 'acline'
 LABEL_TRANSFORMER = 'transformer'
@@ -668,6 +669,7 @@ dict_files_st_settings = {LABEL_BUS: 'ST.S1', LABEL_ACLINE: 'ST.S2', LABEL_TRANS
                           LABEL_SVC: 'ST.S7', LABEL_CONF: 'ST.S0', LABEL_FAULT: 'ST.S11',
                           LABEL_ANA: 'STCRIT.DAT'}
 dict_files_st_results = {LABEL_CONF: 'ST.CAL', LABEL_ANA: 'STANA.DAT'}
+file_st_err = 'STERR.LIS'
 dict_files_sst_eig_results = {LABEL_CONF: 'SST.CAL', LABEL_EIGVAL: 'SST.EG1', LABEL_EIGVEC: 'SST.EG2'}
 dict_files_sst_lin_results = {LABEL_CONF: 'SSTLIN.CAL'}
 

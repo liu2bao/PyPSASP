@@ -12,12 +12,23 @@ MAX_TRY = 60
 WAIT_TIME = 0.2
 MAX_TRY_GETINC = 10
 
+
 class executor_PSASP(object):
     def __init__(self, path_exe, path_env=None, path_flagfile=None, patterns_del=None, window_hide=None):
-        if isinstance(path_flagfile, str):
-            path_t, flag_t = os.path.split(path_flagfile)
-            if not path_t:
-                path_flagfile = os.path.join(path_env, path_flagfile)
+        if isinstance(path_flagfile,str):
+            path_flagfiles = [path_flagfile]
+        elif isinstance(path_flagfile,tuple) or isinstance(path_flagfile,list):
+            path_flagfiles = list(path_flagfile).copy()
+        else:
+            path_flagfiles = None
+
+        if isinstance(path_flagfiles,list):
+            for hh in range(len(path_flagfiles)):
+                pft = path_flagfiles[hh]
+                if isinstance(pft, str):
+                    path_t, flag_t = os.path.split(pft)
+                    if not path_t:
+                        path_flagfiles[hh] = os.path.join(path_env, pft)
         if not os.path.isfile(path_exe):
             path_t, exe_t = os.path.split(path_exe)
             path_exe = os.path.join(path_env, exe_t)
@@ -26,10 +37,10 @@ class executor_PSASP(object):
                 warn('%s not exist' % path_exe)
         self.__path_exe = path_exe
         self.__path_env = path_env
-        self.__path_flagfile = path_flagfile
+        self.__path_flagfiles = path_flagfiles
         self.__current_process = []
         self.__process_inc_matched = []
-        self.__flagfile_last_update_time = None
+        self.__flagfile_last_update_times = {}
         self.__patterns_del = patterns_del
         self.__window_hide = window_hide
         p,self.__exe_name = os.path.split(self.__path_exe)
@@ -62,16 +73,33 @@ class executor_PSASP(object):
         return process_inc_matched
 
     def __update_mtime_flagfile(self):
-        self.__flagfile_last_update_time = get_updated_time(self.__path_flagfile)
+        if isinstance(self.__path_flagfiles,list):
+            for pft in self.__path_flagfiles:
+                if isinstance(pft,str):
+                    if os.path.isfile(pft):
+                        self.__flagfile_last_update_times[pft] = get_updated_time(pft)
+                    else:
+                        self.__flagfile_last_update_times[pft] = None
 
     def __kill_process_while_flag(self, flag_kill_by_name=True, wait_time=WAIT_TIME, max_try=MAX_TRY):
         count = 0
         while count <= max_try:
-            if os.path.isfile(self.__path_flagfile):
-                if self.__flagfile_last_update_time is None:
-                    break
-                elif get_updated_time(self.__path_flagfile) <= self.__flagfile_last_update_time:
-                    break
+            flag_kill = False
+            if isinstance(self.__path_flagfiles, list):
+                if self.__flagfile_last_update_times:
+                    for pft in self.__path_flagfiles:
+                        if isinstance(pft,str) and os.path.isfile(pft):
+                            if pft in self.__flagfile_last_update_times.keys():
+                                tn = get_updated_time(pft)
+                                if tn is not None:
+                                    told = self.__flagfile_last_update_times[pft]
+                                    if (told is None) or (tn > told):
+                                        flag_kill = True
+                                        break
+            else:
+                break
+            if flag_kill:
+                break
             time.sleep(wait_time)
             count += 1
         if count >= max_try:
@@ -112,10 +140,10 @@ class executor_PSASP(object):
             exe_t = temp_bat
         else:
             exe_t = self.__path_exe
-        if not self.__path_flagfile:
+        if not self.__path_flagfiles:
             r = os.system(exe_t)
-            return r
         else:
+            r = None
             thread_exe = Thread(target=os.system, args=(exe_t,))
             thread_kill = Thread(target=self.__kill_process_while_flag, args={'flag_kill_by_name':flag_kill_by_name})
             if Lock_GetProcess.acquire():
@@ -134,6 +162,7 @@ class executor_PSASP(object):
                 os.remove(temp_bat)
             except:
                 print('error while removing %s' % temp_bat)
+        return r
 
 
 class executor_PSASP_lf(executor_PSASP):
@@ -144,10 +173,12 @@ class executor_PSASP_lf(executor_PSASP):
 
 class executor_PSASP_st(executor_PSASP):
     def __init__(self, path_exe, path_env):
-        flag_file_st = const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF]
-        patterns_del = (const.PATTERN_OUTPUT_ST, flag_file_st)
-        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st, patterns_del,
+        flag_files_st = [const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF],
+                         const.file_st_err]
+        patterns_del = tuple([const.PATTERN_OUTPUT_ST] + flag_files_st)
+        executor_PSASP.__init__(self, path_exe, path_env, flag_files_st, patterns_del,
                                 window_hide=const.WINDOW_NAME_ST)
+
 
 class executor_PSASP_sstlin(executor_PSASP):
     def __init__(self, path_exe, path_env):
@@ -171,15 +202,24 @@ def get_updated_time(file_path_t):
 
 
 if __name__ == '__main__':
+    tn = get_updated_time(r'G:\CCT_10m39b\IEEE10m39b\PSASP\Temp_AVR_GOV_PSS_topoChange\STERR.LIS')
+    print(tn)
     # path_exe = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000\WMLFRTMsg.exe'
     # path_env = r'E:\01_Research\98_Data\SmallSystem_PSASP\Temp_20190422_MinInputs'
-    # path_exe = r'E:\05_Resources\Softwares\PSASP\CriticalFiles_60000\wmudrt.exe'
-    # path_exe = r'E:\05_Resources\Softwares\PSASP\CriticalFiles\Wsstlin.exe'
-    path_exe_sstlin = r'E:\CNN\PSASP_SST\Temp2\Wsstlin.exe'
-    path_exe_ssteig = r'E:\CNN\PSASP_SST\Temp2\Wssteig.exe'
-    path_env = r'E:\CNN\PSASP_SST\Temp2'
-
-    et1 = executor_PSASP_sstlin(path_exe_sstlin, path_env)
-    et2 = executor_PSASP_ssteig(path_exe_ssteig, path_env)
+    path_exe_st = r'G:\CCT_10m39b\IEEE10m39b\PSASP\Temp_AVR_GOV_PSS_topoChange\wmudrt.exe'
+    path_exe_lf = r'G:\CCT_10m39b\IEEE10m39b\PSASP\Temp_AVR_GOV_PSS_topoChange\WMLFRTMsg.exe'
+    path_env = r'G:\CCT_10m39b\IEEE10m39b\PSASP\Temp_AVR_GOV_PSS_topoChange'
+    et0 = executor_PSASP_st(path_exe_st, path_env)
+    et1 = executor_PSASP_lf(path_exe_lf,path_env)
     et1.execute_exe()
-    et2.execute_exe()
+    et0.execute_exe()
+    pass
+    # path_exe = r'E:\05_Resources\Softwares\PSASP\CriticalFiles\Wsstlin.exe'
+    # path_exe_sstlin = r'E:\CNN\PSASP_SST\Temp2\Wsstlin.exe'
+    # path_exe_ssteig = r'E:\CNN\PSASP_SST\Temp2\Wssteig.exe'
+    # path_env = r'E:\CNN\PSASP_SST\Temp2'
+    #
+    # et1 = executor_PSASP_sstlin(path_exe_sstlin, path_env)
+    # et2 = executor_PSASP_ssteig(path_exe_ssteig, path_env)
+    # et1.execute_exe()
+    # et2.execute_exe()
