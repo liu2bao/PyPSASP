@@ -173,10 +173,9 @@ class executor_PSASP_lf(executor_PSASP):
 
 class executor_PSASP_st(executor_PSASP):
     def __init__(self, path_exe, path_env):
-        flag_files_st = [const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF],
-                         const.file_st_err]
-        patterns_del = tuple([const.PATTERN_OUTPUT_ST] + flag_files_st)
-        executor_PSASP.__init__(self, path_exe, path_env, flag_files_st, patterns_del,
+        flag_file_st = const.dict_mapping_files[const.LABEL_ST][const.LABEL_RESULTS][const.LABEL_CONF]
+        patterns_del = (const.PATTERN_OUTPUT_ST, flag_file_st)
+        executor_PSASP.__init__(self, path_exe, path_env, flag_file_st, patterns_del,
                                 window_hide=const.WINDOW_NAME_ST)
 
 
