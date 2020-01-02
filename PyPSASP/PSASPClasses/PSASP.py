@@ -138,7 +138,6 @@ class PSASP(object):
         self.__executor_sstlin = executor_PSASP_sstlin(self.__path_exe_wsstlin, self.path_temp)
         self.__executor_ssteig = executor_PSASP_ssteig(self.__path_exe_wssteig, self.path_temp)
 
-
     def calculate_LF(self):
         success_lf = False
         self.__executor_lf.execute_exe()
@@ -171,7 +170,8 @@ class PSASP(object):
         self.__executor_ssteig.execute_exe()
         return success_sst_eig
 
-    def calculate_CCT(self, path_save_left, path_save_right, func_change_t=func_change_t_regular,
+    def calculate_CCT(self, path_save_left=None, path_save_right=None,
+                      func_change_t=func_change_t_regular,
                       func_judge_stable=func_judge_stable_regular, label=None,
                       Tstep_max=Tstep_max_default, Tsim=Tsim_default, eps=eps_default,
                       copy_output=False):
@@ -207,7 +207,8 @@ class PSASP(object):
                 rec[F_LEFT_KEY] = stable
                 rec[CCT_KEY] = CT_t
                 if copy_output:
-                    copyfiles_st(self.path_temp, rec[OUTPUT_ST_LEFT_KEY])
+                    if rec[OUTPUT_ST_LEFT_KEY]:
+                        copyfiles_st(self.path_temp, rec[OUTPUT_ST_LEFT_KEY])
                 if not rec[FLAG_LIMIT_TOUCHED_KEY]:
                     rec[T_RIGHT_KEY] = CT_t + Tstep_max
 
@@ -215,7 +216,8 @@ class PSASP(object):
                 rec[T_RIGHT_KEY] = CT_t
                 rec[F_RIGHT_KEY] = stable
                 if copy_output:
-                    copyfiles_st(self.path_temp, rec[OUTPUT_ST_RIGHT_KEY])
+                    if rec[OUTPUT_ST_RIGHT_KEY]:
+                        copyfiles_st(self.path_temp, rec[OUTPUT_ST_RIGHT_KEY])
                 rec[FLAG_LIMIT_TOUCHED_KEY] = True
 
             rec[COUNT_ITER_KEY] += 1
@@ -223,6 +225,8 @@ class PSASP(object):
                 '%s%d (%s,%.4f): %.4f, %.4f' % (label, rec[COUNT_ITER_KEY], str(stable),
                                                 rec[T_RIGHT_KEY] - rec[T_LEFT_KEY],
                                                 rec[T_LEFT_KEY], rec[T_RIGHT_KEY]))
+            if rec[T_RIGHT_KEY] > Tsim:
+                break
         elapsed = time.clock() - start_time
         rec[ELAPSED_KEY] = elapsed
         print('%sCCT = %.4f' % (label, rec[CCT_KEY]))
@@ -322,25 +326,3 @@ if __name__ == '__main__':
         Cc.run_sim_CCT_once()
         count_t += 1
 
-    '''
-    path_save = 'save'
-    Pt_writer = PSASP(path_save,PATH_TEMP)
-    Pt = PSASP(PATH_TEMP,PATH_TEMP)
-    Pt.calculate_LF()
-    Pt.calculate_ST()
-    Pt.calculate_SST_LIN()
-    Pt.calculate_SST_EIG()
-    G = Pt.parser.parse_single_s(const.LABEL_LF,const.LABEL_SETTINGS,const.LABEL_GENERATOR)
-    G_new = G
-    # modify G_new
-    Pt.parser.write_to_file_s(const.LABEL_LF,const.LABEL_SETTINGS,const.LABEL_GENERATOR,G_new)
-    Pt.parser.write_to_file_s_lfs_autofit(G_new)
-    f = Pt.calculate_LF()
-    if f:
-        A = Pt.parser.parse_all_results_lf()
-        R = Pt.parser.parse_all_results_lf((const.LABEL_BUS,const.LABEL_GENERATOR))
-        evalue = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVAL)
-
-        evec = Pt.parser.parse_single_s(const.LABEL_SST_EIG,const.LABEL_RESULTS,const.LABEL_EIGVEC)
-    
-    '''
